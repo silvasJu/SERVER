@@ -1,0 +1,993 @@
+{
+  "active": false,
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Message a model3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model3": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model3",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-24T16:10:32.818Z",
+  "id": "fECFUuxHCI1l7RJC",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Licitaciones copy",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2144,
+        -336
+      ],
+      "id": "b49476a4-7f4d-43b4-bb22-8b4f9af90983",
+      "name": "When chat message received",
+      "webhookId": "b9b3428c-5d32-4859-9681-1fbf2e05c0dc"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Analiza el siguiente texto del “Cuadro de Características del Contrato” de una licitación pública audiovisual en España.\n\nDevuelve SOLO un JSON con los siguientes campos, rellenando todo lo que puedas. Si un dato no existe, usa null (no inventes).  \nIdentifica bien los importes, la duración y el objeto.\n\n{\n  \"file_name\": \"{{$json['fileName']}}\",\n  \"doc_type\": \"cuadro_caracteristicas\",\n  \"basics\": {\n    \"objeto\": \"string|null\",\n    \"expediente\": \"string|null\",\n    \"procedimiento\": \"string|null\",\n    \"armonizada\": \"si|no|null\",\n    \"duracion_inicial_meses\": \"number|null\",\n    \"prorrogable_hasta_meses\": \"number|null\",\n    \"lugar_ejecucion\": \"string|null\"\n  },\n  \"economia\": {\n    \"presupuesto_iva_excl\": \"number|null\",\n    \"iva\": \"number|null\",\n    \"presupuesto_iva_incl\": \"number|null\",\n    \"valor_estimado\": \"number|null\",\n    \"revision_precios\": \"si|no|null\",\n    \"sistema_precio\": \"tanto_alzado|unitarios|tarifas|otro|null\"\n  },\n  \"resumen_ejecutivo_av\": \"string\"\n}\n\nTexto a analizar:\n{{$json[\"text\"]}}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -976,
+        -528
+      ],
+      "id": "213e0c56-97ec-4e71-956c-9870e2fbdc1f",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=data0",
+        "options": {
+          "joinPages": true,
+          "keepSource": "binary"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        -336
+      ],
+      "id": "296c89c6-9ec9-4a2b-bb6c-04bd1de1227f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appgb9JtcSDVfYReA",
+          "mode": "list",
+          "cachedResultName": "Licitaciones_Audiovisuales.csv",
+          "cachedResultUrl": "https://airtable.com/appgb9JtcSDVfYReA"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9BynX8gU1DTZXf",
+          "mode": "list",
+          "cachedResultName": "Imported table",
+          "cachedResultUrl": "https://airtable.com/appgb9JtcSDVfYReA/tbl9BynX8gU1DTZXf"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Expediente": "={{ $('Merge').item.json.message.content.basics.expediente }}",
+            "Objeto del contrato": "={{ $('Merge').item.json.message.content.basics.objeto }}",
+            "Nombre del archivo": "=",
+            "Procedimiento": "={{ $('Merge').item.json.message.content.basics.procedimiento }}",
+            "Armonizada": "={{ $('Merge').item.json.message.content.basics.armonizada }}",
+            "Duración inicial (meses)": "={{ $('Merge').item.json.message.content.basics.duracion_inicial_meses }}",
+            "Prórroga máxima (meses)": "={{ $('Merge').item.json.message.content.basics.prorrogable_hasta_meses }}",
+            "Lugar de ejecución": "={{ $('Merge').item.json.message.content.basics.lugar_ejecucion }}",
+            "Presupuesto sin IVA (€)": "={{ $('Merge').item.json.message.content.economia.presupuesto_iva_excl }}",
+            "IVA (€)": "={{ $('Merge').item.json.message.content.economia.iva }}",
+            "Presupuesto con IVA (€)": "={{ $('Merge').item.json.message.content.economia.presupuesto_iva_incl }}",
+            "Valor estimado (€)": "={{ $('Merge').item.json.message.content.economia.valor_estimado }}",
+            "Revisión de precios": "={{ $('Merge').item.json.message.content.economia.revision_precios }}",
+            "Sistema de precios": "={{ $('Merge').item.json.message.content.economia.sistema_precio }}",
+            "Solvencia económica": "={{ $('Merge').item.json.message.content.solvencia.economica.join('; ') }}",
+            "Solvencia técnica": "={{ $('Merge').item.json.message.content.solvencia.tecnica.join('; ') }}",
+            "Entregables y formatos": "={{ $('Merge').item.json.message.content.entregables_y_formatos.join('; ') }}",
+            "Documentación a presentar": "={{ $('Merge').item.json.message.content.documentacion_a_presentar.join('; ') }}",
+            "Criterios de adjudicación": "={{ $('Merge').item.json.message.content.criterios_adjudicacion.join('; ') }}",
+            "Riesgos clave": "={{ $('Merge').item.json.message.content.riesgos_claves.join('; ') }}",
+            "Resumen ejecutivo audiovisual": "={{ $('Merge').item.json.message.content.resumen_tecnico }}",
+            "ID Interno": 0,
+            "Equipos solicitados": "={{ $('Merge').item.json.message.content.equipos_solicitados.join('; ') }}",
+            "requisitos tecnicos": "={{ $('Merge').item.json.message.content.requisitos_tecnicos.join('; ') }}",
+            "Plazos y entregas": "={{ $('Merge').item.json.message.content.plazos_y_entregas.join('; ') }}",
+            "requisitos de calidad": "={{ $('Merge').item.json.message.content.requisitos_de_calidad.join('; ') }}",
+            "Fecha de análisis": "={{$now}}",
+            "Riesgos legales": "={{ $json.message.content.riesgos_legales.join('; ')}}",
+            "Resumen juridico": "={{ $json.message.content.resumen_juridico }}",
+            "Alertas": "={{ $json.message.content.alertas.join('; ') }}",
+            "Recomendaciones": "={{ $json.message.content.recomendaciones.join('; ') }}",
+            "Otro datos importantes": "={{ $('Merge').item.json.message.content['otros datos importantes'].join('; ') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID Interno",
+              "displayName": "ID Interno",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nombre del archivo",
+              "displayName": "Nombre del archivo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tipo de documento",
+              "displayName": "Tipo de documento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Objeto del contrato",
+              "displayName": "Objeto del contrato",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Expediente",
+              "displayName": "Expediente",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Procedimiento",
+              "displayName": "Procedimiento",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Armonizada",
+              "displayName": "Armonizada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Duración inicial (meses)",
+              "displayName": "Duración inicial (meses)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Prórroga máxima (meses)",
+              "displayName": "Prórroga máxima (meses)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lugar de ejecución",
+              "displayName": "Lugar de ejecución",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Presupuesto sin IVA (€)",
+              "displayName": "Presupuesto sin IVA (€)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IVA (€)",
+              "displayName": "IVA (€)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Presupuesto con IVA (€)",
+              "displayName": "Presupuesto con IVA (€)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Valor estimado (€)",
+              "displayName": "Valor estimado (€)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Revisión de precios",
+              "displayName": "Revisión de precios",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sistema de precios",
+              "displayName": "Sistema de precios",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Solvencia económica",
+              "displayName": "Solvencia económica",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Solvencia técnica",
+              "displayName": "Solvencia técnica",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Entregables y formatos",
+              "displayName": "Entregables y formatos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Plazos y entregas",
+              "displayName": "Plazos y entregas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Documentación a presentar",
+              "displayName": "Documentación a presentar",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Criterios de adjudicación",
+              "displayName": "Criterios de adjudicación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Riesgos clave",
+              "displayName": "Riesgos clave",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Resumen ejecutivo audiovisual",
+              "displayName": "Resumen ejecutivo audiovisual",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha de análisis",
+              "displayName": "Fecha de análisis",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Equipos solicitados",
+              "displayName": "Equipos solicitados",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "requisitos tecnicos",
+              "displayName": "requisitos tecnicos",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "requisitos de calidad",
+              "displayName": "requisitos de calidad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Riesgos legales",
+              "displayName": "Riesgos legales",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Referencias constitucion",
+              "displayName": "Referencias constitucion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Resumen juridico",
+              "displayName": "Resumen juridico",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Alertas",
+              "displayName": "Alertas",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Recomendaciones",
+              "displayName": "Recomendaciones",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Otro datos importantes",
+              "displayName": "Otro datos importantes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -336
+      ],
+      "id": "5b41a2fa-36f6-457a-9ccd-4b57080b0732",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = [];\nconst binaries = $input.item.binary;\n\n// Recorre todos los binarios recibidos\nfor (const key in binaries) {\n  const file = binaries[key];\n  const fileName = file.fileName || key;\n  \n  output.push({\n    binary: {\n      data: file\n    },\n    json: {\n      fileName: fileName,\n      // Generamos un ID único o un tipo inferido para filtrar después\n      docType: fileName.toLowerCase().includes(\"caracteristicas\") ? \"cuadro_caracteristicas\"\n              : fileName.toLowerCase().includes(\"condiciones\") ? \"pcap\"\n              : fileName.toLowerCase().includes(\"prescripciones\") ? \"ppt\"\n              : \"otro\"\n    }\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        -336
+      ],
+      "id": "8dea8421-2841-4ebf-b8ae-37bb572dc112",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json[\"docType\"]}}\n",
+                    "rightValue": "cuadro_caracteristicas",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "d8f01fff-8194-46d3-941f-56aa3571bae2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Características"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f2276278-1963-45fc-9639-813004ffc7bb",
+                    "leftValue": "={{$json[\"docType\"]}}\n",
+                    "rightValue": "pcap",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Condiciones"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "efc76d31-fdb7-4f05-95a7-d885bd730e50",
+                    "leftValue": "={{$json[\"docType\"]}}\n",
+                    "rightValue": "ppt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Prescripciones"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1200,
+        -352
+      ],
+      "id": "12178725-174e-416d-8828-6efc7b259d56",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Clasifica los PDF según su contenido o nombre\nreturn $input.all().map(item => {\n  const texto = (item.json.text || \"\").toLowerCase();\n  const nombre = (item.json.fileName || \"\").toLowerCase();\n\n  let tipo = \"otro\";\n\n  if (texto.includes(\"cuadro de características\") || nombre.includes(\"caracteristicas\")) {\n    tipo = \"cuadro_caracteristicas\";\n  } else if (texto.includes(\"pliego de condiciones\") || nombre.includes(\"condiciones\")) {\n    tipo = \"pcap\";\n  } else if (texto.includes(\"prescripciones técnicas\") || nombre.includes(\"prescripciones\")) {\n    tipo = \"ppt\";\n  }\n\n  return {\n    json: {\n      ...item.json,\n      docType: tipo,\n      fileName: nombre\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1424,
+        -336
+      ],
+      "id": "fc896855-cf5f-4ff3-971e-c7450e77e77d",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Analiza el siguiente texto correspondiente al “Pliego de Condiciones Administrativas (PCAP)” de una licitación audiovisual en España.\n\nExtrae y devuelve la información en formato JSON, estructurada así:\n\n{\n  \"file_name\": \"{{$json['fileName']}}\",\n  \"doc_type\": \"pcap\",\n  \"solvencia\": {\n    \"economica\": \"string[]\",\n    \"tecnica\": \"string[]\"\n  },\n  \"documentacion_a_presentar\": \"string[]\",\n  \"criterios_adjudicacion\": \"string[]\",\n  \"riesgos_claves\": \"string[]\",\n  \"resumen_ejecutivo_av\": \"string\"\n}\n\nTexto a analizar:\n{{$json[\"text\"]}}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -976,
+        -336
+      ],
+      "id": "3cecd3cd-9ae1-4701-a536-9e5da5f6557f",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=\n\nAnaliza el siguiente texto, pero solo la parte de “Pliego de Prescripciones Técnicas (PPT)” de esta licitación audiovisual en España: {{ $('Extract from File').item.json.text }}\n\nBusca en el texto cualquier referencia a requisitos técnicos, equipamiento, formatos de entrega o plazos. No inventes nada y aclara bien cada contenido. Añade en \"otros datos importantes\" todo el contenido que creas importante y no coincida con el resto de peticiones. En el caso de encontrar especificaciones exactas de algun equipo  utiliza la tool extract_av_equipment para devolver el listado de equipos clasificados por tipo.\n\n\nDevuelve SOLO un JSON estructurado así:\n\n{\n  \"file_name\": \"{{$json['fileName']}}\",\n  \"doc_type\": \"{{ $json.docType }}\",\n  \"equipos_solicitados\": \"string[]\",\n  \"requisitos_tecnicos\": \"string[]\",\n  \"entregables_y_formatos\": \"string[]\",\n  \"plazos_y_entregas\": \"string[]\",\n  \"requisitos_de_calidad\": \"string[]\",\n  \"resumen_tecnico\": \"string\"\n  \"otros datos importantes\": \"string[]\"\n}\n\n\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -960,
+        -80
+      ],
+      "id": "b6234688-b54b-40cb-9968-c277d50a0503",
+      "name": "Message a model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -608,
+        -352
+      ],
+      "id": "4b7723f5-7b8d-4a8a-abb7-9e1ca5aa7b56",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "export default {\n  name: \"extract_av_equipment\",\n  description: \"Extrae y clasifica equipamiento audiovisual detectado en un texto técnico de licitación.\",\n  parameters: {\n    type: \"object\",\n    properties: {\n      camaras: {\n        type: \"array\",\n        description: \"Lista de cámaras o sistemas de grabación.\",\n        items: { type: \"string\" }\n      },\n      microfonos: {\n        type: \"array\",\n        description: \"Sistemas de microfonía y audio detectados.\",\n        items: { type: \"string\" }\n      },\n      iluminacion: {\n        type: \"array\",\n        description: \"Equipos de iluminación audiovisual.\",\n        items: { type: \"string\" }\n      },\n      software: {\n        type: \"array\",\n        description: \"Software de edición o mezcla.\",\n        items: { type: \"string\" }\n      },\n      soporte_tecnico: {\n        type: \"array\",\n        description: \"Trípodes, grúas, rigs, estabilizadores, etc.\",\n        items: { type: \"string\" }\n      },\n      otros: {\n        type: \"array\",\n        description: \"Cualquier otro equipo no clasificado.\",\n        items: { type: \"string\" }\n      }\n    },\n    required: [\"camaras\", \"microfonos\", \"iluminacion\"]\n  },\n  // n8n ejecutará este bloque cuando OpenAI invoque la función\n  async run({ text }) {\n    // Aquí podrías integrar lógica futura, como validaciones o normalización\n    return { ok: true };\n  },\n};\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        -880,
+        96
+      ],
+      "id": "3817a01f-e9f4-4a54-8c01-11dd5d646e48",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4-turbo",
+          "mode": "list",
+          "cachedResultName": "GPT-4-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Eres un asistente legal experto en contratación pública española, especializado en proyectos audiovisuales y la Ley 9/2017 de Contratos del Sector Público (LCSP).\nTu tarea es revisar pliegos técnicos o administrativos para detectar:\n- Cláusulas contrarias a la libre concurrencia.\n- Requisitos técnicos o económicos desproporcionados.\n- Limitaciones injustificadas de marca o proveedor.\n- Riesgos de incumplimiento normativo o mala praxis.\n\nResponde siempre en formato JSON estructurado, sin texto adicional.\n",
+              "role": "system"
+            },
+            {
+              "content": "=Analiza el siguiente texto de licitación audiovisual y genera un informe jurídico estructurado en JSON.\n\n{\n  \"cumple_ley\": true|false,\n  \"riesgos_legales\": [\"...\"],\n  \"alertas\": [\"...\"],\n  \"recomendaciones\": [\"...\"],\n  \"resumen_juridico\": \"...\"\n}\n\nTen en cuenta la Ley 9/2017 de Contratos del Sector Público (LCSP), especialmente los artículos 1, 116, 124, 132 y 145.\nSi el texto no contiene elementos suficientes para un análisis jurídico, devuelve todos los campos como null. Si detectas posibles infracciones o principios vulnerados, usa la función buscar_articulo_constitucion \npara citar los artículos relevantes de la Constitución Española (ubicada en el servidor).\n\n\nTexto a analizar:\n{{ $('Extract from File').item.json.text }}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "maxTokens": 4050,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -416,
+        -336
+      ],
+      "id": "ade01b6a-c441-4a2f-9ddf-5851d762ebbd",
+      "name": "Message a model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "import fs from \"fs\";\n\nexport default {\n  name: \"buscar_articulo_constitucion\",\n  description: \"Devuelve artículos relevantes de la Constitución Española relacionados con un tema o número de artículo.\",\n  parameters: {\n    type: \"object\",\n    properties: {\n      tema: {\n        type: \"string\",\n        description: \"Tema o principio legal a buscar (por ejemplo: igualdad, libre concurrencia, legalidad, administración, contratación pública, etc.)\"\n      },\n      articulo: {\n        type: \"string\",\n        description: \"Número de artículo específico, por ejemplo 'Artículo 14' o 'Artículo 38'.\"\n      }\n    },\n    required: []\n  },\n  async run({ tema, articulo }) {\n    const ruta = \"/home/server-silvasju/ToolN8N/constitucion_esp.json\";\n    const data = JSON.parse(fs.readFileSync(ruta, \"utf8\"));\n\n    // Buscar por artículo exacto\n    if (articulo && data[articulo]) {\n      return { resultado: data[articulo] };\n    }\n\n    // Si se pide por tema (búsqueda semántica simple)\n    const texto = JSON.stringify(data).toLowerCase();\n    const coincidencias = [];\n    const palabras = tema ? tema.toLowerCase().split(\" \") : [];\n\n    for (const clave in data) {\n      const fragmento = (data[clave] || \"\").toLowerCase();\n      if (palabras.some(p => fragmento.includes(p))) {\n        coincidencias.push(`${clave}: ${data[clave]}`);\n      }\n    }\n\n    if (coincidencias.length > 0) {\n      return { resultado: coincidencias.slice(0, 3) };\n    } else {\n      return { resultado: \"No se encontraron artículos relacionados con el tema solicitado.\" };\n    }\n  },\n};\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        -336,
+        -128
+      ],
+      "id": "7773d177-a497-48ba-9ba8-ba884da7ee70",
+      "name": "Code Tool1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "5vWYoAW7L3l6upjf",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/5vWYoAW7L3l6upjf",
+          "cachedResultName": "Licitaciones"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -2416,
+        -352
+      ],
+      "id": "394f2fb2-eb63-42da-9e45-6d45a92424fc",
+      "name": "Call 'Licitaciones'"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-24T16:10:32.830Z",
+      "updatedAt": "2025-10-24T16:10:32.830Z",
+      "role": "workflow:owner",
+      "workflowId": "fECFUuxHCI1l7RJC",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-24T16:34:40.000Z",
+  "versionId": "fd9d78eb-d596-45b7-baba-ce4861bbb205"
+}
