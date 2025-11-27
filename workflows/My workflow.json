@@ -392,17 +392,17 @@
         "operation": "edit",
         "owner": {
           "__rl": true,
-          "value": "={{$node['Variables'].json['repo']['owner']}}",
+          "value": "={{ $('Variables').item.json.repo.owner }}",
           "mode": "name"
         },
         "repository": {
           "__rl": true,
-          "value": ".",
+          "value": "={{ $('Variables').item.json.repo.name }}",
           "mode": "name"
         },
-        "filePath": ".",
-        "fileContent": ".",
-        "commitMessage": "."
+        "filePath": "={{ $('Variables').item.json.repo.path }}{{ $('Get many workflows').item.json.name }}.json",
+        "fileContent": "={{ $('Code in JavaScript').item.json.n8n_data_stringy }}",
+        "commitMessage": "=[n8n backup]  {{ $('Loop Over Items').item.json.name }}.json ({{ $('Code in JavaScript').item.json.github_status }})"
       },
       "type": "n8n-nodes-base.github",
       "typeVersion": 1.1,
@@ -446,6 +446,7 @@
       "id": "26340405-0c92-4865-864b-85fca37d033e",
       "name": "Create a file",
       "webhookId": "fbf4390d-6d28-43bd-9225-196bb6c4677d",
+      "retryOnFail": false,
       "credentials": {
         "githubApi": {
           "id": "Fw0Am5HLUOcL9AwI",
@@ -533,7 +534,7 @@
           "mode": "name",
           "value": "={{$node['Variables'].json['repo']['name'] }}"
         },
-        "filePath": "={{ $('Variables').item.json.repo.path }}{{ $json.name }}.json\n",
+        "filePath": "={{ $('Variables').item.json.repo.path }}{{ $('Get many workflows').item.json.name }}.json",
         "asBinaryProperty": false,
         "additionalParameters": {}
       },
@@ -572,6 +573,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2025-11-27T16:07:29.000Z",
-  "versionId": "264468e1-867a-483f-a25c-67a0c3b40e90"
+  "updatedAt": "2025-11-27T16:24:12.000Z",
+  "versionId": "011b84bd-d20f-4ec7-a301-ec1e73a4f1c7"
 }
