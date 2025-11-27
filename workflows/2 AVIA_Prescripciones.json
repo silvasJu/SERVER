@@ -1,0 +1,255 @@
+{
+  "active": false,
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-24T16:36:42.977Z",
+  "id": "60rSMulgo3TxGL0O",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "2 AVIA_Prescripciones",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        48
+      ],
+      "id": "1eb4a4e7-c5ec-450f-9e5d-19be28afc84c",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analiza el siguiente texto de un documento de licitación o pliego técnico y responde únicamente en formato JSON válido. \nNo incluyas texto fuera del JSON, ni explicaciones, ni comentarios.\n\nTu salida debe tener exactamente esta estructura:\n\n{\n  \"entidad_contratante\": \"\",\n  \"objeto_y_alcance_tecnico\": \"\",\n  \"entregables_principales\": \"\",\n  \"actividades_a_cubrir\": \"\",\n  \"plazos_entrega\": \"\",\n  \"derechos_y_propiedad\": \"\",\n  \"presupuesto_y_duracion\": \"\"\n}\n\n📋 Instrucciones:\n- Extrae y resume la información más relevante de forma concisa y técnica.\n- No inventes datos: si algún campo no aparece en el texto, escribe \"No especificado\".\n- Usa redacción profesional, tipo informe administrativo o técnico.\n- No copies párrafos textuales; resume la información clave.\n- Prioriza datos de tipo técnico, jurídico y económico.\n- El JSON debe ser estructurado, sin comillas escapadas, y completamente válido.\n\nTexto a analizar:\n\"\"\"{{ $json.text_clean }}\"\"\"\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        416,
+        48
+      ],
+      "id": "9dd7b38c-316c-42b2-886d-f34b137e9e16",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appcSCRZZA85BdPy7",
+          "mode": "list",
+          "cachedResultName": "Prescripciones tecnicas",
+          "cachedResultUrl": "https://airtable.com/appcSCRZZA85BdPy7"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfAH8AprT23lGvS",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appcSCRZZA85BdPy7/tblfAH8AprT23lGvS"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "entidad contratante": "={{ $json.message.content.entidad_contratante }}",
+            "objeto y alcance tecnico": "={{ $json.message.content.objeto_y_alcance_tecnico }}",
+            "entregables principales": "={{ $json.message.content.entregables_principales }}",
+            "actividades a cubrir": "={{ $json.message.content.actividades_a_cubrir }}",
+            "plazos entrega": "={{ $json.message.content.plazos_entrega }}",
+            "derechos y propiedad": "={{ $json.message.content.derechos_y_propiedad }}",
+            "presupuesto y duracion": "={{ $json.message.content.presupuesto_y_duracion }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "entidad contratante",
+              "displayName": "entidad contratante",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "objeto y alcance tecnico",
+              "displayName": "objeto y alcance tecnico",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "entregables principales",
+              "displayName": "entregables principales",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "actividades a cubrir",
+              "displayName": "actividades a cubrir",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "plazos entrega",
+              "displayName": "plazos entrega",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "derechos y propiedad",
+              "displayName": "derechos y propiedad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "presupuesto y duracion",
+              "displayName": "presupuesto y duracion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        48
+      ],
+      "id": "fa85915a-b138-4ba8-9041-3bfe8e30d1b4",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Limpieza de texto procedente de PDF ---\nlet texto = $input.first().json.text;\n\n// 2️⃣ Elimina números de página (\"Página X de Y\")\ntexto = texto.replace(/Página\\s+\\d+\\s+de\\s+\\d+/gi, \"\");\n\n// 4️⃣ Elimina líneas en blanco múltiples\ntexto = texto.replace(/\\n\\s*\\n+/g, \"\\n\");\n\n// 5️⃣ Elimina guiones o símbolos repetitivos\ntexto = texto.replace(/[-–•]{2,}/g, \"\");\n\n// 6️⃣ Corrige espacios duplicados\ntexto = texto.replace(/\\s{2,}/g, \" \");\n\n// 🔹 Eliminar puntos suspensivos, guiones o signos repetidos\ntexto = texto.replace(/[•·–—\\-]{2,}/g, \"\");\ntexto = texto.replace(/\\.+/g, \".\");\n\n// 7️⃣ Corta partes redundantes (como índices o pies de página)\ntexto = texto.replace(/ÍNDICE[\\s\\S]*?CAPÍTULO\\s+I/gi, \"CAPÍTULO I\");\n\n// 8️⃣ (Opcional) Corta longitud si excede 60.000 caracteres\nif (texto.length > 60000) {\n  texto = texto.slice(0, 60000);\n}\n\nreturn {\n  json: {\n    tipo: $json.tipo,\n    fileName: $json.fileName,\n    text_clean: texto\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        48
+      ],
+      "id": "4c248f51-be82-4f9d-94da-18992c35d4aa",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-24T16:36:42.986Z",
+      "updatedAt": "2025-10-24T16:36:42.986Z",
+      "role": "workflow:owner",
+      "workflowId": "60rSMulgo3TxGL0O",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-27T17:11:28.000Z",
+  "versionId": "93780b52-b842-4dfa-8ebc-e27b52152282"
+}
