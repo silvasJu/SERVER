@@ -1,0 +1,243 @@
+{
+  "active": false,
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-24T16:49:59.311Z",
+  "id": "QFEp4059Hq0Bg5H0",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "3  AVIA_Condiciones",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        48
+      ],
+      "id": "211ff85e-51ac-4184-a93a-6ca0d0e7c3fd",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analiza el siguiente texto procedente de un documento de licitación y responde únicamente en formato JSON válido. \nNo añadas texto fuera del JSON, explicaciones, ni comentarios.\n\nExtrae y resume la información más relevante de forma concisa, rellenando las siguientes claves:\n\n{\n  \"entidad_contratante\": \"\",\n  \"objeto_y_alcance_tecnico\": \"\",\n  \"requisitos_de_solvencia\": \"\",\n  \"criterios_de_adjudicacion\": \"\",\n  \"condiciones_confidencialidad_propiedad_intelectual\": \"\",\n  \"presupuesto_y_duracion\": \"\"\n}\n\nInstrucciones específicas:\n- No inventes datos: si un punto no aparece en el texto, escribe \"No especificado\".\n- Usa lenguaje claro y técnico, tipo informe profesional.\n- Resume la información, no copies párrafos textuales del documento.\n- El JSON debe ser estructurado y válido, sin comillas escapadas ni caracteres extraños.\n- Prioriza siempre los datos económicos, administrativos y jurídicos.\n\nTexto a analizar:\n\"\"\"{{ $json.text_clean }}\"\"\"\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        512,
+        48
+      ],
+      "id": "1fdf4dc9-6f6f-4190-b549-3fde643f2521",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app3tIis2ocmywKgf",
+          "mode": "list",
+          "cachedResultName": "Condiciones Reguladoras",
+          "cachedResultUrl": "https://airtable.com/app3tIis2ocmywKgf"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl9dHZ2PsmcwkSBp",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/app3tIis2ocmywKgf/tbl9dHZ2PsmcwkSBp"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Entidad contratante": "={{ $json.message.content.entidad_contratante }}",
+            "objeto y alcance tecnico": "={{ $json.message.content.objeto_y_alcance_tecnico }}",
+            "criterios de adjudicacion": "={{ $json.message.content.criterios_de_adjudicacion }}",
+            "requisitos de solvencia": "={{ $json.message.content.requisitos_de_solvencia }}",
+            "condiciones confidencialidad propiedad intelectual": "={{ $json.message.content.condiciones_confidencialidad_propiedad_intelectual }}",
+            "presupuesto y duracion": "={{ $json.message.content.presupuesto_y_duracion }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Entidad contratante",
+              "displayName": "Entidad contratante",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "objeto y alcance tecnico",
+              "displayName": "objeto y alcance tecnico",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "requisitos de solvencia",
+              "displayName": "requisitos de solvencia",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "criterios de adjudicacion",
+              "displayName": "criterios de adjudicacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "condiciones confidencialidad propiedad intelectual",
+              "displayName": "condiciones confidencialidad propiedad intelectual",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "presupuesto y duracion",
+              "displayName": "presupuesto y duracion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        944,
+        48
+      ],
+      "id": "7ff15c59-ab1f-4603-b282-153a284a35f5",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Limpieza de texto procedente de PDF ---\nlet texto = $input.first().json.text;\n\n// 2️⃣ Elimina números de página (\"Página X de Y\")\ntexto = texto.replace(/Página\\s+\\d+\\s+de\\s+\\d+/gi, \"\");\n\n// 4️⃣ Elimina líneas en blanco múltiples\ntexto = texto.replace(/\\n\\s*\\n+/g, \"\\n\");\n\n// 5️⃣ Elimina guiones o símbolos repetitivos\ntexto = texto.replace(/[-–•]{2,}/g, \"\");\n\n// 6️⃣ Corrige espacios duplicados\ntexto = texto.replace(/\\s{2,}/g, \" \");\n\n// 🔹 Eliminar puntos suspensivos, guiones o signos repetidos\ntexto = texto.replace(/[•·–—\\-]{2,}/g, \"\");\ntexto = texto.replace(/\\.+/g, \".\");\n\n// 7️⃣ Corta partes redundantes (como índices o pies de página)\ntexto = texto.replace(/ÍNDICE[\\s\\S]*?CAPÍTULO\\s+I/gi, \"CAPÍTULO I\");\n\n// 8️⃣ (Opcional) Corta longitud si excede 60.000 caracteres\nif (texto.length > 60000) {\n  texto = texto.slice(0, 60000);\n}\n\nreturn {\n  json: {\n    tipo: $json.tipo,\n    fileName: $json.fileName,\n    text_clean: texto\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        48
+      ],
+      "id": "713fae14-c697-44b7-85d3-6f94bd4ddd3b",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-24T16:49:59.317Z",
+      "updatedAt": "2025-10-24T16:49:59.317Z",
+      "role": "workflow:owner",
+      "workflowId": "QFEp4059Hq0Bg5H0",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-27T17:12:13.000Z",
+  "versionId": "ea4e7b45-82cf-4d25-b324-00f37c4351f7"
+}
