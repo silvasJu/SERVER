@@ -1,0 +1,28 @@
+{
+  "active": false,
+  "connections": {},
+  "createdAt": "2025-10-24T16:36:58.061Z",
+  "id": "5xdArWObGapEHppy",
+  "isArchived": true,
+  "meta": null,
+  "name": "AVIA_Condiciones",
+  "nodes": [],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-24T16:36:58.070Z",
+      "updatedAt": "2025-10-24T16:36:58.070Z",
+      "role": "workflow:owner",
+      "workflowId": "5xdArWObGapEHppy",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-24T16:50:13.000Z",
+  "versionId": "a9771502-d79a-4b88-8957-eff97d59093c"
+}
