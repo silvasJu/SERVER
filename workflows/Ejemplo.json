@@ -3,24 +3,12 @@
   "connections": {
     "Google Drive Trigger": {
       "main": [
-        [
-          {
-            "node": "Message a model",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Telegram Trigger": {
       "main": [
-        [
-          {
-            "node": "Message a model",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "WhatsApp Trigger": {
@@ -239,6 +227,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2025-10-23T22:17:25.000Z",
-  "versionId": "4cd3f64d-ec67-4b5a-8fec-78568d2d5156"
+  "updatedAt": "2025-11-27T16:24:57.000Z",
+  "versionId": "1b992a6a-fd5e-45bd-8ce7-36ff0bd16e4f"
 }
