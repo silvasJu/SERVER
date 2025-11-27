@@ -1,0 +1,453 @@
+{
+  "active": false,
+  "connections": {
+    "Code — Collect Binaries": {
+      "main": [
+        [
+          {
+            "node": "Extract from File (PDF)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File (PDF)": {
+      "main": [
+        [
+          {
+            "node": "Code — Clean & Prepare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Clean & Prepare": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP — OpenAI (Meta)": {
+      "main": [
+        []
+      ]
+    },
+    "Code — Parse Meta JSON": {
+      "main": [
+        [
+          {
+            "node": "Merge (Meta + BOM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP — OpenAI (BOM)": {
+      "main": [
+        []
+      ]
+    },
+    "Code — Parse BOM JSON": {
+      "main": [
+        [
+          {
+            "node": "Merge (Meta + BOM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP — OpenAI (Specs)": {
+      "main": [
+        []
+      ]
+    },
+    "Code — Parse Specs JSON": {
+      "main": [
+        [
+          {
+            "node": "Merge (All)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge (Meta + BOM)": {
+      "main": [
+        [
+          {
+            "node": "Merge (All)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge (All)": {
+      "main": [
+        [
+          {
+            "node": "Code — Fuse Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code — Collect Binaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-28T14:24:33.503Z",
+  "id": "erFhYBagqDnzUfsx",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AVIA-Pro — Licitación (Análisis + BOM + Specs)",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Recoge todos los binarios que vengan del trigger y crea 1 item por archivo.\n// Cada item lleva: json.fileName, json.mimeType, json.binaryKey y el binario en binary[binaryKey].\nconst out = [];\nconst inItem = items[0] || {};\n\nif (inItem.binary) {\n  for (const key of Object.keys(inItem.binary)) {\n    const b = inItem.binary[key];\n    out.push({\n      json: {\n        fileName: b.fileName || 'file',\n        mimeType: b.mimeType || b.mime || '',\n        binaryKey: key,\n      },\n      binary: {\n        [key]: b,\n      },\n    });\n  }\n}\n\nreturn out;\n"
+      },
+      "id": "f68848ea-e1cf-4615-a016-4dcdb128ab63",
+      "name": "Code — Collect Binaries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2352,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=data0",
+        "options": {}
+      },
+      "id": "4353a15e-3826-4625-a21e-bd79c11fea08",
+      "name": "Extract from File (PDF)",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2032,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === Clean & Prepare (robusto) ===\n// Toma salidas típicas del extractor y normaliza a json.text_ready\n\nconst j = $json || {};\nlet text = '';\n\nfunction joinStrings(arr) {\n  return arr.filter(s => typeof s === 'string' && s.trim().length).join('\\n');\n}\n\n// 1) Intenta las rutas más comunes\nif (typeof j.text === 'string') {\n  text = j.text;\n} else if (Array.isArray(j.text)) {\n  text = joinStrings(j.text);\n} else if (Array.isArray(j.pages)) {\n  // Algunos extractores devuelven { pages: [ \"texto\", ... ] } o { pages: [ {text:\"...\"}, ... ] }\n  const parts = j.pages.map(p => (typeof p === 'string' ? p : (p && p.text) || '') );\n  text = joinStrings(parts);\n} else if (j.content && typeof j.content === 'string') {\n  text = j.content;\n} else if (j.data && typeof j.data.text === 'string') {\n  text = j.data.text;\n} else {\n  // 2) Rescate superficial: busca strings largas en el primer nivel\n  const candidates = [];\n  for (const [k, v] of Object.entries(j)) {\n    if (typeof v === 'string' && v.length > 300) candidates.push(v);\n    if (Array.isArray(v) && v.length && typeof v[0] === 'string') candidates.push(v.join('\\n'));\n  }\n  text = candidates.join('\\n');\n}\n\n// 3) Normalización y limpieza\nlet t = String(text || '');\n\n// quitar soft-hyphen y guiones de fin de línea\nt = t.replace(/\\u00AD\\n?/g, '');     // soft hyphen\nt = t.replace(/-\\n(?=\\w)/g, '');     // salto con guion por corte de línea\n\n// normalizar saltos / espacios / artefactos\nt = t.replace(/\\r/g, '');\nt = t.replace(/\\f/g, '\\n');\nt = t.replace(/https?:\\/\\/\\S+/g, '');     // URLs\nt = t.replace(/Página\\s+\\d+\\s+de\\s+\\d+/gi, ''); // cabeceras típicas\nt = t.replace(/\\n\\s*\\n{2,}/g, '\\n\\n');\nt = t.replace(/[ \\t]{2,}/g, ' ');\nt = t.replace(/\\n{3,}/g, '\\n\\n');\n\n// podar posible índice inicial\nconst tocRegex = /ÍNDICE[\\s\\S]{0,3000}?(?=\\n\\s*(CAP[IÍ]TULO|1[\\.\\)]\\s+|OBJETO|OBJETO DEL CONTRATO))/i;\nt = t.replace(tocRegex, '');\n\nt = t.trim();\n\nreturn [{\n  json: {\n    text_ready: t,\n    stats: {\n      chars: t.length\n    }\n  }\n}];\n"
+      },
+      "id": "7b5ec219-7b68-4aa7-afe4-72798443afc1",
+      "name": "Code — Clean & Prepare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "options": {}
+      },
+      "id": "58c2c4e4-d627-47ee-9c04-2cabee44d65d",
+      "name": "HTTP — OpenAI (Meta)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -1728,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "language": "JavaScript"
+      },
+      "id": "9d50d9a3-bbaa-431a-ade2-30e0b74720bf",
+      "name": "Code — Parse Meta JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "options": {}
+      },
+      "id": "bbf2697c-d4c1-4a62-a6f5-b5b3f515be32",
+      "name": "HTTP — OpenAI (BOM)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -2048,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "language": "JavaScript"
+      },
+      "id": "9d4c77a8-1da0-4839-abe2-059cec77fcaa",
+      "name": "Code — Parse BOM JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "options": {}
+      },
+      "id": "5c0beb75-3462-4698-a66f-a8d90cee6164",
+      "name": "HTTP — OpenAI (Specs)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -2016,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "language": "JavaScript"
+      },
+      "id": "0597d464-bdb5-4deb-a9a1-a188546a5f9a",
+      "name": "Code — Parse Specs JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex",
+        "options": {}
+      },
+      "id": "f244e8ba-e99e-4817-abdf-8296bf1d2960",
+      "name": "Merge (Meta + BOM)",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex",
+        "options": {}
+      },
+      "id": "845ae8e0-829e-4533-9b7d-03848d37f44d",
+      "name": "Merge (All)",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "language": "JavaScript"
+      },
+      "id": "99bb8f5a-28a1-42b8-bf82-cb7160327e83",
+      "name": "Code — Fuse Outputs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        112
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "267115d1-fa95-43d7-9d36-d51c4fcd4d9f",
+      "name": "NOTA — Configuración",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2624,
+        -64
+      ],
+      "id": "0ff62af5-e62f-41a1-b21e-91bfa7805624",
+      "name": "When chat message received",
+      "webhookId": "f93d5ae3-e568-474c-abd4-ce19c02062c6"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un analista experto en contratación pública y proyectos audiovisuales.\nAnaliza el texto del documento y devuelve exclusivamente un JSON con los siguientes campos:\n\n{\n  \"entidad_contratante\": \"\",\n  \"expediente\": \"\",\n  \"objeto\": \"\",\n  \"plazo_ejecucion\": \"\",\n  \"lugar_entrega\": [],\n  \"financiacion\": \"\",\n  \"garantia_meses\": \"\",\n  \"criterios_adjudicacion\": \"\",\n  \"presupuesto_sin_iva\": \"\",\n  \"presupuesto_con_iva\": \"\",\n  \"valor_estimado\": \"\"\n}\n\nReglas:\n- No inventes datos; si faltan, usa \"No especificado\".\n- Los importes deben ir como string sin separadores.\n- El texto de entrada es largo; resume, pero conserva precisión.\n\nTexto del documento:\n\"\"\"\n{{ $json.text_ready }}\n\"\"\"\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1440,
+        -48
+      ],
+      "id": "bf610449-ce20-4020-b2c6-5f7def01c1c0",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un extractor estricto de líneas de suministro (equipos/materiales) en pliegos de licitación.\nTu salida debe ser ÚNICAMENTE un JSON VÁLIDO con este esquema:\n\n{\n  \"bom\": [\n    {\n      \"producto\": \"\",                      // nombre exacto del equipo (texto tal cual)\n      \"clave\": \"\",                         // código/partida/clave exacta (p.ej. \"12.01.04.00\")\n      \"unidades\": \"\",                      // número de unidades tal cual (p.ej. \"1\", \"2\", \"1 ud\")\n      \"precio_unitario_sin_iva\": \"\",       // precio unitario SIN IVA tal cual (p.ej. \"1.268,00 €\")\n      \"total_sin_iva\": \"\",                 // total SIN IVA tal cual (p.ej. \"1.268,00 €\")\n      \"total_iva_incluido\": \"\"             // total CON IVA tal cual (p.ej. \"1.534,28 €\")\n    \n    }\n  ]\n}\n\nREGLAS MUY IMPORTANTES:\n- NO INVENTES NINGÚN DATO. Copia literalmente lo que aparezca en el documento.\n- Si un campo NO aparece, escribe `null` (valor nulo) para ese campo.\n- Mantén los valores de importes EXACTAMENTE como salen (comas, puntos, símbolo €, espacios).\n- Reconoce “clave” también como “código”, “partida”, “ref.”, “clave AM”, etc.\n- Incluye SOLO ítems que sean equipos/materiales. EXCLUYE conceptos globales (lote, transporte, instalación, servicios, mano de obra, formación, garantías, etc.) salvo que vengan como línea de suministro con precio.\n- No calcules nada: si falta un total o un unitario, pon `null`.\n- Ordena las líneas en el mismo orden en que aparecen en el texto.\n- Devuelve EXCLUSIVAMENTE el JSON pedido, sin texto adicional.\n\nTEXTO A ANALIZAR:\n\"\"\"\n{{ $json.text_ready }}\n\"\"\"\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1424,
+        208
+      ],
+      "id": "edc8254a-adc0-4cd6-8802-09379fd86978",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un ingeniero audiovisual experto en especificaciones técnicas.\nDel texto del documento, extrae y organiza las especificaciones técnicas de los equipos o materiales.\n\nDevuelve SOLO un JSON con esta estructura:\n\n{\n  \"specs_por_tipo\": [\n    {\n      \"tipo\": \"\",\n      \"requisitos\": {\n        \"pulgadas\": \"\",\n        \"resolucion\": \"\",\n        \"brillo_nits\": \"\",\n        \"puertos\": \"\",\n        \"protocolos\": \"\",\n        \"potencia\": \"\",\n        \"otros\": \"\"\n      }\n    }\n  ]\n}\n\nReglas:\n- No inventes información. Si algo no está especificado, usa \"No especificado\".\n- No incluyas texto fuera del JSON.\n- Cada tipo de equipo o material debe ser un elemento del array \"specs_por_tipo\".\n\nTexto del documento:\n\"\"\"\n{{ $json.text_ready }}\n\"\"\"\n",
+              "role": "system"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1408,
+        432
+      ],
+      "id": "1451422d-6129-4386-b395-caf930a55f58",
+      "name": "Message a model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-28T14:24:33.513Z",
+      "updatedAt": "2025-10-28T14:24:33.513Z",
+      "role": "workflow:owner",
+      "workflowId": "erFhYBagqDnzUfsx",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-28T16:27:43.000Z",
+  "versionId": "d2646097-9778-42e0-b83e-8208da4aa5cb"
+}
