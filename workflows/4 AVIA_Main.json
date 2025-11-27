@@ -1,0 +1,382 @@
+{
+  "active": false,
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Call '1 (1/3) AVIA_Cuadro'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call '1 (3/3) AVIA_Condiciones'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call '1 (2/3) AVIA_Prescripciones'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-10-24T16:35:46.363Z",
+  "id": "saAaVu5ZAOrLVMfj",
+  "isArchived": false,
+  "meta": null,
+  "name": "4 AVIA_Main",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=data",
+        "options": {
+          "joinPages": false,
+          "keepSource": "binary"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        448,
+        64
+      ],
+      "id": "1fdade94-4729-4ac6-a467-d30b6542adb1",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = [];\n\nfor (let i = 0; i < items[0].json.files.length; i++) {\n  const file = items[0].json.files[i];\n  const binaryKey = `data${i}`;\n  output.push({\n    json: {\n      fileName: file.fileName,\n      fileType: file.fileExtension,\n    },\n    binary: {\n      data: items[0].binary[binaryKey]\n    }\n  });\n}\n\nreturn output;\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        64
+      ],
+      "id": "0e5fe078-eebd-4d37-a776-96f71026d3a4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "cuadro",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "17ed0d4e-c4c2-48e3-b354-1ad88fe1fbd2"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "caracteristicas del contrato"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "51570c91-64bd-410f-b495-fae8eb1d16c4",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "condiciones",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "condiciones reguladoras"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "89cf0825-ba5e-43ec-80c8-3736ea2b4638",
+                    "leftValue": "={{ $json.tipo }}",
+                    "rightValue": "prescripciones",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "prescripciones tecnicas"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1120,
+        48
+      ],
+      "id": "4b67a7d9-a680-464e-8294-8c33138f7830",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        64
+      ],
+      "id": "dfd557e0-7f8c-46d7-bfef-e04d9152b78f",
+      "name": "When chat message received",
+      "webhookId": "df82e0dd-0477-44bc-ab28-320fc95849e2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = [];\n\nfor (const item of items) {\n  // Intentamos obtener el nombre del archivo desde los binarios\n  const fileName = item.binary?.data?.fileName\n    ? item.binary.data.fileName.toLowerCase()\n    : \"desconocido.pdf\";\n\n  let tipo = \"\";\n\n  if (fileName.includes(\"caracter\")) tipo = \"cuadro\";\n  else if (fileName.includes(\"prescrip\")) tipo = \"prescripciones\";\n  else if (fileName.includes(\"condicion\")) tipo = \"condiciones\";\n  else tipo = \"desconocido\";\n\n  // Combina todas las páginas de texto del PDF en un solo string\n  const fullText = Array.isArray(item.json.text)\n    ? item.json.text.join(\"\\n\")\n    : String(item.json.text || \"\");\n\n  output.push({\n    json: {\n      tipo,\n      fileName,\n      text: fullText\n    }\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        64
+      ],
+      "id": "13383679-1f18-49fb-bbcb-bcfedca2da7f",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Limpia cualquier binario sobrante antes de enviar al subworkflow\nreturn items.map(item => ({\n  json: item.json  // conserva solo el contenido JSON\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        64
+      ],
+      "id": "981dbccd-ecf2-4431-bc5e-89d9475eea8c",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "yY4criK2rs0nHaaQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yY4criK2rs0nHaaQ",
+          "cachedResultName": "1 (1/3) AVIA_Cuadro"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tipo": "={{ $json.tipo }}",
+            "fileName": "={{ $json.fileName }}",
+            "text": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "fileName",
+              "displayName": "fileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1472,
+        -144
+      ],
+      "id": "49de7281-85e3-4206-b8cc-05fb2ac05cce",
+      "name": "Call '1 (1/3) AVIA_Cuadro'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "QFEp4059Hq0Bg5H0",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/QFEp4059Hq0Bg5H0",
+          "cachedResultName": "1 (3/3) AVIA_Condiciones"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1472,
+        64
+      ],
+      "id": "b1b040f4-7ed6-4272-9c8c-a6ffbda4babe",
+      "name": "Call '1 (3/3) AVIA_Condiciones'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "60rSMulgo3TxGL0O",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/60rSMulgo3TxGL0O",
+          "cachedResultName": "1 (2/3) AVIA_Prescripciones"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        304
+      ],
+      "id": "4884ae9c-84ec-414f-a265-d9081295adb0",
+      "name": "Call '1 (2/3) AVIA_Prescripciones'"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2025-10-24T16:35:46.374Z",
+      "updatedAt": "2025-10-24T16:35:46.374Z",
+      "role": "workflow:owner",
+      "workflowId": "saAaVu5ZAOrLVMfj",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-27T17:12:39.000Z",
+  "versionId": "3c51b838-d4ff-49de-a97a-589c89802f20"
+}
