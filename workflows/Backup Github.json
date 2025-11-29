@@ -27,7 +27,7 @@
       "main": [
         [
           {
-            "node": "FIN",
+            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
@@ -517,8 +517,8 @@
       "name": "FIN",
       "typeVersion": 1,
       "position": [
-        848,
-        -272
+        1312,
+        -624
       ],
       "id": "cd87fa57-ffd0-402c-a90c-cff7c9323f46"
     },
@@ -567,8 +567,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        624,
-        -272
+        928,
+        -352
       ],
       "id": "a05fee40-fe74-4d56-8826-a13b68bbdb1e",
       "name": "Send a text message",
@@ -590,8 +590,8 @@
   },
   "shared": [
     {
-      "createdAt": "2025-11-26T15:30:36.653Z",
       "updatedAt": "2025-11-26T15:30:36.653Z",
+      "createdAt": "2025-11-26T15:30:36.653Z",
       "role": "workflow:owner",
       "workflowId": "GkrUZfZx2ZcgBb27",
       "projectId": "u2lnFFYk1yGEaOcS"
@@ -604,6 +604,6 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-11-27T17:20:58.000Z",
-  "versionId": "2258f161-61e9-47e7-bc88-ef0ff6d5236e"
+  "updatedAt": "2025-11-27T17:23:29.000Z",
+  "versionId": "224e8090-d604-4477-8dcf-f096e7ac8c7e"
 }
