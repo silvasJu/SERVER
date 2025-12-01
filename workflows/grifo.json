@@ -1,0 +1,74 @@
+{
+  "active": false,
+  "connections": {
+    "Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "createdAt": "2025-11-29T18:28:02.645Z",
+  "id": "WxGxDO0lliNOxYvS",
+  "isArchived": false,
+  "meta": null,
+  "name": "grifo",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "instagram-dm",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4867bf38-d6a5-4cca-a6b7-ef45f0eb00a2",
+      "name": "Webhook",
+      "webhookId": "890cbcfb-3661-419a-8e6f-d87528414834"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json[\"query\"][\"hub.challenge\"] }}\n",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/plain"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9588b08c-8d2b-4b6e-92b0-fe627506f853",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-11-29T18:28:02.657Z",
+      "createdAt": "2025-11-29T18:28:02.657Z",
+      "role": "workflow:owner",
+      "workflowId": "WxGxDO0lliNOxYvS",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-30T16:58:29.000Z",
+  "versionId": "e0e5736d-9a74-4b5b-9b0f-1f86481fcea0"
+}
