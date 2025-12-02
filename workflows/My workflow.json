@@ -1,5 +1,5 @@
 {
-  "active": true,
+  "active": false,
   "connections": {},
   "createdAt": "2025-11-30T17:00:23.179Z",
   "id": "wTRJXo4w4Lv6SSfM",
@@ -9,18 +9,8 @@
   "nodes": [
     {
       "parameters": {
-        "path": "instagram-dm",
-        "options": {
-          "responseData": "={{ $json[\"query\"][\"hub.challenge\"] }}\n",
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "text/plain"
-              }
-            ]
-          }
-        }
+        "path": "instagram-webhook",
+        "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -49,6 +39,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-11-30T17:00:24.000Z",
-  "versionId": "7cd86930-9b10-4471-986d-b5afd38ba320"
+  "updatedAt": "2025-12-02T00:40:01.000Z",
+  "versionId": "b6fea56c-0999-4b7e-af58-a7af4d1adc25"
 }
