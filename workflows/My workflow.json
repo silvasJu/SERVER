@@ -1,6 +1,25 @@
 {
-  "active": false,
-  "connections": {},
+  "active": true,
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "createdAt": "2025-11-30T17:00:23.179Z",
   "id": "wTRJXo4w4Lv6SSfM",
   "isArchived": false,
@@ -9,7 +28,9 @@
   "nodes": [
     {
       "parameters": {
+        "multipleMethods": true,
         "path": "instagram-webhook",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -21,6 +42,21 @@
       "id": "c309717b-5331-498e-8635-5b124beae7fb",
       "name": "Webhook",
       "webhookId": "189d8362-740e-4e45-a95e-d95c6b91055a"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json[\"query\"][\"hub.challenge\"]}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f53d36de-0f92-4ba4-b946-f7296da3b672",
+      "name": "Respond to Webhook"
     }
   ],
   "pinData": {},
@@ -39,6 +75,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-12-02T00:40:01.000Z",
-  "versionId": "b6fea56c-0999-4b7e-af58-a7af4d1adc25"
+  "updatedAt": "2025-12-02T18:45:52.000Z",
+  "versionId": "15be80b3-3d04-46a5-ac14-ff3be82edd71"
 }
