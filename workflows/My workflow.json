@@ -10,13 +10,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -75,6 +69,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-12-02T18:45:52.000Z",
-  "versionId": "15be80b3-3d04-46a5-ac14-ff3be82edd71"
+  "updatedAt": "2025-12-03T17:58:46.000Z",
+  "versionId": "9a1b1e4a-e0b5-4f86-be26-6569ca1dbbf9"
 }
