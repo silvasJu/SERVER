@@ -1,0 +1,177 @@
+{
+  "active": false,
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Start Cloudflare Tunnel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-11-29T18:28:02.645Z",
+  "id": "WxGxDO0lliNOxYvS",
+  "isArchived": true,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "ACTIVAR  TUNNEL",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "z",
+        "text": "={{$json[\"response\"] || $json[\"content\"]}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        0
+      ],
+      "id": "95cd1597-f8ec-492d-b7aa-b7ea70ddc7e3",
+      "name": "Send a text message",
+      "webhookId": "7937a02d-3a25-4ec6-aaad-2f4d286407d7",
+      "credentials": {
+        "telegramApi": {
+          "id": "n08JAEpIKZ4MM88M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "6cb96da3-7ce9-45ce-95ab-746f56b073ee",
+      "name": "Telegram Trigger",
+      "webhookId": "90335c57-378a-4fc0-a3ba-5c55aae0163f",
+      "credentials": {
+        "telegramApi": {
+          "id": "LGNG4M7JBayVDvu8",
+          "name": "ON/OFF TUNNEL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "ACTIVAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "073b292b-ea82-407c-8103-1ba9dbdfcf4c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ACTIVAR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "54aeba0e-e5ec-49ce-81e5-e5831c21e662",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "DESACTIVAR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DESACTIVAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        160,
+        0
+      ],
+      "id": "0d5daa46-269c-4647-8940-dc9e39875344",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "command": "sudo /usr/local/bin/cloudflared-start-n8n.sh"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -96
+      ],
+      "id": "4bc90cf1-74ee-47bb-844d-ff42d7fba5d0",
+      "name": "Start Cloudflare Tunnel"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-11-29T18:28:02.657Z",
+      "createdAt": "2025-11-29T18:28:02.657Z",
+      "role": "workflow:owner",
+      "workflowId": "WxGxDO0lliNOxYvS",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-07T12:39:12.000Z",
+  "versionId": "6b7081b0-a17a-42ea-83f0-e88faa3ec370"
+}
