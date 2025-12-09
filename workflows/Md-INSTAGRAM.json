@@ -10,6 +10,22 @@
             "index": 0
           }
         ],
+        [
+          {
+            "node": "IG - Datos usuario",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
         []
       ]
     }
@@ -46,11 +62,31 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        208,
-        0
+        272,
+        -112
       ],
       "id": "f53d36de-0f92-4ba4-b946-f7296da3b672",
       "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v21.0/{{$json[\"body\"][\"entry\"][0][\"changes\"][0][\"value\"][\"sender\"][\"id\"]}}?fields=id,name,profile_pic&access_token=EAAPxpYsEr04BQERLsIPhFf13oqOqJ3mqDNeM4RTxCh2UDfF6dnSJvZAZBuj4nXl2yNIUOblBzpDZBhJrUNadrVxOonvyZCT6dZC4tymUq90fx4YPDyR1XREIm0cO9haGZBYaS6rTzA8XJqCpwYhh0vm58LFewtBEYgXtxFqbTwqHmRp7TGM3sApIbok1lZCF3HK4CnZBaMvnezdGW4SRZBhjDb1xpurdmNAZAvk8YZB9gsgEW4EO010WiPggVq4xnwv5kZCNoZBfTWIBFRUhiYD1PescVYhUZD\n",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        576,
+        64
+      ],
+      "id": "dd7805bb-b2df-4bd6-849d-944d999f42ad",
+      "name": "IG - Datos usuario"
     }
   ],
   "pinData": {},
@@ -69,6 +105,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-12-04T15:58:10.000Z",
-  "versionId": "2777a528-ee7c-4116-a694-eb817f5910ed"
+  "updatedAt": "2025-12-09T00:54:50.000Z",
+  "versionId": "e9ca2a39-feec-4365-af52-2f76e71675ae"
 }
