@@ -1,0 +1,90 @@
+{
+  "active": false,
+  "connections": {
+    "PayPal Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create a payout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a payout": {
+      "main": [
+        [
+          {
+            "node": "Create an order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-10T18:23:04.228Z",
+  "id": "y4Ov78TR2qvbApOH",
+  "isArchived": false,
+  "meta": null,
+  "name": "Formas de pago",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.payPalTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1a704471-9f23-479f-9206-edbb07f1b1a0",
+      "name": "PayPal Trigger",
+      "webhookId": "2000605c-f1df-41ad-ac97-a458cbf941c6"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.payPal",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "dc43f79f-79cf-4ef3-9e80-9a567895c66a",
+      "name": "Create a payout"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.shopify",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "627e8d4f-0906-44e1-8e22-b06e01bd3345",
+      "name": "Create an order"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-10T18:23:04.240Z",
+      "createdAt": "2025-12-10T18:23:04.240Z",
+      "role": "workflow:owner",
+      "workflowId": "y4Ov78TR2qvbApOH",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-12-10T18:32:25.000Z",
+  "versionId": "836acbfe-fc77-40a8-972c-eecd811a7dc7"
+}
