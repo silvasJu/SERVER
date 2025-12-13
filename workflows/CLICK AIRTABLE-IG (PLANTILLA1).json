@@ -1,0 +1,304 @@
+{
+  "active": false,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook Click-MD": {
+      "main": [
+        [
+          {
+            "node": "CAMBIAR A RESPONDIDO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CAMBIAR A RESPONDIDO": {
+      "main": [
+        [
+          {
+            "node": "Redirigir al chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-10T18:23:04.228Z",
+  "id": "y4Ov78TR2qvbApOH",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "CLICK AIRTABLE-IG (PLANTILLA1)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -464
+      ],
+      "id": "c8f2535a-0fc7-4a1d-bdb4-84c1fe13af1a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"headers\": {\n      \"host\": \"n8n.silvasju.com\",\n      \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\",\n      \"accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\",\n      \"accept-encoding\": \"gzip, br, zstd\",\n      \"accept-language\": \"es-ES,es;q=0.9\",\n      \"cf-connecting-ip\": \"79.116.162.233\",\n      \"cf-ipcountry\": \"ES\",\n      \"cf-ray\": \"9ac5be9b3eebec91-MAD\",\n      \"cf-visitor\": \"{\\\"scheme\\\":\\\"https\\\"}\",\n      \"cf-warp-tag-id\": \"f34171ea-87d5-492e-8a9c-2241c043f648\",\n      \"connection\": \"keep-alive\",\n      \"priority\": \"u=0, i\",\n      \"sec-ch-ua\": \"\\\"Google Chrome\\\";v=\\\"143\\\", \\\"Chromium\\\";v=\\\"143\\\", \\\"Not A(Brand\\\";v=\\\"24\\\"\",\n      \"sec-ch-ua-mobile\": \"?0\",\n      \"sec-ch-ua-platform\": \"\\\"Windows\\\"\",\n      \"sec-fetch-dest\": \"document\",\n      \"sec-fetch-mode\": \"navigate\",\n      \"sec-fetch-site\": \"cross-site\",\n      \"sec-fetch-user\": \"?1\",\n      \"upgrade-insecure-requests\": \"1\",\n      \"x-forwarded-for\": \"79.116.162.233\",\n      \"x-forwarded-proto\": \"https\"\n    },\n    \"params\": {},\n    \"query\": {\n      \"id\": \"recti1IWvUach6uhv\",\n      \"url\": \"https://business.facebook.com/latest/inbox\"\n    },\n    \"webhookUrl\": \"https://n8n.silvasju.com/webhook/abrir-chat\",\n    \"executionMode\": \"production\"\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -464
+      ],
+      "id": "ca6a1d61-c589-4d26-a058-825dd9254e1b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "path": "abrir-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -144
+      ],
+      "id": "af0629d9-524c-451a-bffb-7aaf18bf51ac",
+      "name": "Webhook Click-MD",
+      "webhookId": "b9e61b0d-7794-4cf5-a7cc-53ff3cb89570"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appAph3JrPjdbMEpM",
+          "mode": "list",
+          "cachedResultName": "inbox_mensajes.csv",
+          "cachedResultUrl": "https://airtable.com/appAph3JrPjdbMEpM"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl6eeDL3BXD2FdZQ",
+          "mode": "list",
+          "cachedResultName": "Imported table",
+          "cachedResultUrl": "https://airtable.com/appAph3JrPjdbMEpM/tbl6eeDL3BXD2FdZQ"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado Respuesta": "Respondido",
+            "id": "={{ $json.query.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Mensaje",
+              "displayName": "Mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Responder",
+              "displayName": "Responder",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "URL Conversación",
+              "displayName": "URL Conversación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Categoría",
+              "displayName": "Categoría",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado Respuesta",
+              "displayName": "Estado Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Respondido",
+                  "value": "Respondido"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Razón IA",
+              "displayName": "Razón IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IGNORAR",
+              "displayName": "IGNORAR",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "IGNORAR",
+                  "value": "IGNORAR"
+                },
+                {
+                  "name": "",
+                  "value": ""
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha Entrada",
+              "displayName": "Fecha Entrada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sender_ID",
+              "displayName": "Sender_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        -144
+      ],
+      "id": "58d0a462-681f-4fc0-b25e-88e5f0d74b88",
+      "name": "CAMBIAR A RESPONDIDO",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<html>\n  <head>\n    <title>Abriendo chat...</title>\n    <meta http-equiv=\"refresh\" content=\"0; url=\"{{ $json.fields['URL Conversación'] }}\" />\n  </head>\n  <body>\n    <script>window.location.href = \"{{ $json.fields['URL Conversación'] }}\";</script>\n    <p>Abriendo Instagram... <a href=\"{{ $json.fields['URL Conversación'] }}\">Haz clic aquí si no carga.</a></p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -144
+      ],
+      "id": "1dcfb4a3-7444-4bed-be8b-dc49c8b6f764",
+      "name": "Redirigir al chat"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-10T18:23:04.240Z",
+      "createdAt": "2025-12-10T18:23:04.240Z",
+      "role": "workflow:owner",
+      "workflowId": "y4Ov78TR2qvbApOH",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-12T20:12:51.000Z",
+  "versionId": "6b3b518a-9008-4c08-a1d8-71ab70acf24b"
+}
