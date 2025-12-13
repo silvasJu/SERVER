@@ -1,0 +1,828 @@
+{
+  "active": true,
+  "connections": {
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Categoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categoria": {
+      "main": [
+        [
+          {
+            "node": "URL+DM+CATEGORIA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record1": {
+      "main": [
+        []
+      ]
+    },
+    "Crear o actualizar usuario": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a record1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recoger comentarios": {
+      "main": [
+        []
+      ]
+    },
+    "URL+DM+CATEGORIA": {
+      "main": [
+        [
+          {
+            "node": "Crear o actualizar usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-11T22:46:05.480Z",
+  "id": "NUKXmIo4PBgGU8d7",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "ORGANIZADOR-MD-IG (PRUEBA 1)",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json[\"query\"][\"hub.challenge\"]}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -96,
+        -416
+      ],
+      "id": "94eba674-bb95-4748-99ba-ef6d273bb174",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        144
+      ],
+      "id": "43560b5b-307d-4494-95c7-791bec70fab9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=\\# ROL\n\nEres un moderador y clasificador experto de mensajes directos (DMs) para una cuenta profesional de Instagram. Tu única función es analizar el texto entrante, detectar la intención y el tono palabra por palabra, y categorizarlo estrictamente en una de las 4 categorías definidas. Tienes una \"MEMORIA\" con mensajes y sus categorías.\n\n\n# MEMORIA (ejemplos previos)\n\n{{ $json.Memoria }}\n\n# CATEGORÍAS (Explicadas al detalle)\n\n1. \"Despectivos\":\n   - Asigna esta categoría si el mensaje contiene insultos, palabras obscenas, agresividad, odio, racismo, sexismo o una falta clara de educación y respeto.\n   - Incluso si es una propuesta de trabajo, si el lenguaje es insultante, prima esta categoría.\n\n2. \"Trabajo\":\n   - Asigna esta categoría si el usuario propone servicios profesionales, colaboraciones laborales, edición de fotos/videos, servicios de IA, agencias de marketing o cualquier transacción comercial profesional.\n\n3. \"Proposicion_contenido\":\n   - Asigna esta categoría si el usuario sugiere ideas para nuevos videos, temas para posts, retos, o pide que hables de un tema específico en tu cuenta.\n\n4. \"Saludos\":\n   - Asigna esta categoría para mensajes casuales, \"hola\", \"buenos días\", reacciones con emojis simples, preguntas genéricas sobre cómo estás, o cualquier mensaje amistoso que no encaje en trabajo ni contenido.\n\n# INSTRUCCIONES DE ANÁLISIS\n1. Lee el mensaje completo.\n2. Analiza palabra por palabra buscando palabras clave (ej: \"tonto\" -> despectivo, \"editar\" -> trabajo, \"idea\" -> proposicion_contenido).\n3. Analiza el contexto semántico (ej: \"¿Qué tal?\" es saludo, pero \"¿Qué tal editas?\" es trabajo).\n4. Si un mensaje parece encajar en dos categorías, prioriza en este orden: despectivos > trabajo > proposicion_contenido > saludos.\n\n\n# EJEMPLOS DE CATEGORIA \"DESPECTIVO\"\n\nEntrada: \"Tú haces esos vídeos para que la gente te de comida gratis y aprovecharte de la gente que dan las cosas aprovechado eso es lo que eres y luego tus vídeos que son unas mentiras ©y luego que editas si tus edits lo hacen un niño de párvulo solo te aprovechas de la gente y haces que vas pasando frío y hambre Cuandl es mentira te recomiendo llamarte así en tus redes sociales grifo grifaprovechao\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Despectivos\", \"razon\": \"Contiene acusaciones agresivas e insultos\"}\n\nEntrada: \"Vaya mierda de perfil tienes, eres un inútil. No sé cómo no te da vergüenza subir esa basura de videos. Hazle un favor al mundo y borra la cuenta, payaso, que das pena ajena.\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Despectivos\", \"razon\": \"Uso de palabras obscenas e insultos directos\"}\n\nEntrada: \"Eres un puto estafador, deja de engañar a la gente con tus mentiras. No tienes ni puta idea de lo que hablas y solo quieres robar dinero. Ojalá te cierren la cuenta por ladrón y falso.\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Despectivos\", \"razon\": \"Solicitud clara de servicios profesionales\"}\n\nEntrada: \"Qué asco me da tu voz y tu cara, eres insoportable. Aprende a hablar antes de ponerte delante de una cámara, pareces retrasado. Me tienes harto, te voy a bloquear, idiota.\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Despectivos\", \"razon\": \"Solicitud clara de servicios profesionales\"}\n\n\n# EJEMPLOS DE CATEGORIA \"TRABAJO\"\n\nEntrada: \"Hola, te escribo porque quiero hacer un regalo muy especial a mi pareja. Me gustaría saber si ofreces el servicio de crear un video con IA uniendo una foto de ella y de su abuela fallecida dándose un abrazo real. ¿Podrías darme precio y plazos?\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Trabajo\", \"razon\": \"Solicitud de servicio video IA\"}\n\nEntrada: \"¡Buenas! He estado viendo tu contenido y creo que tienes mucho potencial, pero la edición se podría pulir para retener más audiencia. Soy editor profesional especializado en formato vertical (Reels/TikTok). Me gustaría que me editaras un pack de 3 vídeos para que probemos a trabajar juntos. ¿Te interesa?\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Trabajo\", \"razon\": \"Oferta servicios profesionales de edición\"}\n\nEntrada: \"Hola, te contactamos desde la agencia Creativa360. Representamos a una nueva app de finanzas y nos encaja mucho tu perfil para una colaboración remunerada. Sería un Reel y dos Stories explicando la app. ¿Podrías pasarnos tu media kit o tarifas actuales?\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Trabajo\", \"razon\": \"Propuesta de colaboración comercial remunerada\"}\n\nEntrada: \"Buenas tardes. Tengo una pequeña empresa de reformas y necesito a alguien que me lleve las redes sociales o me haga los vídeos corporativos con tu estilo. ¿Estás aceptando clientes nuevos ahora mismo o solo te dedicas a tu marca personal?\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Trabajo\", \"razon\": \"Busca contratar servicios para empresa\"}\n\nEntrada: \"Muy buenas grifo, te hablaba por si haciamos una colaboracion juntos en un video y hacemos un par de tiktoks juntos\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Trabajo\", \"razon\": \"Colaboracion de contenido\"}\n\n\n\n# EJEMPLOS DE CATEGORIA \"PROPOSICION CONTENIDO\"\n\nEntrada: \"Me encanta cómo quedan tus colores. ¿Podrías hacer un vídeo explicando paso a paso cómo haces la corrección de color en Premiere? Me ayudaría muchísimo.\"\nSalida: {\"mensaje_original\": \"...\", \"Categoria\": \"Proposicion_contenido\", \"razon\": \"Solicita tutorial técnico sobre color\"}\n\nEntrada: \"¡Tienes que probar el reto de editar una foto en menos de 1 minuto! Lo he visto en otras cuentas y seguro que tú lo haces genial, molaría ver tu intento.\"\nSalida: {\"mensaje_original\": \"...\", \"Categoria\": \"Proposicion_contenido\", \"razon\": \"Propone unirse a reto viral\"}\n\nEntrada: \"Hola, estaría genial que un día hablaras sobre si merece la pena pagar por la verificación de Instagram. Tengo dudas y me fío de tu criterio.\"\nSalida: {\"mensaje_original\": \"...\", \"Categoria\": \"Proposicion_contenido\", \"razon\": \"Sugiere tema de opinión específico\"}\n\nEntrada: \"¿Has pensado en hacer directos los domingos analizando perfiles de seguidores? Creo que aprenderíamos mucho viendo cómo corriges fallos en tiempo real.\"\nSalida: {\"mensaje_original\": \"...\", \"Categoria\": \"Proposicion_contenido\", \"razon\": \"Propone nueva sección de análisis\"}\n\n\n\n# EJEMPLOS DE CATEGORIA \"SALUDOS\"\n\nEntrada: \"Buenos días máquina, espero que tengas un día genial hoy y vaya todo muy bien.\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Saludo\", \"razon\": \"Saludo amistoso de buenos días\"}\n\nEntrada: \"Hola, ¿qué tal todo? Hace tiempo que te sigo y me caéis muy bien tú y tu equipo.\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Saludo\", \"razon\": \"Uso de palabras obscenas e insultos directos\"}\n\nEntrada: \"Eres el mejor 🔥🔥🔥\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Saludo\", \"razon\": \"Solicitud clara de servicios profesionales\"}\n\nEntrada: \"Eres la ostia tio, me entretienen un monton tus videos\"\nSalida: {\"mensaje_original\": \"...\", \"categoria\": \"Saludo\", \"razon\": \"Alago\"}\n\n\n\n# FORMATO DE SALIDA (OBLIGATORIO)\nDebes responder ÚNICAMENTE con un objeto JSON válido. No añadas texto antes ni después del JSON. No uses bloques de código markdown (```json).\n\nEstructura del JSON:\n{\n  \"mensaje_original\": \"{{ $('Webhook').item.json.body.entry[0].messaging[0].message.text }}\",\n  \"categoria\": \"una_de_las_4_categorias_exactas\",\n  \"razon\": \"Breve explicación de 5 palabras de por qué elegiste esa categoría\"\n} \n"
+            },
+            {
+              "content": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        32,
+        -48
+      ],
+      "id": "849dd444-1144-4cf8-adee-9e15ca8b8119",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        -48
+      ],
+      "id": "0064d03d-3d7d-437b-87a6-70a722cbb225",
+      "name": "Categoria"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprpSC38jBuMpvty",
+          "mode": "list",
+          "cachedResultName": "tablas (1).csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl8gQqFk3EaoL85r",
+          "mode": "list",
+          "cachedResultName": "DB_MENSAJES.csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty/tbl8gQqFk3EaoL85r"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Mensaje_Texto": "={{ $('Webhook3').item.json.body.entry[0].messaging[0].message.text }}",
+            "Categoria": "={{ $('Categoria').item.json.categoria }}",
+            "Razon_IA": "={{ $('Categoria').item.json.razon }}",
+            "Estado_Respuesta": "Pendiente",
+            "URL_Conversacion": "={{ $('URL+DM+CATEGORIA').item.json.URL }}",
+            "Fecha_Entrada": "={{ $now.setZone(\"Europe/Madrid\").toFormat(\"dd/LL/yyyy HH:mm:ss\") }}",
+            "Link_Usuario": "={{ $('Crear o actualizar usuario').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "ID_Mensaje",
+              "displayName": "ID_Mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Mensaje_Texto",
+              "displayName": "Mensaje_Texto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Responder",
+              "displayName": "Responder",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Link_Usuario",
+              "displayName": "Link_Usuario",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "options": [
+                {
+                  "name": "Negocio",
+                  "value": "Negocio"
+                },
+                {
+                  "name": "Actividad",
+                  "value": "Actividad"
+                },
+                {
+                  "name": "Conversacional",
+                  "value": "Conversacional"
+                },
+                {
+                  "name": "Sin sustancia",
+                  "value": "Sin sustancia"
+                },
+                {
+                  "name": "Insulto o sexual",
+                  "value": "Insulto o sexual"
+                },
+                {
+                  "name": "trabajo",
+                  "value": "trabajo"
+                },
+                {
+                  "name": "despectivos",
+                  "value": "despectivos"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Razon_IA",
+              "displayName": "Razon_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado_Respuesta",
+              "displayName": "Estado_Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Respondido",
+                  "value": "Respondido"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Entrada",
+              "displayName": "Fecha_Entrada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "URL_Conversacion",
+              "displayName": "URL_Conversacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "IGNORAR",
+              "displayName": "IGNORAR",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "IGNORAR",
+                  "value": "IGNORAR"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        80
+      ],
+      "id": "1077fd6d-d6a9-4c74-ab99-0bbf0fb2ebcd",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "apprpSC38jBuMpvty",
+          "mode": "list",
+          "cachedResultName": "tablas (1).csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfNlKOd20bzd0z0",
+          "mode": "list",
+          "cachedResultName": "MEMORIA_IG",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty/tblfNlKOd20bzd0z0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Categoria": "={{ $json.categoria }}",
+            "Mensaje_Texto": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Mensaje_Texto",
+              "displayName": "Mensaje_Texto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Negocio  ",
+                  "value": "Negocio  "
+                },
+                {
+                  "name": "Actividad",
+                  "value": "Actividad"
+                },
+                {
+                  "name": "Conversacional",
+                  "value": "Conversacional"
+                },
+                {
+                  "name": "Sin sustancia",
+                  "value": "Sin sustancia"
+                },
+                {
+                  "name": "Insulto o sexual",
+                  "value": "Insulto o sexual"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        -144
+      ],
+      "id": "1670d308-19f5-4797-9796-4bb51c773bef",
+      "name": "Create a record1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "apprpSC38jBuMpvty",
+          "mode": "list",
+          "cachedResultName": "tablas (1).csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblP97YGAOBLeTlkO",
+          "mode": "list",
+          "cachedResultName": "DB_USUARIOS.csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty/tblP97YGAOBLeTlkO"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado_CRM": "Nuevo",
+            "Fecha_Ultima_Interaccion": "={{ $now.setZone(\"Europe/Madrid\").toFormat(\"dd/LL/yyyy HH:mm:ss\") }}",
+            "Sender_ID": "={{ $('Webhook').item.json.body.entry[0].messaging[0].sender.id }}"
+          },
+          "matchingColumns": [
+            "Sender_ID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Sender_ID",
+              "displayName": "Sender_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Persona o dato",
+              "displayName": "Persona o dato",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado_CRM",
+              "displayName": "Estado_CRM",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Nuevo",
+                  "value": "Nuevo"
+                },
+                {
+                  "name": "Amigo",
+                  "value": "Amigo"
+                },
+                {
+                  "name": "Trabajo",
+                  "value": "Trabajo"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Ultima_Interaccion",
+              "displayName": "Fecha_Ultima_Interaccion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "DB_MENSAJES.csv",
+              "displayName": "DB_MENSAJES.csv",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        656,
+        -48
+      ],
+      "id": "686f09a5-7444-4e79-acf1-d3431cdffe27",
+      "name": "Crear o actualizar usuario",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "value": "apprpSC38jBuMpvty",
+          "mode": "list",
+          "cachedResultName": "tablas (1).csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfNlKOd20bzd0z0",
+          "mode": "list",
+          "cachedResultName": "MEMORIA_IG",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty/tblfNlKOd20bzd0z0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        -608
+      ],
+      "id": "d8d9aebc-aa41-4439-bb81-e4887ee45743",
+      "name": "Recoger comentarios",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8ef9e4c5-1330-4eb0-8217-73a4acfe042f",
+              "name": "URL",
+              "value": "=https://business.facebook.com/latest/inbox/all/?asset_id=894925823708082&business_id=1176769843952048&selected_item_id={{ $('Webhook').item.json.body.entry[0].messaging[0].sender.id }}",
+              "type": "string"
+            },
+            {
+              "id": "2c1f484a-b571-40eb-ab80-fa7c2fb1f3f4",
+              "name": "Mensaje_Texto",
+              "value": "={{ $('Webhook').item.json.body.entry[0].messaging[0].message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "6383b5f4-356a-4527-9bd2-d473137bb768",
+              "name": "Categoria",
+              "value": "={{ $json.categoria }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -48
+      ],
+      "id": "a249be82-337a-443b-aea6-abdc15056223",
+      "name": "URL+DM+CATEGORIA"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Devuelve exactamente el mismo JSON que te llega desde el webhook\nreturn [\n  {\n    \"headers\": {\n      \"host\": \"n8n.silvasju.com\",\n      \"x-real-ip\": \"127.0.0.1\",\n      \"x-forwarded-for\": \"2a03:2880:3ff:4::, 127.0.0.1\",\n      \"x-forwarded-proto\": \"http\",\n      \"connection\": \"close\",\n      \"content-length\": \"446\",\n      \"user-agent\": \"facebookexternalua\",\n      \"accept\": \"*/*\",\n      \"accept-encoding\": \"gzip, br\",\n      \"cdn-loop\": \"cloudflare; loops=1\",\n      \"cf-connecting-ip\": \"2a03:2880:3ff:4::\",\n      \"cf-ipcountry\": \"US\",\n      \"cf-ray\": \"9ad128987e1d2a0c-SJC\",\n      \"cf-visitor\": \"{\\\"scheme\\\":\\\"https\\\"}\",\n      \"cf-warp-tag-id\": \"527e4270-1fd3-4cd0-aa15-51fd5162eb99\",\n      \"content-type\": \"application/json\",\n      \"instagram-api-version\": \"v23.0\",\n      \"x-hub-signature\": \"sha1=da5ef073ec4ac0fa000a6e25a824cbd243385f6f\",\n      \"x-hub-signature-256\": \"sha256=0e1413926d996f76de44282e8e6017a1a0a07d3366ae35d09fab5478b398051e\"\n    },\n    \"params\": {},\n    \"query\": {},\n    \"body\": {\n      \"object\": \"instagram\",\n      \"entry\": [\n        {\n          \"time\": 1765583788722,\n          \"id\": \"17841478493404551\",\n          \"messaging\": [\n            {\n              \"sender\": {\n                \"id\": \"1167048252308115\"\n              },\n              \"recipient\": {\n                \"id\": \"17841478493404551\"\n              },\n              \"timestamp\": 1765583787798,\n              \"message\": {\n                \"mid\": \"aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDc4NDkzNDA0NTUxOjM0MDI4MjM2Njg0MTcxMDMwMTI0NDI1OTk2Njc2MTE4OTMwMTU4NzozMjU2OTI3MjI3NDIwMzM3MDUzMDEyMTI2NTUwOTgyNjU2MAZDZD\",\n                \"text\": \"Hola cómo estás, haces videos personalizados?\"\n              }\n            }\n          ]\n        }\n      ]\n    },\n    \"webhookUrl\": \"https://n8n.silvasju.com/webhook/instagram-webhook\",\n    \"executionMode\": \"production\"\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        144
+      ],
+      "id": "27e1a5f5-21cf-4ae1-a45b-3448a775dd1d",
+      "name": "Webhook3"
+    },
+    {
+      "parameters": {
+        "multipleMethods": true,
+        "path": "instagram-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -368,
+        -288
+      ],
+      "id": "cb346dd7-49c1-4d8a-bd6e-773cc1853270",
+      "name": "Webhook",
+      "webhookId": "3b201586-d60f-4ae1-a546-d31e7024193b"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apprpSC38jBuMpvty",
+          "mode": "list",
+          "cachedResultName": "tablas (1).csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfNlKOd20bzd0z0",
+          "mode": "list",
+          "cachedResultName": "MEMORIA_IG",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty/tblfNlKOd20bzd0z0"
+        },
+        "filterByFormula": "=",
+        "returnAll": false,
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Mensaje_Texto",
+              "direction": "desc"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        -48
+      ],
+      "id": "63787a41-1d30-4bcb-a392-b630b21824fb",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b97624c0-b066-421c-ac54-53e686b8e20a",
+              "name": "Memoria",
+              "value": "=- [{{ $json.Categoria }}] {{ $json.Mensaje_Texto }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "06128fca-ff82-488f-a2b8-5d2d1d0179ae",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-11T22:46:05.486Z",
+      "createdAt": "2025-12-11T22:46:05.486Z",
+      "role": "workflow:owner",
+      "workflowId": "NUKXmIo4PBgGU8d7",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-13T12:54:21.000Z",
+  "versionId": "c58362ed-5408-483e-9576-afe833757fef"
+}
