@@ -1,0 +1,302 @@
+{
+  "active": false,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook Click-MD": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-12-11T22:46:26.896Z",
+  "id": "Z9ZYcnjDkiSPNsA4",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "CLICK AIRTABLE-IG (PRUEBA 1)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -464
+      ],
+      "id": "69a90dd9-220e-4e85-a37c-5413dc5cdd13",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    \"headers\": {\n      \"host\": \"n8n.silvasju.com\",\n      \"x-real-ip\": \"127.0.0.1\",\n      \"x-forwarded-for\": \"2a0c:5a81:3303:b700:d8f3:7c8:5def:a6bd, 127.0.0.1\",\n      \"x-forwarded-proto\": \"http\",\n      \"connection\": \"close\",\n      \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36\",\n      \"accept\": \"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\",\n      \"accept-encoding\": \"gzip, br\",\n      \"accept-language\": \"es-ES,es;q=0.9,en;q=0.8\",\n      \"cdn-loop\": \"cloudflare; loops=1\",\n      \"cf-connecting-ip\": \"2a0c:5a81:3303:b700:d8f3:7c8:5def:a6bd\",\n      \"cf-ipcountry\": \"ES\",\n      \"cf-ray\": \"9ad0ca32d95ccbcb-MAD\",\n      \"cf-visitor\": \"{\\\"scheme\\\":\\\"https\\\"}\",\n      \"cf-warp-tag-id\": \"527e4270-1fd3-4cd0-aa15-51fd5162eb99\",\n      \"priority\": \"u=0, i\",\n      \"sec-ch-ua\": \"\\\"Google Chrome\\\";v=\\\"143\\\", \\\"Chromium\\\";v=\\\"143\\\", \\\"Not A(Brand\\\";v=\\\"24\\\"\",\n      \"sec-ch-ua-mobile\": \"?0\",\n      \"sec-ch-ua-platform\": \"\\\"Windows\\\"\",\n      \"sec-fetch-dest\": \"document\",\n      \"sec-fetch-mode\": \"navigate\",\n      \"sec-fetch-site\": \"cross-site\",\n      \"sec-fetch-user\": \"?1\",\n      \"upgrade-insecure-requests\": \"1\"\n    },\n    \"params\": {},\n    \"query\": {\n      \"id\": \"rec3U57tAzuRIRdzb\",\n      \"url\": \"https://business.facebook.com/latest/inbox/all/?asset_id=894925823708082&business_id=1176769843952048&selected_item_id=1213\"\n    },\n    \"webhookUrl\": \"https://n8n.silvasju.com/webhook/abrir-chat1\",\n    \"executionMode\": \"production\"\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -464
+      ],
+      "id": "9d308d8b-8330-436d-b995-874091cd1947",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "path": "abrir-chat1",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -144
+      ],
+      "id": "25d3d027-b951-4ad9-8558-dfbdaaa1014c",
+      "name": "Webhook Click-MD",
+      "webhookId": "23d25a48-ab33-453c-90b4-a9634fb7fb0e"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<html>\n  <head>\n    <title>Abriendo chat...</title>\n    <meta http-equiv=\"refresh\" content=\"0; url={{ $json.fields.URL_Conversacion }}\" />\n  </head>\n  <body>\n    <script>window.location.href = \"{{ $json.fields.URL_Conversacion }}\";</script>\n    <p>Abriendo Instagram... <a href=\"{{ $json.fields.URL_Conversacion }}\">Haz clic aquí si no carga.</a></p>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        -144
+      ],
+      "id": "40e92956-7b83-4491-82ec-c7ad61f58d91",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "apprpSC38jBuMpvty",
+          "mode": "list",
+          "cachedResultName": "tablas (1).csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl8gQqFk3EaoL85r",
+          "mode": "list",
+          "cachedResultName": "DB_MENSAJES.csv",
+          "cachedResultUrl": "https://airtable.com/apprpSC38jBuMpvty/tbl8gQqFk3EaoL85r"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID_Mensaje": "=",
+            "Estado_Respuesta": "Respondido",
+            "Link_Usuario": "=",
+            "URL_Conversacion": "={{ $json.query.url }}",
+            "id": "={{ $json.query.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "ID_Mensaje",
+              "displayName": "ID_Mensaje",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Mensaje_Texto",
+              "displayName": "Mensaje_Texto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link_Usuario",
+              "displayName": "Link_Usuario",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Razon_IA",
+              "displayName": "Razon_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Estado_Respuesta",
+              "displayName": "Estado_Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pendiente",
+                  "value": "Pendiente"
+                },
+                {
+                  "name": "Respondido",
+                  "value": "Respondido"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_Entrada",
+              "displayName": "Fecha_Entrada",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "URL_Conversacion",
+              "displayName": "URL_Conversacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Responder",
+              "displayName": "Responder",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        -224
+      ],
+      "id": "481ec464-2748-4c5d-a72f-ddaf4758b526",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-12-11T22:46:26.902Z",
+      "createdAt": "2025-12-11T22:46:26.902Z",
+      "role": "workflow:owner",
+      "workflowId": "Z9ZYcnjDkiSPNsA4",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-12-12T23:43:40.000Z",
+  "versionId": "4ec1aed3-115c-42bb-9e1a-40379ea795fb"
+}
