@@ -14,7 +14,13 @@
     },
     "Code in JavaScript": {
       "main": [
-        []
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Webhook Click-MD": {
@@ -22,11 +28,6 @@
         [
           {
             "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Update record",
             "type": "main",
             "index": 0
           }
@@ -128,7 +129,6 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "ID_Mensaje": "=",
             "Estado_Respuesta": "Respondido",
             "Link_Usuario": "=",
             "URL_Conversacion": "={{ $json.query.url }}",
@@ -149,8 +149,8 @@
               "removed": false
             },
             {
-              "id": "ID_Mensaje",
-              "displayName": "ID_Mensaje",
+              "id": "ID_Mensaje (mid instagram)",
+              "displayName": "ID_Mensaje (mid instagram)",
               "required": false,
               "defaultMatch": false,
               "canBeUsedToMatch": true,
@@ -171,6 +171,17 @@
               "removed": false
             },
             {
+              "id": "Responder1",
+              "displayName": "Responder1",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
               "id": "Link_Usuario",
               "displayName": "Link_Usuario",
               "required": false,
@@ -188,18 +199,29 @@
               "defaultMatch": false,
               "canBeUsedToMatch": true,
               "display": true,
-              "type": "string",
-              "readOnly": false,
-              "removed": false
-            },
-            {
-              "id": "Razon_IA",
-              "displayName": "Razon_IA",
-              "required": false,
-              "defaultMatch": false,
-              "canBeUsedToMatch": true,
-              "display": true,
-              "type": "string",
+              "type": "array",
+              "options": [
+                {
+                  "name": "Negocio",
+                  "value": "Negocio"
+                },
+                {
+                  "name": "Actividad",
+                  "value": "Actividad"
+                },
+                {
+                  "name": "Conversacional",
+                  "value": "Conversacional"
+                },
+                {
+                  "name": "Sin sustancia",
+                  "value": "Sin sustancia"
+                },
+                {
+                  "name": "Insulto o sexual",
+                  "value": "Insulto o sexual"
+                }
+              ],
               "readOnly": false,
               "removed": false
             },
@@ -219,6 +241,10 @@
                 {
                   "name": "Respondido",
                   "value": "Respondido"
+                },
+                {
+                  "name": "IGNORAR",
+                  "value": "IGNORAR"
                 }
               ],
               "readOnly": false,
@@ -247,8 +273,25 @@
               "removed": false
             },
             {
-              "id": "Responder",
-              "displayName": "Responder",
+              "id": "IGNORAR",
+              "displayName": "IGNORAR",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "IGNORAR",
+                  "value": "IGNORAR"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "EsPendiente",
+              "displayName": "EsPendiente",
               "required": false,
               "defaultMatch": false,
               "canBeUsedToMatch": true,
@@ -268,8 +311,8 @@
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
       "position": [
-        112,
-        -224
+        80,
+        -272
       ],
       "id": "481ec464-2748-4c5d-a72f-ddaf4758b526",
       "name": "Update record",
@@ -297,6 +340,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-12-12T23:43:40.000Z",
-  "versionId": "4ec1aed3-115c-42bb-9e1a-40379ea795fb"
+  "updatedAt": "2025-12-15T23:47:21.000Z",
+  "versionId": "2cfffafc-12bd-48e9-862b-1675ac6f8072"
 }
