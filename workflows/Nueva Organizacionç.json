@@ -1,0 +1,607 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Same",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Diferent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "New",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "Same": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diferent": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many workflows": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Variables": {
+      "main": [
+        [
+          {
+            "node": "Get many workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FIN": {
+      "main": [
+        []
+      ]
+    },
+    "Get a record": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-05T14:45:22.161Z",
+  "id": "6s0zIYtOjMWp986t",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Nueva Organizacionç",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -136
+      ],
+      "id": "087b0376-3e2a-4487-b178-7ab3bfb6bceb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 14
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        56
+      ],
+      "id": "1a95e32c-81f6-470f-a777-aca491f55406",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        672,
+        -136
+      ],
+      "id": "60222cd6-7a49-4453-a84a-5f91dade2071",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1120,
+        -184
+      ],
+      "id": "3d1f9f25-7b39-4ba5-96f3-17f3139c6186",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const orderJsonKeys = (jsonObj) => {\n  const ordered = {};\n  Object.keys(jsonObj).sort().forEach(key => {\n    ordered[key] = jsonObj[key];\n  });\n  return ordered;\n};\n\nconst allInputs = $input.all();\n\n// 0 = Github (resultado de Get a file)\n// 1 = Workflow actual de n8n\nconst githubItem = allInputs[0];\nconst n8nItem = allInputs[1];\n\nconst gh = githubItem.json;\nconst n8nWorkflow = n8nItem.json;\n\n// Ordenamos el workflow actual\nconst orderedActual = orderJsonKeys(n8nWorkflow);\n\n// 1) Caso: archivo NO existe (404)\nconst httpCode = gh.error?.errorDetails?.httpCode;\nif (httpCode === '404') {\n  gh.github_status = 'new';                  // no existe\n  gh.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n  return [githubItem];\n}\n\n// 2) Caso: archivo existe y viene con \"content\" (GitHub OK)\nif (gh.content) {\n  const origWorkflow = JSON.parse(\n    Buffer.from(gh.content, 'base64').toString('utf8')\n  );\n\n  const orderedOriginal = orderJsonKeys(origWorkflow);\n\n  if (JSON.stringify(orderedOriginal) === JSON.stringify(orderedActual)) {\n    gh.github_status = 'same';               // existe y es igual\n  } else {\n    gh.github_status = 'different';          // existe y es distinto\n    gh.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\n  }\n\n  gh.content_decoded = orderedOriginal;\n  return [githubItem];\n}\n\n// 3) Fallback: cualquier otro caso raro → lo tratamos como \"nuevo\"\ngh.github_status = 'new';\ngh.n8n_data_stringy = JSON.stringify(orderedActual, null, 2);\nreturn [githubItem];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        -184
+      ],
+      "id": "436967d5-34ae-480d-bd05-d3129b4b95a1",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.github_status }}",
+                    "rightValue": "same",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "5a1f0ea9-7eea-49a6-a9b2-cbb5090228a5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "0"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8e657f72-ac9e-4cee-aac4-77bcc4b6f2d4",
+                    "leftValue": "={{ $json.github_status }}",
+                    "rightValue": "different",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "1"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e66b4074-9808-4594-8291-0322d3f7f58c",
+                    "leftValue": "={{ $json.github_status }}",
+                    "rightValue": "new",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "2"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1568,
+        -200
+      ],
+      "id": "919e25cb-8e03-4799-8326-fd5ab1605d11",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Same",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        -432
+      ],
+      "id": "2cfbc1fa-cfb7-4109-9fc6-4959ec5873e7"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Diferent",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        -208
+      ],
+      "id": "4fd791f1-21e4-41a9-9e53-b5b7f9da1cb9"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "New",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        -48
+      ],
+      "id": "9d7537a8-bfd5-4c60-80f9-e7c36484db58"
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -136
+      ],
+      "id": "7dbdc4a2-6612-4c40-9636-6b470cd9d49b",
+      "name": "Get many workflows",
+      "credentials": {
+        "n8nApi": {
+          "id": "92qxZJmoTFvoPei1",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d0fad980-b741-47f9-821c-f463f593a66e",
+              "name": "repo.owner",
+              "value": "silvasJu",
+              "type": "string"
+            },
+            {
+              "id": "a287679c-ca9c-404e-a730-8f1e2f756664",
+              "name": "repo.name",
+              "value": "SERVER",
+              "type": "string"
+            },
+            {
+              "id": "64eb246f-c1d2-4fc5-956c-0276b9afdb2c",
+              "name": "repo.path",
+              "value": "workflows/",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -136
+      ],
+      "id": "71bc1cde-b9b3-4724-9922-a805d2470f5f",
+      "name": "Variables"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "FIN",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -624
+      ],
+      "id": "781fbeb4-227e-4df4-8728-97e664a9a767"
+    },
+    {
+      "parameters": {
+        "chatId": "1696686197",
+        "text": "Backup de los workflows REALIZADA",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        -376
+      ],
+      "id": "56876d6d-b309-4a1a-a04d-2ebcf0a2599b",
+      "name": "Send a text message",
+      "webhookId": "a7b1b30a-ddbf-4642-b1f8-eae448484209",
+      "credentials": {
+        "telegramApi": {
+          "id": "n08JAEpIKZ4MM88M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        896,
+        -184
+      ],
+      "id": "c31186d3-d75c-4f85-be5f-fa132dd66152",
+      "name": "Get a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2448,
+        -32
+      ],
+      "id": "e20b1b52-cc10-4fa9-a0a6-290b1a33357d",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2448,
+        208
+      ],
+      "id": "e1fd3daf-20fd-4fb3-8539-e1c79e490f80",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Madrid",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-05T14:45:22.171Z",
+      "createdAt": "2026-02-05T14:45:22.171Z",
+      "role": "workflow:owner",
+      "workflowId": "6s0zIYtOjMWp986t",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-02-05T14:49:07.000Z",
+  "versionId": "bb4f526c-ef9f-4b1a-a8aa-d710146985be"
+}
