@@ -1,0 +1,284 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "HTTP Request - Obtener página": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiar HTML": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Preparar prompt para IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar prompt para IA": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Ejecutar código generado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Obtener página",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-05T15:06:52.194Z",
+  "id": "RyDpMt0PY0xfpSNW",
+  "isArchived": false,
+  "meta": {
+    "templateId": "2812",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Web Scraping con IA - Workflow Funcional",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.url_entrada }}sitemap.xml",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "7a7c26fe-9f01-4537-8d3f-03ef7dd2aa5f",
+      "name": "HTTP Request - Obtener página",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "76028faf-1c81-4333-8064-626168a2591d",
+      "name": "Limpiar HTML",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        -480
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "html_limpio",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "858dbabe-870c-4ad4-8525-ff446d756ec7",
+      "name": "Preparar prompt para IA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -304
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "aee16704-8b46-4730-8b95-82f16838d377",
+      "name": "Ejecutar código generado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -64,
+        -128
+      ],
+      "id": "341a070a-0ffd-4fdc-aaa3-89289026b582",
+      "name": "When chat message received",
+      "webhookId": "a0a3ffea-5c9d-4140-a118-6580783874a6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const html = $input.first().json.data;\n\n// quitar scripts y estilos\nlet cleaned = html\n  .replace(/<script[\\s\\S]*?>[\\s\\S]*?<\\/script>/gi, '')\n  .replace(/<style[\\s\\S]*?>[\\s\\S]*?<\\/style>/gi, '')\n  .replace(/<[^>]+>/g, ' ');\n\n// reducir espacios\ncleaned = cleaned.replace(/\\s+/g, ' ').trim();\n\nreturn [\n  {\n    json: {\n      text: cleaned.slice(0, 5000) // limitar tamaño\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -336
+      ],
+      "id": "d1bfcc58-765e-41d5-851c-f52abba7d0e8",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=Analiza el siguiente contenido HTML y genera código JavaScript para extraer:\n- Títulos principales\n- Precios (si existen)\n- Descripciones\n- Enlaces relevantes\n\nExtrae del texto los datos y devuelve SOLO un JSON válido con esta estructura exacta:\n{ \"titles\": [], \"prices\": [], \"descriptions\": [], \"links\": [] }\nNo escribas código. No uses ```.\n\nHTML: {{ $json.html_limpio }}"
+            },
+            {
+              "content": "=Extrae del siguiente texto:  \n- Títulos principales\n- Precios (si existen)\n- Descripciones\n- Enlaces relevantes \n \nTexto: {{ $json.html_limpio }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        -208
+      ],
+      "id": "e231ede0-5982-41fc-b67e-602ffd35ed8a",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input =\n  $json.chatInput ??\n  $json.chatinput ??\n  $json[\"URL ENTRADA\"] ??\n  $json.url ??\n  '';\n\nconst raw = String(input).trim();\nif (!raw) throw new Error('No llega ninguna URL en chatInput/chatinput/URL ENTRADA/url');\n\n// Asegurar protocolo para poder parsear\nconst u = /^https?:\\/\\//i.test(raw) ? raw : `https://${raw}`;\n\n// Extraer dominio con regex (sin usar URL())\nconst m = u.match(/^https?:\\/\\/([^\\/?#]+)(?:[\\/?#]|$)/i);\nif (!m) throw new Error(`No puedo parsear la URL: ${u}`);\n\nconst domain = m[1].replace(/^www\\./i, '');\n\nreturn [{\n  json: {\n    url_entrada: raw,\n    dominio: domain\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -128
+      ],
+      "id": "46077f96-489f-43ba-895f-95dd8d70421d",
+      "name": "Code in JavaScript1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bb46d7f2-3185-4654-a346-527fdbc69246",
+              "leftValue": "={{$json[\"data\"]}}{{$json[\"data\"]}}\n",
+              "rightValue": "<loc>",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        592,
+        -128
+      ],
+      "id": "0c8ca86c-8a66-4ca7-9641-5c3a250a88b2",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "settings": {},
+  "shared": [
+    {
+      "updatedAt": "2026-02-05T15:06:52.201Z",
+      "createdAt": "2026-02-05T15:06:52.201Z",
+      "role": "workflow:owner",
+      "workflowId": "RyDpMt0PY0xfpSNW",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-10T17:55:36.177Z",
+  "versionId": "e3bfe422-8b0d-493e-bcd7-2c48e16901cd"
+}
