@@ -1,0 +1,580 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Parse Chat Command": {
+      "main": [
+        [
+          {
+            "node": "Get robots.txt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get robots.txt": {
+      "main": [
+        [
+          {
+            "node": "Build Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Candidates": {
+      "main": [
+        [
+          {
+            "node": "Fetch Candidate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Candidate + Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Candidate": {
+      "main": [
+        [
+          {
+            "node": "Merge Candidate + Body",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Candidate + Body": {
+      "main": [
+        [
+          {
+            "node": "Pick + Parse Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick + Parse Candidate": {
+      "main": [
+        [
+          {
+            "node": "IF Is Child Sitemap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Is Child Sitemap": {
+      "main": [
+        [
+          {
+            "node": "IF Child URL Present",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Page URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Child URL Present": {
+      "main": [
+        [
+          {
+            "node": "Fetch Child Sitemap",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Child Dummy -> Page Dummy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Child Sitemap": {
+      "main": [
+        [
+          {
+            "node": "Parse Child Sitemap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Child Sitemap": {
+      "main": [
+        [
+          {
+            "node": "Merge Page URLs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Child Dummy -> Page Dummy": {
+      "main": [
+        [
+          {
+            "node": "Merge Page URLs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Page URLs": {
+      "main": [
+        [
+          {
+            "node": "Filter + Limit URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter + Limit URLs": {
+      "main": [
+        [
+          {
+            "node": "IF No URLs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge URL + HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF No URLs": {
+      "main": [
+        [
+          {
+            "node": "Build JSON File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Product Pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Product Pages": {
+      "main": [
+        [
+          {
+            "node": "Merge URL + HTML",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge URL + HTML": {
+      "main": [
+        [
+          {
+            "node": "Parse Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Product Data": {
+      "main": [
+        [
+          {
+            "node": "Build JSON File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build JSON File": {
+      "main": [
+        [
+          {
+            "node": "Send JSON (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Parse Chat Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-16T15:49:04.797Z",
+  "id": "1O6u05RMHqps04JGr-GBQ",
+  "isArchived": false,
+  "meta": null,
+  "name": "Universal Web Scraper (Products -> 1 JSON) [Telegram]",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const j = $input.first().json.chatInput\n\n// Telegram suele traer el texto aquí:\nconst text =\n  (j.message?.text || j.message?.caption || '').trim();\n\nif (!text) {\n  throw new Error('No hay texto en el mensaje.');\n}\n\n// max=200 (opcional)\nconst maxToken = text.match(/(?:^|\\s)max\\s*=\\s*(\\d+)/i);\nlet maxProducts = 200;\nif (maxToken?.[1]) {\n  const n = parseInt(maxToken[1], 10);\n  if (Number.isFinite(n)) maxProducts = Math.min(Math.max(n, 1), 2000);\n}\n\n// Extraer URL (acepta https://, http://, //dominio, www., o dominio “a pelo”)\nlet url = '';\nconst urlMatch = text.match(/https?:\\/\\/[^\\s]+|\\/\\/[^\\s]+|www\\.[^\\s]+|[a-z0-9.-]+\\.[a-z]{2,}(?:\\/[^\\s]*)?/i);\nif (urlMatch) url = urlMatch[0].trim();\n\nif (!url) {\n  throw new Error('No encontré ninguna URL. Ej: https://fonestar.com max=200');\n}\n\n// Normalizar URL\nif (url.startsWith('//')) url = 'https:' + url;\nif (url.startsWith('www.')) url = 'https://' + url;\nif (!/^https?:\\/\\//i.test(url)) url = 'https://' + url;\n\n// Validar + calcular origin\nlet origin = '';\ntry {\n  origin = new URL(url).origin;\n} catch (e) {\n  throw new Error(`URL inválida: ${url}`);\n}\n\nconst chatId = j.message?.chat?.id;\n\nreturn [{\n  json: {\n    chatId,\n    inputText: text,\n    targetUrl: url,\n    origin,\n    maxProducts,\n    userAgent: 'Mozilla/5.0 (n8n-scraper)'\n  }\n}];\n"
+      },
+      "id": "eeef0838-1896-4b12-9e4b-1499420879e0",
+      "name": "Parse Chat Command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1840,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$items('Parse Chat Command')[0].json.origin + '/robots.txt'}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "1fd86777-0f85-4131-bfad-ecd9bcda0303",
+      "name": "Get robots.txt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -1584,
+        144
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const origin=meta.origin;const robotsStr=(()=>{const j=$input.first().json;for(const v of Object.values(j)){if(typeof v==='string'&&v.length>0)return v;}return '';})();const lines=robotsStr.split('\\n');const found=[];for(const line of lines){const low=line.toLowerCase();const idx=low.indexOf('sitemap:');if(idx!==-1){const u=line.slice(idx+8).trim();if(u)found.push(u.split(/\\s+/)[0]);}}const defaults=[origin+'/sitemap.xml',origin+'/sitemap_index.xml',origin+'/sitemap-index.xml',origin+'/sitemapindex.xml',origin+'/wp-sitemap.xml',origin+'/sitemap.xml.gz'];const html=[origin+'/sitemap',origin+'/en/sitemap',origin+'/es/sitemap',origin+'/de/sitemap',origin+'/sitemap/'];const candidates=[...found,...defaults,...html].filter(Boolean);const uniq=[...new Set(candidates)];return uniq.map(u=>({json:{candidateUrl:u}}));"
+      },
+      "id": "dd774cdf-9a96-4081-94e7-72be8dc84d4c",
+      "name": "Build Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1344,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.candidateUrl}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "e6123b6f-73d4-45c0-94a2-e2f2e28363dc",
+      "name": "Fetch Candidate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        -1104,
+        144
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex",
+        "options": {}
+      },
+      "id": "7a5ed551-599a-4b33-9bb5-745ab92d6cd9",
+      "name": "Merge Candidate + Body",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const origin=meta.origin;const host=(new URL(origin)).host;const all=$input.all().map(x=>x.json);function getBody(o){for(const k of ['body','data','response','text']){if(typeof o[k]==='string')return o[k];}for(const v of Object.values(o)){if(typeof v==='string'&&v.length>50)return v;}return '';}let bestScore=0;let bestBody='';for(const o of all){const body=getBody(o)||'';if(!body)continue;const b=body.toLowerCase();let score=0;if(b.includes('<urlset'))score=3;else if(b.includes('<sitemapindex'))score=2;else if(b.includes('<html'))score=1;if(score>bestScore){bestScore=score;bestBody=body;}}let pageUrls=[];let childSitemaps=[];if(bestScore===3||bestScore===2){const locRe=new RegExp('<loc>([^<]+)</loc>','gi');for(const m of bestBody.matchAll(locRe)){const u=(m[1]||'').trim();if(!u)continue;const lu=u.toLowerCase();const isXml=lu.endsWith('.xml')||lu.endsWith('.xml.gz');if(bestScore===2&&isXml)childSitemaps.push(u);else pageUrls.push(u);} } else if(bestScore===1){const hrefRe=/href=[\"']([^\"']+)[\"']/gi;for(const m of bestBody.matchAll(hrefRe)){const h=(m[1]||'').trim();if(!h||h.startsWith('#')||h.startsWith('mailto:')||h.startsWith('tel:')||h.startsWith('javascript:'))continue;try{const u=new URL(h,origin);if(u.host!==host)continue;pageUrls.push(u.href);}catch(e){}}}pageUrls=[...new Set(pageUrls)];childSitemaps=[...new Set(childSitemaps)];if(pageUrls.length===0)pageUrls=[''];if(childSitemaps.length===0)childSitemaps=[''];const out=[];for(const u of pageUrls){out.push({json:{kind:'pageUrl',url:u,isDummy:!u}});}for(const u of childSitemaps){out.push({json:{kind:'childSitemap',url:u,isDummy:!u}});}return out;"
+      },
+      "id": "a05d0ae0-b6be-4a0e-ad85-cc6f97422cf2",
+      "name": "Pick + Parse Candidate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.kind}}",
+              "operation": "equals",
+              "value2": "childSitemap"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "668936df-a48b-4e15-8379-8c34878efab8",
+      "name": "IF Is Child Sitemap",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.url}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd750105-a332-425b-9c54-1c4a26d3826c",
+      "name": "IF Child URL Present",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "a236d503-c113-4d68-a627-e99a2b9a6d16",
+      "name": "Fetch Child Sitemap",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        32,
+        288
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const origin=meta.origin;const host=(new URL(origin)).host;const all=$input.all().map(i=>i.json);function getBody(o){for(const k of ['body','data','response','text']){if(typeof o[k]==='string')return o[k];}for(const v of Object.values(o)){if(typeof v==='string'&&v.length>50)return v;}return '';}const pageUrls=[];const locRe=new RegExp('<loc>([^<]+)</loc>','gi');for(const o of all){const body=getBody(o)||'';if(!body)continue;for(const m of body.matchAll(locRe)){const u=(m[1]||'').trim();if(!u)continue;const lu=u.toLowerCase();const isXml=lu.endsWith('.xml')||lu.endsWith('.xml.gz');if(isXml)continue;try{const uu=new URL(u,origin);if(uu.host!==host)continue;pageUrls.push(uu.href);}catch(e){}}}const uniq=[...new Set(pageUrls)];if(uniq.length===0)return [{json:{kind:'pageUrl',url:'',isDummy:true}}];return uniq.map(u=>({json:{kind:'pageUrl',url:u,isDummy:false}}));"
+      },
+      "id": "1259481f-6f4d-4a69-abca-9ed793bf27cb",
+      "name": "Parse Child Sitemap",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{json:{kind:'pageUrl',url:'',isDummy:true}}];"
+      },
+      "id": "e30c1f75-96d9-4d57-a721-37360a7ebaa0",
+      "name": "Child Dummy -> Page Dummy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        448
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f2743b89-b59f-4afa-adbc-4b0b31778e14",
+      "name": "Merge Page URLs",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        32,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const origin=meta.origin;const host=(new URL(origin)).host;const max=meta.maxProducts||200;const urls=[];for(const it of $input.all()){const j=it.json;if(j.kind==='pageUrl'&&j.url)urls.push(j.url);}const ded=[...new Set(urls)];const cleaned=[];const badExt=['.jpg','.jpeg','.png','.gif','.webp','.svg','.css','.js','.pdf','.zip','.rar','.7z','.mp4','.mp3','.wav','.ico','.woff','.woff2','.ttf','.eot'];for(const u of ded){try{const uu=new URL(u);if(uu.host!==host)continue;const p=uu.pathname.toLowerCase();if(badExt.some(ext=>p.endsWith(ext)))continue;cleaned.push(uu.href);}catch(e){}}const productHints=['/product/','/products/','/producto/','/productos/','/shop/','/store/','/tienda/','/catalog','/catalogo','/item/','/p/','/prod'];const hinted=cleaned.filter(u=>productHints.some(h=>u.toLowerCase().includes(h)));const chosen=(hinted.length>=Math.min(50,max))?hinted:cleaned;const final=chosen.slice(0,max);if(final.length===0)return [{json:{noUrls:true}}];return final.map(u=>({json:{url:u}}));"
+      },
+      "id": "29f39985-f1f5-4a68-891e-77bd073b6835",
+      "name": "Filter + Limit URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.noUrls}}",
+              "operation": "isTrue"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c41949cb-c419-48df-8729-7d0f10324885",
+      "name": "IF No URLs",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        496,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "126358f6-5bc8-43d4-b150-9d4807ee6c21",
+      "name": "Fetch Product Pages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        720,
+        16
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex",
+        "options": {}
+      },
+      "id": "25c446b7-6c5b-4247-a85f-14107b8dea04",
+      "name": "Merge URL + HTML",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        960,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const origin=meta.origin;function getBody(o){for(const k of ['body','data','response','text']){if(typeof o[k]==='string')return o[k];}for(const v of Object.values(o)){if(typeof v==='string'&&v.length>50)return v;}return '';}function stripTags(s){return String(s||'').replace(/<[^>]+>/g,' ').replace(/\\s+/g,' ').trim();}function typeHas(t,val){if(!t)return false;if(Array.isArray(t))return t.map(x=>String(x)).some(x=>x===val||x.includes(val));const s=String(t);return s===val||s.includes(val);}const items=$input.all();const out=[];for(const it of items){const j=it.json||{};const url=j.url||j.candidateUrl||j.link||'';const html=getBody(j)||'';if(!url||!html||html.length<200){out.push({json:{url,isProduct:false}});continue;}const re=new RegExp('<script[^>]*application/ld\\\\+json[^>]*>([\\\\s\\\\S]*?)</script>','gi');const scripts=[];let m;while((m=re.exec(html))!==null){scripts.push((m[1]||'').trim());}const objs=[];for(const s of scripts){if(!s)continue;try{const parsed=JSON.parse(s);const arr=Array.isArray(parsed)?parsed:[parsed];for(const o of arr){if(o&&typeof o==='object'){if(Array.isArray(o['@graph'])){for(const g of o['@graph'])objs.push(g);}objs.push(o);}}}catch(e){}}let prod=null;for(const o of objs){if(o&&typeHas(o['@type'],'Product')){prod=o;break;}}let bc=null;for(const o of objs){if(o&&typeHas(o['@type'],'BreadcrumbList')){bc=o;break;}}let name=(prod&&prod.name)?String(prod.name).trim():'';if(!name){const titleMatch=html.match(new RegExp('<title[^>]*>([\\\\s\\\\S]*?)</title>','i'));if(titleMatch)name=stripTags(titleMatch[1]).split('|')[0].split('-')[0].trim();}let price=null;let currency=null;if(prod&&prod.offers){const off=Array.isArray(prod.offers)?prod.offers[0]:prod.offers;currency=off&&off.priceCurrency?String(off.priceCurrency):null;let pr=null;if(off){pr=off.price??(off.priceSpecification&&off.priceSpecification.price)??null;}if(pr!=null){const s=String(pr).replace(',','.').replace(/[^0-9.]/g,'');const n=parseFloat(s);if(Number.isFinite(n))price=n;}}let categoryPath='';if(bc&&bc.itemListElement){const els=Array.isArray(bc.itemListElement)?bc.itemListElement:[bc.itemListElement];const names=[];for(const el of els){const item=el&&el.item?el.item:el;const nm=(item&&item.name)?item.name:(el&&el.name)?el.name:'';if(nm)names.push(String(nm).trim());}const cleaned=names.filter(x=>x&&x.toLowerCase()!=='home'&&x.toLowerCase()!=='inicio');if(cleaned.length>0){let last=cleaned[cleaned.length-1];if(name&&last&&last.toLowerCase()===name.toLowerCase())cleaned.pop();categoryPath=cleaned.join(' > ');}}if(!categoryPath){try{const p=new URL(url).pathname.split('/').filter(Boolean);const seg=p.slice(0,Math.max(1,Math.min(3,p.length-1)));categoryPath=seg.map(s=>decodeURIComponent(s)).join(' > ');}catch(e){categoryPath='';}}let sku='';const itemNo=html.match(/Item\\s*No\\.?\\s*[:\\-]?\\s*([A-Z0-9\\-_.]+)/i);if(itemNo)sku=String(itemNo[1]).trim();const isProduct=!!prod||!!(name&&price!==null);out.push({json:{url,isProduct,name,price,currency,category:categoryPath||'Sin categoria',sku}});}return out;"
+      },
+      "id": "bbe4194a-bedb-43bd-962f-73ddd4419214",
+      "name": "Parse Product Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const chatId=meta.chatId;const src=meta.targetUrl;const now=new Date().toISOString();const items=$input.all().map(i=>i.json||{});const products=items.filter(p=>p.isProduct&&p.name).map(p=>({name:p.name,price:(p.price??null),currency:(p.currency??null),url:p.url,sku:(p.sku||null)}));const byCat=new Map();for(const p of items){if(!(p.isProduct&&p.name))continue;const c=(p.category||'Sin categoria').trim()||'Sin categoria';if(!byCat.has(c))byCat.set(c,[]);byCat.get(c).push({name:p.name,price:(p.price??null),currency:(p.currency??null),url:p.url,sku:(p.sku||null)});}const categories=[...byCat.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([name,prods])=>({name,products:prods}));const catalog={source:src,generated_at:now,total_products:products.length,categories};const jsonStr=JSON.stringify(catalog,null,2);const host=(new URL(meta.origin)).host.replace(/[^a-zA-Z0-9.-]/g,'_');const fileName=`catalog_${host}_${Date.now()}.json`;return [{json:{chatId,fileName,total_products:products.length},binary:{data:{data:Buffer.from(jsonStr,'utf8').toString('base64'),mimeType:'application/json',fileName}}}];"
+      },
+      "id": "ef50a9e6-e4dd-4ad6-88d2-b8ad3a660a09",
+      "name": "Build JSON File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{$json.chatId}}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "id": "b7987d72-bf05-4e95-8ebd-182cdaba894e",
+      "name": "Send JSON (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        256
+      ],
+      "webhookId": "a10dc2a0-6aae-47ec-b2bf-26e606268575"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -2144,
+        128
+      ],
+      "id": "72dfad9d-0829-45f0-bcdb-f4788fb23d8c",
+      "name": "When chat message received",
+      "webhookId": "b2395d30-08dd-4c8f-8d19-0a121c85d1f9"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-16T15:49:04.806Z",
+      "createdAt": "2026-02-16T15:49:04.806Z",
+      "role": "workflow:owner",
+      "workflowId": "1O6u05RMHqps04JGr-GBQ",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-16T16:23:08.870Z",
+  "versionId": "f6476e5c-0bb1-47f7-a37a-4803e6b2ca04"
+}
