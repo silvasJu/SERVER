@@ -73,6 +73,17 @@
           }
         ]
       ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2026-02-05T15:06:52.194Z",
@@ -86,8 +97,16 @@
   "nodes": [
     {
       "parameters": {
-        "url": "={{ $json.url_entrada }}sitemap.xml",
+        "url": "={{$json.targetUrl}}",
         "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          },
           "timeout": 10000
         }
       },
@@ -219,7 +238,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const input =\n  $json.chatInput ??\n  $json.chatinput ??\n  $json[\"URL ENTRADA\"] ??\n  $json.url ??\n  '';\n\nconst raw = String(input).trim();\nif (!raw) throw new Error('No llega ninguna URL en chatInput/chatinput/URL ENTRADA/url');\n\n// Asegurar protocolo para poder parsear\nconst u = /^https?:\\/\\//i.test(raw) ? raw : `https://${raw}`;\n\n// Extraer dominio con regex (sin usar URL())\nconst m = u.match(/^https?:\\/\\/([^\\/?#]+)(?:[\\/?#]|$)/i);\nif (!m) throw new Error(`No puedo parsear la URL: ${u}`);\n\nconst domain = m[1].replace(/^www\\./i, '');\n\nreturn [{\n  json: {\n    url_entrada: raw,\n    dominio: domain\n  }\n}];\n"
+        "jsCode": "const text =\n  $json.message?.text ||\n  $json.bod:contentReference[oaicite:5]{index=5}ing?.[0]?.message?.text ||\n  '';\n\nconst m = text.match(/https?:\\/\\/[^\\s]+/i);\nif (!m) throw new Error('No encontré ninguna URL en el mensaje.');\n\nreturn [{ json: { targetUrl: m[0] } }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -263,6 +282,20 @@
       ],
       "id": "0c8ca86c-8a66-4ca7-9641-5c3a250a88b2",
       "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "=={{ new URL($json.targetUrl).origin + \"/wp-json/wc/store/v1/products/categories\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        -176
+      ],
+      "id": "dd417bd6-b03e-4efe-872e-d765764dce5f",
+      "name": "HTTP Request"
     }
   ],
   "pinData": {},
@@ -279,6 +312,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-02-10T17:55:36.177Z",
-  "versionId": "e3bfe422-8b0d-493e-bcd7-2c48e16901cd"
+  "updatedAt": "2026-02-16T15:00:17.438Z",
+  "versionId": "2ce26afb-eb35-4fa9-9cbf-2a7b6e457fd8"
 }
