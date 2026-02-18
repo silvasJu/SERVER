@@ -88,7 +88,7 @@
   },
   "createdAt": "2026-02-05T15:06:52.194Z",
   "id": "RyDpMt0PY0xfpSNW",
-  "isArchived": false,
+  "isArchived": true,
   "meta": {
     "templateId": "2812",
     "templateCredsSetupCompleted": true
@@ -312,6 +312,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-02-16T15:00:17.438Z",
-  "versionId": "2ce26afb-eb35-4fa9-9cbf-2a7b6e457fd8"
+  "updatedAt": "2026-02-17T23:38:38.000Z",
+  "versionId": "8ab3e78d-555f-4caf-9733-1ef7bb0335b0"
 }
