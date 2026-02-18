@@ -1,0 +1,288 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Extraer texto del archivo": {
+      "main": [
+        [
+          {
+            "node": "Normalizar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar texto": {
+      "main": [
+        [
+          {
+            "node": "¿Texto extraído?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Texto extraído?": {
+      "main": [
+        [
+          {
+            "node": "IA - Extraer datos del pliego",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salida error (sin texto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IA - Extraer datos del pliego",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Extraer datos del pliego": {
+      "main": [
+        [
+          {
+            "node": "Salida estructurada (respuesta)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Recibir pliego1": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook - Recibir pliego": {
+      "main": [
+        [
+          {
+            "node": "Extraer texto del archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-17T17:53:43.261Z",
+  "id": "cpIHPZYkg1J3P1GyISGla",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AV - Ingesta y análisis de pliegos (IA)",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        208,
+        320
+      ],
+      "id": "c478a259-e258-491d-ad03-501616f7cd0a",
+      "name": "Extraer texto del archivo"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normaliza para que siempre exista $json.document_text\n// y añade metadatos básicos (file_name, mime_type, received_at)\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const bin = item.binary?.data || {};\n\n  let text = \"\";\n\n  // Tu nodo \"Extraer texto del archivo\" devuelve j.text\n  if (typeof j.text === \"string\") text = j.text;\n  else if (typeof j.data === \"string\") text = j.data;\n  else if (Array.isArray(j.data)) text = j.data.join(\"\\n\");\n  else if (typeof j.content === \"string\") text = j.content;\n  else if (typeof j.body === \"string\") text = j.body;\n\n  text = (text || \"\")\n    .replace(/\\r/g, \"\")\n    .replace(/[ \\t]+\\n/g, \"\\n\")\n    .replace(/\\n{3,}/g, \"\\n\\n\")\n    .trim();\n\n  item.json = {\n    ...j,\n    document_text: text,\n    file_name: bin.fileName ?? j.file_name ?? null,\n    mime_type: bin.mimeType ?? j.mime_type ?? null,\n    received_at: j.received_at ?? new Date().toISOString(),\n  };\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        320
+      ],
+      "id": "86982558-feff-40a3-a589-1b5003fd3798",
+      "name": "Normalizar texto"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.document_text }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        688,
+        320
+      ],
+      "id": "80bbc589-6c81-4c5d-8361-6b2c5410791f",
+      "name": "¿Texto extraído?"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        592
+      ],
+      "id": "dfa61710-c47e-4b1a-8f44-a1b5ee8975ff",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.document_text }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"cliente\": \"ACME S.L.\",\n  \"ubicacion\": {\n    \"direccion\": \"Calle Ejemplo 123\",\n    \"ciudad\": \"Madrid\",\n    \"provincia\": \"Madrid\",\n    \"pais\": \"España\"\n  },\n  \"tipo_proyecto\": \"Sala de reuniones\",\n  \"resumen_ejecutivo\": \"Resumen breve y claro del encargo.\",\n  \"alcance_tecnico\": {\n    \"descripcion\": \"Qué hay que instalar/mantener y hasta dónde llega el alcance.\",\n    \"sistemas\": [\"Audiovisuales\", \"Control\", \"Videoconferencia\", \"Streaming\", \"Cartelería digital\", \"Audio\", \"Iluminación\", \"Red\"],\n    \"tareas_principales\": [\"Suministro\", \"Instalación\", \"Configuración\", \"Integración\", \"Puesta en marcha\", \"Formación\", \"Mantenimiento\"]\n  },\n  \"equipamiento_requerido\": [\n    {\n      \"categoria\": \"Pantallas\",\n      \"items\": [\"Pantalla 86\\\" 4K\"],\n      \"cantidad_aprox\": 2,\n      \"notas\": \"Si no se indica, poner null en cantidad_aprox.\"\n    }\n  ],\n  \"integraciones_y_protocolos\": [\"HDMI\", \"HDBT\", \"Dante\", \"AES67\", \"NDI\", \"SDVoE\", \"Q-SYS\", \"Crestron\", \"Extron\", \"RS-232\", \"IP\", \"PJLink\"],\n  \"fechas\": {\n    \"publicacion_pliego\": null,\n    \"visita_tecnica\": null,\n    \"fecha_limite_preguntas\": null,\n    \"fecha_entrega_oferta\": null,\n    \"inicio_estimado\": null,\n    \"fin_estimado\": null\n  },\n  \"presupuesto\": {\n    \"importe\": null,\n    \"moneda\": \"EUR\",\n    \"detalles\": null\n  },\n  \"criterios_adjudicacion\": [\n    {\"criterio\": \"Precio\", \"peso\": null, \"detalle\": null},\n    {\"criterio\": \"Calidad técnica\", \"peso\": null, \"detalle\": null},\n    {\"criterio\": \"Plazo\", \"peso\": null, \"detalle\": null}\n  ],\n  \"requisitos_documentales\": [\"Documentación administrativa\", \"Memoria técnica\", \"Planificación\"],\n  \"requisitos_tecnicos_clave\": [\"Compatibilidad con infraestructura existente\", \"Garantías\", \"SLA\"],\n  \"riesgos_y_ambiguedades\": [\"Puntos del pliego poco claros o contradictorios\"],\n  \"preguntas_recomendadas_al_cliente\": [\"Preguntas para aclarar alcance, obra civil, red, plazos, marcas admitidas\"],\n  \"secciones_importantes\": [\"Objeto\", \"Alcance\", \"Prescripciones técnicas\", \"Criterios\", \"Plazos\"],\n  \"secciones_poco_relevantes\": [\"Historia de la entidad\"],\n  \"palabras_clave\": [\"sala\", \"auditorio\", \"pantallas\", \"microfonía\", \"DSP\", \"control\", \"videoconferencia\"],\n  \"clasificacion\": {\n    \"linea_negocio\": \"Salas de reuniones\",\n    \"complejidad\": \"Media\",\n    \"prioridad\": \"Media\",\n    \"probabilidad_ganar\": \"Media\",\n    \"motivo\": \"Justificación corta basada en señales del pliego (plazo, requisitos, competencia, etc.)\"\n  }\n}",
+        "options": {
+          "systemPromptTemplate": "Eres un analista senior de licitaciones/pliegos para una empresa de instalaciones y mantenimiento audiovisual y de control (salas de reuniones, auditorios, teatros, digital signage, etc.).\n\nTu tarea: extraer información del texto del pliego y devolver **SOLO** un JSON válido (sin markdown, sin explicaciones, sin texto extra).\n\nReglas estrictas:\n- Devuelve únicamente JSON válido.\n- Respeta la estructura del ejemplo (mismos campos). Puedes dejar valores en null si no aparecen.\n- Fechas en formato ISO: YYYY-MM-DD.\n- Números como número (no texto). Moneda en ISO (EUR, USD...).\n- No inventes datos.\n- Si hay varias ubicaciones/fechas, usa la principal y menciona el resto en el campo más adecuado.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        976,
+        256
+      ],
+      "id": "6040ef7d-665d-4433-8118-b20a9dabde44",
+      "name": "IA - Extraer datos del pliego"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Salida estructurada final (para Webhook Response: \"Last Node\")\n// Modo: Run once for all items\n\nreturn items.map((item) => {\n  const data = item.json || {};\n  const o = data.output || {}; // <- contenido real extraído por la IA\n\n  const now = new Date().toISOString();\n  const project_id = `PLIEGO-${now.replace(/[-:TZ.]/g, \"\").slice(0, 14)}`;\n\n  const ubic = o.ubicacion || {};\n  const clas = o.clasificacion || {};\n  const fechas = o.fechas || {};\n  const pres = o.presupuesto || {};\n\n  const ubicTxt = `${ubic.ciudad ?? \"\"} ${ubic.provincia ?? \"\"} ${ubic.pais ?? \"\"}`\n    .replace(/\\s+/g, \" \")\n    .trim();\n\n  const resumen = [\n    `Cliente: ${o.cliente ?? \"N/D\"}`,\n    `Ubicación: ${ubicTxt || \"N/D\"}`,\n    `Tipo: ${o.tipo_proyecto ?? \"N/D\"}`,\n    `Línea negocio: ${clas.linea_negocio ?? \"N/D\"}`,\n    `Complejidad: ${clas.complejidad ?? \"N/D\"} | Prioridad: ${clas.prioridad ?? \"N/D\"}`,\n    `Entrega oferta: ${fechas.fecha_entrega_oferta ?? \"N/D\"}`,\n    `Presupuesto: ${(pres.importe ?? \"N/D\")} ${(pres.moneda ?? \"\")}`.trim(),\n  ].join(\"\\n\");\n\n  return {\n    json: {\n      project_id,\n      processed_at: now,\n      source: {\n        file_name: data.file_name ?? null,\n        mime_type: data.mime_type ?? null,\n        received_at: data.received_at ?? null,\n      },\n      ...data, // incluye output intacto\n      resumen_para_email: resumen,\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        304
+      ],
+      "id": "3694ed98-7826-4548-bee9-e5540bbd384d",
+      "name": "Salida estructurada (respuesta)"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { error: true, message: 'No se ha podido extraer texto del archivo. Envía un PDF con texto seleccionable o añade OCR externo (Google Document AI / PDF.co / etc.).', received_at: $json.received_at ?? new Date().toISOString(), file_name: $json.file_name ?? null, mime_type: $json.mime_type ?? null } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        528
+      ],
+      "id": "5675296d-4873-4292-8961-be112430509b",
+      "name": "Salida error (sin texto)"
+    },
+    {
+      "parameters": {
+        "content": "### Siguientes pasos (opcional)\n\n**Airtable / Excel / Email**\n\n1) Después de `Salida estructurada (respuesta)`, añade:\n- **Airtable (Create/Upsert)** en tu tabla `PROYECTOS`.\n  - Campos recomendados: project_id, cliente, ubicacion, tipo_proyecto, linea_negocio, prioridad, complejidad, fecha_entrega_oferta, presupuesto, resumen_para_email, json_completo.\n- **Google Sheets (Append Row)** si quieres “Excel”.\n- **Email Send / Gmail** para enviar el resumen.\n\n2) Si activas nodos que vayan *después* de la respuesta, cambia el Webhook a **Response Mode: Response Node** y usa un nodo **Respond to Webhook** para controlar exactamente qué se devuelve.\n\n**Consejo**: guarda siempre el JSON completo en un campo largo para auditoría.\n",
+        "height": 260,
+        "width": 560,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        32
+      ],
+      "id": "5d3cb82f-cded-409d-928e-1ad0ae38c06e",
+      "name": "NOTA"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pliego-av-ingesta",
+        "responseMode": "lastNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        464
+      ],
+      "id": "20f6e031-a52a-4eef-87a4-8a2a88a09eea",
+      "name": "Webhook - Recibir pliego1",
+      "webhookId": "f2b7a0d4-9e6a-4e3a-9c4a-3b0f2d2b7c11"
+    },
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -176,
+        304
+      ],
+      "id": "0a4b9dab-e15f-46a5-a204-49e28edc7b11",
+      "name": "Webhook - Recibir pliego",
+      "webhookId": "9b62726c-c6f4-4a44-9831-1492f805f688"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-17T17:53:43.270Z",
+      "createdAt": "2026-02-17T17:53:43.270Z",
+      "role": "workflow:owner",
+      "workflowId": "cpIHPZYkg1J3P1GyISGla",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-17T18:46:49.000Z",
+  "versionId": "9412b7e5-d553-43aa-9d47-487d31163fc2"
+}
