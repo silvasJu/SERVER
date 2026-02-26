@@ -3,50 +3,34 @@
   "activeVersion": null,
   "activeVersionId": null,
   "connections": {
-    "Google Drive Trigger": {
+    "When clicking ‘Execute workflow’": {
       "main": [
         [
           {
-            "node": "Message a model",
+            "node": "AI Agent1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Telegram Trigger": {
-      "main": [
+    "Simple Memory": {
+      "ai_memory": [
         [
           {
-            "node": "Message a model",
-            "type": "main",
+            "node": "AI Agent1",
+            "type": "ai_memory",
             "index": 0
           }
         ]
       ]
     },
-    "WhatsApp Trigger": {
-      "main": [
+    "AI Agent Tool": {
+      "ai_tool": [
         [
           {
-            "node": "Message a model",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Message a model": {
-      "main": [
-        [
-          {
-            "node": "Create a record",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Create sheet",
-            "type": "main",
+            "node": "AI Agent1",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -62,167 +46,15 @@
   "name": "Ejemplo",
   "nodes": [
     {
-      "parameters": {
-        "updates": [
-          "message"
-        ],
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.2,
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
       "position": [
         0,
         0
       ],
-      "id": "e02c9ca9-f464-4bfc-a891-1d5581182e8e",
-      "name": "Telegram Trigger",
-      "webhookId": "15271f86-8978-4a96-8a2d-253d08c15708",
-      "credentials": {
-        "telegramApi": {
-          "id": "n08JAEpIKZ4MM88M",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "updates": [
-          "messages"
-        ],
-        "options": {}
-      },
-      "type": "n8n-nodes-base.whatsAppTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        160
-      ],
-      "id": "ae3e2c8a-e60a-4404-b3c7-9eeb32391252",
-      "name": "WhatsApp Trigger",
-      "webhookId": "b1de085b-4c63-47b3-8e21-715694af8c1d"
-    },
-    {
-      "parameters": {
-        "pollTimes": {
-          "item": [
-            {
-              "mode": "everyMinute"
-            }
-          ]
-        },
-        "triggerOn": "specificFolder",
-        "folderToWatch": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        }
-      },
-      "type": "n8n-nodes-base.googleDriveTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        -144
-      ],
-      "id": "8ba43906-7ec8-4e8c-ac96-e5d7a0c44da9",
-      "name": "Google Drive Trigger",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "Ma59CevGtBQGI11Z",
-          "name": "Google Drive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "messages": {
-          "values": [
-            {}
-          ]
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.openAi",
-      "typeVersion": 1.8,
-      "position": [
-        352,
-        0
-      ],
-      "id": "863513af-094e-45b7-8274-194b77273190",
-      "name": "Message a model",
-      "credentials": {
-        "openAiApi": {
-          "id": "oA6THKJAOrrLFbwX",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "create",
-        "base": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "table": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {},
-          "matchingColumns": [],
-          "schema": [],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.airtable",
-      "typeVersion": 2.1,
-      "position": [
-        848,
-        -96
-      ],
-      "id": "779320c2-b687-44ba-8120-6ef5b87fa824",
-      "name": "Create a record",
-      "credentials": {
-        "airtableTokenApi": {
-          "id": "voWYyEgk8WCrlWD0",
-          "name": "Airtable Personal Access Token account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "create",
-        "documentId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.7,
-      "position": [
-        848,
-        96
-      ],
-      "id": "5ee2c5fd-c6c7-42e2-952f-d3fb3de1888f",
-      "name": "Create sheet",
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "kDeH1JvCi1MPNIWh",
-          "name": "Google Sheets account"
-        }
-      }
+      "id": "d2ac1f56-4462-4799-ada3-abfddf13d7d7",
+      "name": "When clicking ‘Execute workflow’"
     },
     {
       "parameters": {
@@ -231,11 +63,35 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        400,
-        384
+        208,
+        0
       ],
-      "id": "ce3388ba-6d5d-4c93-b0e4-1dc472111e08",
-      "name": "AI Agent"
+      "id": "7aa90fcf-c7ee-47b5-82e5-33a8e6e3614b",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        256
+      ],
+      "id": "52247da1-3be3-4db1-b2b7-fbdc7f00968a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        416,
+        256
+      ],
+      "id": "82901d66-f1fa-4e89-b24f-01ee4f37ea98",
+      "name": "AI Agent Tool"
     }
   ],
   "pinData": {},
@@ -254,6 +110,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-02-18T20:23:06.469Z",
-  "versionId": "516268cf-7fc9-41b1-bd96-397b2b58c92b"
+  "updatedAt": "2026-02-26T08:47:17.353Z",
+  "versionId": "73d92026-b3dc-4f59-bcbe-6e7baf5e1d9a"
 }
