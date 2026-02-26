@@ -1,0 +1,69 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Replace me with your logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-26T08:48:57.706Z",
+  "id": "dpoajZ8jUKeATmFi",
+  "isArchived": false,
+  "meta": null,
+  "name": "My Sub-Workflow 1",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"pliego_analisis\": {{$json.output}},\n  \"pliego_id\": \"PLIEGO-{{ $now }}\",\n  \"fuente\": {\n    \"pdf_nombre\": \"1.1-PLIEGO DE ENTRADA.pdf\",\n    \"url\": null\n  }\n}"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        352
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "id": "b5942df6-0160-4ef7-965d-57583acdc8aa",
+      "name": "Replace me with your logic",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        528,
+        352
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T08:48:57.717Z",
+      "createdAt": "2026-02-26T08:48:57.717Z",
+      "role": "workflow:owner",
+      "workflowId": "dpoajZ8jUKeATmFi",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-26T08:50:58.025Z",
+  "versionId": "a86115a2-33e8-41c1-975d-150c67c73b8b"
+}
