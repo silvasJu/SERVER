@@ -3,17 +3,6 @@
   "activeVersion": null,
   "activeVersionId": null,
   "connections": {
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "AI Agent1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Simple Memory": {
       "ai_memory": [
         [
@@ -25,12 +14,34 @@
         ]
       ]
     },
-    "AI Agent Tool": {
+    "Qdrant Vector Store": {
       "ai_tool": [
         [
           {
             "node": "AI Agent1",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
             "index": 0
           }
         ]
@@ -45,17 +56,6 @@
   },
   "name": "Ejemplo",
   "nodes": [
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "d2ac1f56-4462-4799-ada3-abfddf13d7d7",
-      "name": "When clicking ‘Execute workflow’"
-    },
     {
       "parameters": {
         "options": {}
@@ -74,24 +74,69 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        304,
-        256
+        272,
+        272
       ],
       "id": "52247da1-3be3-4db1-b2b7-fbdc7f00968a",
       "name": "Simple Memory"
     },
     {
       "parameters": {
+        "mode": "retrieve-as-tool",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.agentTool",
-      "typeVersion": 3,
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
       "position": [
-        416,
-        256
+        432,
+        272
       ],
-      "id": "82901d66-f1fa-4e89-b24f-01ee4f37ea98",
-      "name": "AI Agent Tool"
+      "id": "4af6d15a-4729-4518-94a7-aa411a25744d",
+      "name": "Qdrant Vector Store"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        272
+      ],
+      "id": "cc5bd7a9-0408-4fad-b43a-751ad5508eb7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        7.625
+      ],
+      "id": "7220348a-549b-4baf-9101-c04ee167930b",
+      "name": "When chat message received",
+      "webhookId": "5c598546-5578-4ea3-9b07-0bdf8e888c52"
     }
   ],
   "pinData": {},
@@ -110,6 +155,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-03-04T11:53:14.592Z",
-  "versionId": "e7be3b5f-8ebf-4b57-b2f2-b82b6065d005"
+  "updatedAt": "2026-03-04T15:45:20.171Z",
+  "versionId": "5b378c6a-0de3-417b-8a70-971869b3ac75"
 }
