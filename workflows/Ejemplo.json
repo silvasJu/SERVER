@@ -3,23 +3,56 @@
   "activeVersion": null,
   "activeVersionId": null,
   "connections": {
-    "Simple Memory": {
-      "ai_memory": [
+    "When chat message received": {
+      "main": [
         [
           {
-            "node": "AI Agent1",
-            "type": "ai_memory",
+            "node": "Code in JavaScript",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Qdrant Vector Store": {
-      "ai_tool": [
+    "Code in JavaScript": {
+      "main": [
         [
           {
-            "node": "AI Agent1",
-            "type": "ai_tool",
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
             "index": 0
           }
         ]
@@ -29,19 +62,150 @@
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent1",
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain1",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "When chat message received": {
+    "Basic LLM Chain": {
       "main": [
         [
           {
-            "node": "AI Agent1",
+            "node": "Basic LLM Chain1",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -60,51 +224,88 @@
       "parameters": {
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
       "position": [
-        208,
-        0
+        -176,
+        16
       ],
-      "id": "7aa90fcf-c7ee-47b5-82e5-33a8e6e3614b",
-      "name": "AI Agent1"
-    },
-    {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        272,
-        272
-      ],
-      "id": "52247da1-3be3-4db1-b2b7-fbdc7f00968a",
-      "name": "Simple Memory"
+      "id": "7220348a-549b-4baf-9101-c04ee167930b",
+      "name": "When chat message received",
+      "webhookId": "5c598546-5578-4ea3-9b07-0bdf8e888c52"
     },
     {
       "parameters": {
-        "mode": "retrieve-as-tool",
-        "qdrantCollection": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        -96
+      ],
+      "id": "1ebcd616-f2de-4f0c-ad1b-a92b222b3d16",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
-      "typeVersion": 1.3,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        0
+      ],
+      "id": "ce09277c-5e53-450c-94aa-dfa79cafb217",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        -96
+      ],
+      "id": "336ca915-7aa9-45db-907d-0334b6f1770f",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         432,
-        272
+        16
       ],
-      "id": "4af6d15a-4729-4518-94a7-aa411a25744d",
-      "name": "Qdrant Vector Store"
+      "id": "b66d6105-64cd-4624-a851-5dd04e7a5865",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        640,
+        16
+      ],
+      "id": "1699824c-eb15-46ad-8e9c-9d5b6bd8f39e",
+      "name": "Basic LLM Chain"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4o-mini",
           "mode": "list",
-          "value": "gpt-5-mini"
+          "cachedResultName": "gpt-4o-mini"
         },
         "builtInTools": {},
         "options": {}
@@ -112,11 +313,54 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        80,
-        272
+        960,
+        288
       ],
-      "id": "cc5bd7a9-0408-4fad-b43a-751ad5508eb7",
+      "id": "94ab5cfd-4d43-456c-af40-04a68ea09d78",
       "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1120,
+        32
+      ],
+      "id": "a52716e4-b3a6-4536-9afb-9ff9d1a0dab2",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "responses": {
+          "values": [
+            {}
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1472,
+        32
+      ],
+      "id": "a074fdc6-6c64-4e04-a2a9-c653c08beda9",
+      "name": "Message a model",
       "credentials": {
         "openAiApi": {
           "id": "oA6THKJAOrrLFbwX",
@@ -128,15 +372,203 @@
       "parameters": {
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.4,
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
       "position": [
-        0,
-        7.625
+        1824,
+        32
       ],
-      "id": "7220348a-549b-4baf-9101-c04ee167930b",
-      "name": "When chat message received",
-      "webhookId": "5c598546-5578-4ea3-9b07-0bdf8e888c52"
+      "id": "bd659f98-1bd8-4a3d-bab9-dae77e353998",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "responses": {
+          "values": [
+            {}
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        2032,
+        32
+      ],
+      "id": "e569ce73-a375-4ab0-a8bf-1ae9bc0b2e2a",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "db066af7-3b32-4f3b-8643-8ca55c9e4d77"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2384,
+        32
+      ],
+      "id": "a98081a8-821b-4149-a1d7-2a90a24d0ee8",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2544,
+        -80
+      ],
+      "id": "9727278b-05c1-4964-9027-20179ee3beb1",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2704,
+        -160
+      ],
+      "id": "35e8ba76-e9c0-4234-bed3-40222275bdb6",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "voWYyEgk8WCrlWD0",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        -96
+      ],
+      "id": "5260b748-8688-478f-9684-741f55fc8d13",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2720,
+        144
+      ],
+      "id": "ef2b0e8b-8841-42e2-9d77-64140f73d12b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2928,
+        144
+      ],
+      "id": "93e2af73-1a34-445b-8c88-69a943e23d23",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        2880,
+        368
+      ],
+      "id": "ab1760f5-c495-4abd-9384-268a39b7b7c9",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        3008,
+        384
+      ],
+      "id": "89a122e1-2278-476b-b6b2-1368fbc9c8e0",
+      "name": "Simple Memory"
     }
   ],
   "pinData": {},
@@ -155,6 +587,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-03-04T15:45:20.171Z",
-  "versionId": "5b378c6a-0de3-417b-8a70-971869b3ac75"
+  "updatedAt": "2026-03-06T23:22:37.915Z",
+  "versionId": "ba6073f0-7cb1-4e80-8791-3467c50c11bf"
 }
