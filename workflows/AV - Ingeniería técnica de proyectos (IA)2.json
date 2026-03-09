@@ -1,0 +1,307 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook - Recibir análisis de pliego": {
+      "main": [
+        []
+      ]
+    },
+    "Preparar contexto técnico": {
+      "main": [
+        [
+          {
+            "node": "IA - Ingeniería técnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Ingeniería técnica": {
+      "main": [
+        [
+          {
+            "node": "Ensamblar JSON técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensamblar JSON técnico": {
+      "main": [
+        [
+          {
+            "node": "Generar informe HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Preparar contexto técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "IA - Ingeniería técnica",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BUSQUEDA": {
+      "ai_tool": [
+        [
+          {
+            "node": "IA - Ingeniería técnica",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-08T12:11:34.736Z",
+  "id": "rGH8sBo0uN6LKWMEDjZdG",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AV - Ingeniería técnica de proyectos (IA)2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ingenieria-tecnica-av",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        -144
+      ],
+      "id": "b6079549-a2fd-42db-b16e-4493eb374366",
+      "name": "Webhook - Recibir análisis de pliego",
+      "webhookId": "b8c3d2e1-f0a1-2b3c-4d5e-6f7a8b9c0d1e"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae y formatea los datos relevantes del pliego\n// para pasarlos al motor de ingeniería técnica\n\nreturn items.map((item) => {\n  const j = item.json || {};\n\n  // El input puede venir directamente del workflow de pliegos.\n  // Los datos reales pueden estar en j.output o directamente en j.\n  const pliego = j.output ?? j;\n\n  const equipamiento = (pliego.equipamiento_requerido || [])\n    .map(cat => {\n      const itemsList = (cat.items || []).join(', ');\n      return `CATEGORÍA: ${cat.categoria}\\nItems: ${itemsList}\\nCantidad: ${cat.cantidad_aprox ?? 'No especificada'}\\nNotas: ${cat.notas ?? 'Ninguna'}`;\n    })\n    .join('\\n\\n');\n\n  const protocolos = (pliego.integraciones_y_protocolos || []).join(', ') || 'No especificados';\n  const alcance = pliego.alcance_tecnico || {};\n  const sistemas = (alcance.sistemas || []).join(', ') || 'No especificados';\n  const tareas = (alcance.tareas_principales || []).join(', ') || 'No especificadas';\n  const riesgos = (pliego.riesgos_y_ambiguedades || []).join('; ') || 'Ninguno identificado';\n\n  const contexto = `TIPO DE PROYECTO: ${pliego.tipo_proyecto ?? 'N/D'}\nCLIENTE: ${pliego.cliente ?? 'N/D'}\nDESCRIPCIÓN TÉCNICA: ${alcance.descripcion ?? pliego.resumen_ejecutivo ?? 'N/D'}\n\nSISTEMAS A INSTALAR: ${sistemas}\nTAREAS PRINCIPALES: ${tareas}\nPROTOCOLOS E INTEGRACIONES: ${protocolos}\n\nEQUIPAMIENTO REQUERIDO:\n${equipamiento || 'No especificado'}\n\nCOMPLEJIDAD ESTIMADA: ${pliego.clasificacion?.complejidad ?? 'N/D'}\nPRESUPUESTO: ${pliego.presupuesto?.importe ?? 'N/D'} ${pliego.presupuesto?.moneda ?? ''}\nRIESGOS IDENTIFICADOS: ${riesgos}`;\n\n  return {\n    json: {\n      ...j,\n      _contexto_ingenieria: contexto,\n      _pliego_data: pliego,\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        80
+      ],
+      "id": "95750466-1069-4c7a-946e-1182c540651a",
+      "name": "Preparar contexto técnico"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json._contexto_ingenieria }}",
+        "options": {
+          "systemMessage": "ROL\nEres un ingeniero técnico senior especializado en integración de sistemas audiovisuales profesionales: salas de reunión, auditorios, teatros, digital signage, sistemas de videoconferencia y sistemas de control automático (Crestron, AMX, Extron, Q-SYS, Biamp).\n\nTAREA\nAnalizarás los requisitos técnicos de un proyecto AV extraídos de un pliego de licitación y deberás:\n1. Buscar productos específicos en los catálogos reales de la empresa usando la herramienta buscar_catalogo_av\n2. Recomendar productos concretos (fabricante, modelo, referencia) para cada categoría de equipamiento\n3. Determinar qué configuraciones especiales o programación son necesarias\n4. Estimar horas de trabajo de integración por área\n\nHERRAMIENTA DE CATÁLOGOS (IMPORTANTE)\nTienes acceso a la herramienta \"BUSQUEDA\" que busca en los catálogos reales de los proveedores AV de la empresa.\n\nInstrucciones de uso:\n- DEBES usar esta herramienta para CADA categoría de equipamiento que necesites recomendar\n- Haz búsquedas específicas por tipo de producto (ej: \"altavoz empotrable techo\", \"amplificador 100V 4 zonas\", \"micrófono inalámbrico conferencia\")\n- Si la primera búsqueda no da buenos resultados, intenta con sinónimos o términos más amplios\n- PRIORIZA SIEMPRE los productos encontrados en el catálogo sobre tu conocimiento general\n- Si un producto del catálogo incluye referencia, precio o especificaciones, inclúyelos en tu recomendación\n- Si NO encuentras un producto adecuado en el catálogo para una categoría, puedes recomendar uno de tu conocimiento general pero indica claramente \"[NO EN CATÁLOGO]\" en la justificación\n- Realiza múltiples búsquedas si es necesario para cubrir todas las categorías\n\nREGLAS DE SALIDA (CRÍTICO)\n1. Tu respuesta final DEBE ser ÚNICAMENTE un objeto JSON válido\n2. No incluyas markdown, bloques de código (```), ni texto explicativo antes o después del JSON\n3. Si una configuración no aplica al proyecto, usa false en 'requerida' y null/0 en el resto de campos\n4. Proporciona siempre al menos 2 opciones de producto por categoría cuando sea posible\n5. Las horas estimadas son números enteros\n6. Cuando un producto proviene del catálogo, incluye la referencia exacta del catálogo en el campo referencia_catalogo\n\nFABRICANTES DE REFERENCIA POR CATEGORÍA\n- Pantallas/proyectores: Samsung, LG, Philips, Sony, NEC, Barco, Christie, Epson\n- Control: Crestron, AMX, Extron, Control4, RTI\n- DSP/Audio: Q-SYS (QSC), Biamp, Dante (Audinate), Shure, Sennheiser, Beyerdynamic, Crown, BSS\n- Videoconferencia: Cisco (Webex), Poly (HP), Logitech, Neat, Yealink\n- Distribución vídeo: Crestron DM, Extron XTP, Kramer, Atlona, ZeeVee, Aurora\n- AV-over-IP: SDVoE (Semtech), NDI (Vizrt), Dante AV (Audinate), Haivision\n- Micrófonos/audio sala: Shure MXA, Sennheiser TeamConnect, Biamp Devio, ClearOne\n\nCRITERIOS DE ESTIMACIÓN DE HORAS\n- Programación control simple (1-2 salas, sin integración): 16-24h\n- Programación control media (3-5 salas, con integración AV): 32-48h\n- Programación control compleja (múltiples salas, BYOD, videoconf): 60-100h\n- DSP audio básico (Dante, routing simple): 8-16h\n- DSP audio complejo (multi-zona, AEC, conferencia): 24-40h\n- Calibración/puesta en marcha por sala: 4-8h\n\nFORMATO JSON DE RESPUESTA\nTu respuesta final debe ser EXACTAMENTE un objeto JSON con esta estructura (sin bloques de código, solo JSON puro):\n{\n  \"productos_recomendados\": [\n    {\n      \"categoria\": \"nombre de la categoría\",\n      \"necesidad\": \"descripción de la necesidad\",\n      \"cantidad\": N,\n      \"opciones\": [\n        {\n          \"fabricante\": \"marca\",\n          \"modelo\": \"modelo\",\n          \"referencia_catalogo\": \"referencia del catálogo o null si no viene del catálogo\",\n          \"caracteristicas\": [\"lista de características\"],\n          \"justificacion\": \"por qué se recomienda este producto\"\n        }\n      ],\n      \"notas_tecnicas\": \"notas adicionales o null\"\n    }\n  ],\n  \"configuraciones_requeridas\": {\n    \"programacion_control\": {\n      \"requerida\": true/false,\n      \"plataforma_recomendada\": \"nombre o null\",\n      \"descripcion\": \"descripción o null\",\n      \"horas_estimadas\": N,\n      \"complejidad\": \"Baja/Media/Alta\"\n    },\n    \"dsp_audio\": {\n      \"requerida\": true/false,\n      \"plataforma_recomendada\": \"nombre o null\",\n      \"descripcion\": \"descripción o null\",\n      \"horas_estimadas\": N,\n      \"complejidad\": \"Baja/Media/Alta\"\n    },\n    \"integracion_red_it\": {\n      \"requerida\": true/false,\n      \"descripcion\": \"descripción o null\",\n      \"requisitos_red\": [\"lista\"],\n      \"coordinacion_it_necesaria\": true/false\n    },\n    \"calibracion_puesta_marcha\": {\n      \"requerida\": true/false,\n      \"descripcion\": \"descripción o null\",\n      \"dias_estimados\": N,\n      \"requiere_visita_previa\": true/false\n    }\n  },\n  \"servicios_complementarios\": [\n    {\n      \"servicio\": \"nombre\",\n      \"descripcion\": \"descripción\",\n      \"requerido\": true/false\n    }\n  ],\n  \"advertencias_tecnicas\": [\"lista de advertencias\"],\n  \"preguntas_a_resolver\": [\"lista de preguntas\"],\n  \"resumen_tecnico\": \"resumen de una frase\",\n  \"complejidad_integracion\": \"Baja/Media/Alta\",\n  \"horas_estimadas_totales\": {\n    \"programacion_control\": N,\n    \"configuracion_dsp\": N,\n    \"instalacion\": N,\n    \"puesta_marcha\": N,\n    \"total\": N\n  }\n}",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -400,
+        80
+      ],
+      "id": "47003e1e-f630-462c-b56a-fb00aa507c1c",
+      "name": "IA - Ingeniería técnica"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ensambla la respuesta JSON estructurada final con metadatos\n// Soporta tanto output de Information Extractor (objeto) como de Agent (string JSON)\n\nreturn items.map((item) => {\n  const j = item.json || {};\n\n  // El output puede ser un objeto (Information Extractor) o un string JSON (Agent)\n  let ing = j.output || {};\n  if (typeof ing === 'string') {\n    try {\n      // Limpiar posibles bloques de código markdown\n      const cleaned = ing.replace(/```json\\s*/gi, '').replace(/```\\s*/g, '').trim();\n      ing = JSON.parse(cleaned);\n    } catch(e) {\n      // Si no se puede parsear, envolver el texto en un objeto mínimo\n      ing = { resumen_tecnico: ing, error_parseo: true };\n    }\n  }\n\n  const pliego = j._pliego_data || {};\n\n  const now = new Date().toISOString();\n  const engineering_id = `ING-${now.replace(/[-:TZ.]/g, '').slice(0, 14)}`;\n\n  const horas = ing.horas_estimadas_totales || {};\n  const configs = ing.configuraciones_requeridas || {};\n\n  const flagControl = configs.programacion_control?.requerida === true;\n  const flagDSP = configs.dsp_audio?.requerida === true;\n  const flagIT = configs.integracion_red_it?.requerida === true;\n  const flagCalib = configs.calibracion_puesta_marcha?.requerida === true;\n\n  const resumenFlags = [\n    flagControl ? 'Programación de control' : null,\n    flagDSP ? 'Config. DSP/Audio' : null,\n    flagIT ? 'Integración IT/Red' : null,\n    flagCalib ? 'Calibración y puesta en marcha' : null,\n  ].filter(Boolean).join(' | ') || 'Sin configuraciones especiales';\n\n  return {\n    json: {\n      engineering_id,\n      generado_en: now,\n      pliego_id: j.project_id || null,\n      cliente: pliego.cliente || null,\n      tipo_proyecto: pliego.tipo_proyecto || null,\n      complejidad: ing.complejidad_integracion || null,\n      horas_totales: horas.total || null,\n      flags_configuracion: resumenFlags,\n      ingenieria_tecnica: ing,\n      _pliego_data: pliego,\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8b0d2586-0bc3-4d08-ba38-2c8a9f653f77",
+      "name": "Ensamblar JSON técnico"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Genera un informe HTML legible para el equipo de ingeniería\n// Incluye columna de referencia de catálogo para productos reales\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const ing = j.ingenieria_tecnica || {};\n  const configs = ing.configuraciones_requeridas || {};\n  const horas = ing.horas_estimadas_totales || {};\n\n  const col = (val) => val === true ? '✅' : '❌';\n\n  // ── Productos recomendados ──────────────────────────────────────────────\n  const productosHtml = (ing.productos_recomendados || []).map(cat => {\n    const opcionesHtml = (cat.opciones || []).map((op, i) => `\n      <tr class=\"${i === 0 ? 'opcion-principal' : 'opcion-alt'}\">\n        <td>${i === 0 ? '⭐ Principal' : 'Alternativa'}</td>\n        <td><strong>${op.fabricante ?? ''}</strong></td>\n        <td>${op.modelo ?? ''}</td>\n        <td>${op.referencia_catalogo ? `📋 ${op.referencia_catalogo}` : '<span class=\"grey\">—</span>'}</td>\n        <td>${(op.caracteristicas || []).join(', ')}</td>\n        <td>${op.justificacion ?? ''}</td>\n      </tr>`).join('');\n    return `\n    <div class=\"categoria\">\n      <h3>📦 ${cat.categoria} <span class=\"badge\">${cat.cantidad ?? ''} ud.</span></h3>\n      <p class=\"necesidad\">${cat.necesidad ?? ''}</p>\n      <table>\n        <thead><tr><th>Tipo</th><th>Fabricante</th><th>Modelo</th><th>Ref. Catálogo</th><th>Características</th><th>Justificación</th></tr></thead>\n        <tbody>${opcionesHtml}</tbody>\n      </table>\n      ${cat.notas_tecnicas ? `<p class=\"nota\">📝 ${cat.notas_tecnicas}</p>` : ''}\n    </div>`;\n  }).join('');\n\n  // ── Configuraciones requeridas ─────────────────────────────────────────\n  const configItems = [\n    { key: 'programacion_control',   label: 'Programación de control', icon: '⚙️' },\n    { key: 'dsp_audio',              label: 'DSP / Audio',             icon: '🎛️' },\n    { key: 'integracion_red_it',     label: 'Integración IT / Red',    icon: '🌐' },\n    { key: 'calibracion_puesta_marcha', label: 'Calibración y puesta en marcha', icon: '🔧' },\n  ];\n  const configsHtml = configItems.map(({ key, label, icon }) => {\n    const c = configs[key] || {};\n    const req = c.requerida;\n    return `\n    <div class=\"config-card ${req ? 'required' : 'not-required'}\">\n      <h4>${icon} ${label} ${col(req)}</h4>\n      ${req ? `\n        <p>${c.descripcion ?? ''}</p>\n        ${c.plataforma_recomendada ? `<p><strong>Plataforma:</strong> ${c.plataforma_recomendada}</p>` : ''}\n        ${c.horas_estimadas ? `<p><strong>Horas estimadas:</strong> ${c.horas_estimadas}h | <strong>Complejidad:</strong> ${c.complejidad ?? 'N/D'}</p>` : ''}\n        ${c.dias_estimados ? `<p><strong>Días estimados:</strong> ${c.dias_estimados} días</p>` : ''}\n        ${(c.requisitos_red || []).length > 0 ? `<ul>${c.requisitos_red.map(r => `<li>${r}</li>`).join('')}</ul>` : ''}\n        ${c.coordinacion_it_necesaria ? `<p>⚠️ Requiere coordinación con departamento IT del cliente</p>` : ''}\n      ` : '<p class=\"grey\">No requerido para este proyecto</p>'}\n    </div>`;\n  }).join('');\n\n  const html = `<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Informe Ingeniería - ${j.engineering_id}</title>\n  <style>\n    body { font-family: Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px; color: #222; }\n    h1 { color: #1a3c6e; border-bottom: 3px solid #1a3c6e; padding-bottom: 8px; }\n    h2 { color: #2c5f9e; margin-top: 32px; }\n    h3 { color: #444; }\n    .meta { background: #f5f7fa; border-radius: 8px; padding: 16px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }\n    .meta-item { display: flex; flex-direction: column; }\n    .meta-label { font-size: 11px; text-transform: uppercase; color: #888; }\n    .meta-value { font-weight: bold; font-size: 15px; }\n    .categoria { background: #fff; border: 1px solid #dde3ec; border-radius: 8px; padding: 20px; margin-bottom: 20px; }\n    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }\n    th { background: #1a3c6e; color: white; padding: 8px 12px; text-align: left; }\n    td { padding: 8px 12px; border-bottom: 1px solid #eee; }\n    .opcion-principal td { background: #f0f4ff; }\n    .badge { background: #1a3c6e; color: white; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin-left: 8px; }\n    .necesidad { color: #555; font-style: italic; margin: 4px 0 12px; }\n    .nota { background: #fffbe6; border-left: 3px solid #f0c000; padding: 8px 12px; border-radius: 0 4px 4px 0; font-size: 13px; }\n    .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }\n    .config-card { border-radius: 8px; padding: 16px; border: 1px solid #dde3ec; }\n    .config-card.required { border-color: #2c5f9e; background: #f7faff; }\n    .config-card.not-required { opacity: 0.5; }\n    .config-card h4 { margin: 0 0 10px; font-size: 15px; }\n    .grey { color: #999; font-style: italic; }\n    .horas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }\n    .hora-card { background: #f0f4ff; border-radius: 8px; padding: 14px; text-align: center; }\n    .hora-num { font-size: 28px; font-weight: bold; color: #1a3c6e; }\n    .hora-label { font-size: 11px; color: #666; text-transform: uppercase; margin-top: 4px; }\n    .hora-total { background: #1a3c6e; color: white; border-radius: 8px; padding: 14px; text-align: center; }\n    .advertencias { background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 0 8px 8px 0; padding: 16px; }\n    .preguntas { background: #e8f5e9; border-left: 4px solid #43a047; border-radius: 0 8px 8px 0; padding: 16px; }\n    ul { padding-left: 20px; margin: 8px 0; }\n    li { margin: 4px 0; }\n    .resumen-box { background: #1a3c6e; color: white; border-radius: 8px; padding: 20px; margin-bottom: 24px; }\n    .catalogo-badge { background: #43a047; color: white; border-radius: 4px; padding: 1px 6px; font-size: 11px; }\n    footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 48px; border-top: 1px solid #eee; padding-top: 12px; }\n  </style>\n</head>\n<body>\n  <h1>📐 Informe de Ingeniería Técnica AV</h1>\n\n  <div class=\"meta\">\n    <div class=\"meta-item\"><span class=\"meta-label\">ID Informe</span><span class=\"meta-value\">${j.engineering_id}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Cliente</span><span class=\"meta-value\">${j.cliente ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Tipo de proyecto</span><span class=\"meta-value\">${j.tipo_proyecto ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Complejidad integración</span><span class=\"meta-value\">${j.complejidad ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Horas totales estimadas</span><span class=\"meta-value\">${j.horas_totales ?? 'N/D'}h</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Generado</span><span class=\"meta-value\">${new Date(j.generado_en).toLocaleDateString('es-ES')}</span></div>\n  </div>\n\n  <div class=\"resumen-box\">\n    <p style=\"margin:0;font-size:15px;\">📋 ${ing.resumen_tecnico ?? 'Sin resumen disponible'}</p>\n  </div>\n\n  <h2>🛒 Productos Recomendados</h2>\n  ${productosHtml || '<p>No se han identificado categorías de equipamiento.</p>'}\n\n  <h2>⚙️ Configuraciones y Programación Requeridas</h2>\n  <div class=\"config-grid\">${configsHtml}</div>\n\n  <h2>⏱️ Estimación de Horas</h2>\n  <div class=\"horas-grid\">\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.programacion_control ?? 0}</div><div class=\"hora-label\">Prog. control</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.configuracion_dsp ?? 0}</div><div class=\"hora-label\">DSP / Audio</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.instalacion ?? 0}</div><div class=\"hora-label\">Instalación</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.puesta_marcha ?? 0}</div><div class=\"hora-label\">Puesta en marcha</div></div>\n  </div>\n  <div class=\"hora-total\" style=\"text-align:center;border-radius:8px;padding:14px;margin-bottom:8px;\">\n    <span style=\"font-size:18px;font-weight:bold;\">TOTAL ESTIMADO: ${horas.total ?? 0} horas</span>\n  </div>\n\n  ${(ing.servicios_complementarios || []).length > 0 ? `\n  <h2>🔩 Servicios Complementarios</h2>\n  <ul>${(ing.servicios_complementarios || []).map(s => `<li><strong>${s.servicio}</strong>: ${s.descripcion}</li>`).join('')}</ul>` : ''}\n\n  ${(ing.advertencias_tecnicas || []).length > 0 ? `\n  <h2>⚠️ Advertencias Técnicas</h2>\n  <div class=\"advertencias\"><ul>${(ing.advertencias_tecnicas || []).map(a => `<li>${a}</li>`).join('')}</ul></div>` : ''}\n\n  ${(ing.preguntas_a_resolver || []).length > 0 ? `\n  <h2>❓ Preguntas a Resolver Antes de Ofertar</h2>\n  <div class=\"preguntas\"><ul>${(ing.preguntas_a_resolver || []).map(p => `<li>${p}</li>`).join('')}</ul></div>` : ''}\n\n  <footer>Generado automáticamente · ${j.engineering_id} · ${j.generado_en}</footer>\n</body>\n</html>`;\n\n  // Devuelve el JSON completo sin los campos internos\n  const { _pliego_data, _contexto_ingenieria, output, ...limpio } = j;\n  return {\n    json: {\n      ...limpio,\n      informe_html: html,\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        80
+      ],
+      "id": "b05274e5-baa5-403c-b0dc-b3122c8db3ea",
+      "name": "Generar informe HTML"
+    },
+    {
+      "parameters": {
+        "content": "### Herramienta de Catálogos AV\n\nEl nodo **Buscar catálogo AV** conecta al agente con la API de búsqueda vectorial:\n\n**Endpoint:** `POST http://vectordb-api:8808/search`\n**Body:** `{\"query\": \"término\", \"limit\": 5}`\n\n**Catálogos indexados (9 PDFs, 749 vectores):**\n- Adam Hall (LD Systems, Cameo, Gravity, Palmer)\n- Fonestar (megafonía, audio instalación)\n- Work Pro (audio profesional)\n\n**Gestión de catálogos:**\n- Carpeta: `/home/server-silvasju/catalogos/activos/`\n- Re-indexar: `docker exec vectordb-api python ingest_files.py`\n- Verificar: `curl http://localhost:8808/health`\n\n**Red Docker:** vectordb-api y n8n están en `n8n-public_default`",
+        "height": 380,
+        "width": 440,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        544
+      ],
+      "id": "e8bcf24f-1fee-46fe-8876-78d81f45a172",
+      "name": "NOTA - Catálogos AV"
+    },
+    {
+      "parameters": {
+        "content": "### Cómo convertir el informe a PDF\n\nEl campo `informe_html` contiene el informe completo en HTML.\n\n**Opción A – PDFShift (cloud, fácil):**\n- HTTP Request → POST `https://api.pdfshift.io/v3/convert/pdf`\n- Body JSON: `{ \"source\": \"{{ $json.informe_html }}\" }`\n- Auth: Basic (API key de PDFShift como usuario)\n\n**Opción B – Gotenberg (self-hosted):**\n- HTTP Request → POST a tu instancia `/forms/chromium/convert/html`\n- Body: `multipart/form-data` con el HTML\n\n**Opción C – API2PDF / HTMLPDFapi:**\n- Servicios alternativos con APIs similares\n\nEl PDF resultante se puede:\n→ Guardar en Google Drive\n→ Adjuntar a Airtable como fichero\n→ Enviar por email al equipo técnico",
+        "height": 300,
+        "width": 440,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        400
+      ],
+      "id": "52c7e4cf-e8b8-43f9-8fd4-413e3659fbfc",
+      "name": "NOTA - Generación de PDF"
+    },
+    {
+      "parameters": {
+        "content": "### Workflow 2 · AV - Ingeniería Técnica (con Catálogos)\n\n**Input:** POST a `/ingenieria-tecnica-av`\nEnvía el JSON completo del Workflow 1 (pliegos) como body.\n\n**Pipeline:**\n1. Preparar contexto técnico del pliego\n2. **AI Agent** busca productos reales en catálogos (RAG)\n3. Ensamblar JSON estructurado\n4. Generar informe HTML\n\n**Output:**\n- `ingenieria_tecnica` → productos del catálogo + configuraciones + horas\n- `informe_html` → informe visual con referencias de catálogo\n- `flags_configuracion` → resumen de servicios especiales\n\n**Pipeline completo:**\n1️⃣ Ingesta y análisis de pliegos (IA)\n2️⃣ **← Estás aquí →** Ingeniería técnica (IA + Catálogos)\n3️⃣ Presupuesto comercial (próximo workflow)",
+        "height": 300,
+        "width": 380,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        368
+      ],
+      "id": "989fb553-90fa-40f0-9442-211fe30e7963",
+      "name": "NOTA - Overview"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        224
+      ],
+      "id": "f470b3b9-855a-49f6-a8f3-bc81d5375291",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      \"cliente\": \"Agencia para el Empleo de Madrid\",\n      \"ubicacion\": {\n        \"direccion\": \"\",\n        \"ciudad\": \"Madrid\",\n        \"provincia\": \"Madrid\",\n        \"pais\": \"ES\"\n      },\n      \"tipo_proyecto\": \"Suministro e instalación de material audiovisual para centros de formación\",\n      \"resumen_ejecutivo\": \"Contrato basado del Acuerdo Marco AM 12/2021 para el suministro, instalación y puesta en funcionamiento de diverso material audiovisual en la Escuela de Hostelería de Santa Eugenia y en la Escuela Verde y de Oficios de la Agencia para el Empleo de Madrid, incluyendo sistemas de cartelería digital, videowalls, pantallas LED indoor, monitores de señalización, sistemas de audio, videoconferencia, streaming, control y cableado asociado.\",\n      \"alcance_tecnico\": {\n        \"descripcion\": \"Suministro, instalación, configuración y puesta en marcha de equipos audiovisuales completos (audio, vídeo, cartelería digital, videoconferencia, streaming y control) en dos sedes de la Agencia para el Empleo de Madrid, incluyendo transporte, montaje, conexión, cableado de fuerza y datos hasta 5 m por punto, estructuras de soporte, racks, servidores y software de gestión de contenidos.\",\n        \"sistemas\": [\n          \"Sistemas de audio (altavoces array, subwoofers, amplificadores, micrófonos inalámbricos)\",\n          \"Sistemas de vídeo (monitores de señalización de 32\\\", 43\\\", 55\\\", 65\\\" y 98\\\", pantallas LED indoor de gran formato, videowalls 2x2)\",\n          \"Sistemas de cartelería digital (servidores HW, software de gestión, clientes OPS/NUC)\",\n          \"Sistemas de videoconferencia con compartición inalámbrica\",\n          \"Sistemas de procesamiento de vídeo multiventana\",\n          \"Sistemas de streaming y grabación H.264\",\n          \"Sistemas de control audiovisual centralizado (procesadores de control, tabletas de control)\",\n          \"Infraestructura de red y conectividad (switches PoE, puntos WiFi, cableado de fuerza y datos)\",\n          \"Estructuras y soportes para monitores, pantallas LED, videowalls y cámaras PTZ\",\n          \"Racks de 19\\\" para sistemas de proyección y control\"\n        ],\n        \"tareas_principales\": [\n          \"Suministro de todos los equipos audiovisuales especificados en el Anexo III\",\n          \"Transporte y entrega en las dos sedes indicadas en Madrid\",\n          \"Montaje físico de monitores, pantallas LED, videowalls, altavoces, cámaras PTZ y racks\",\n          \"Instalación de soportes de pared, techo y suelo específicos para cada equipo\",\n          \"Tendido de cableado de fuerza y datos hasta un máximo de 5 metros por ubicación\",\n          \"Configuración de servidores y software de cartelería digital para gestionar todos los elementos de audio y vídeo\",\n          \"Instalación y configuración de OPS y NUC en monitores y videowalls según distribución\",\n          \"Integración de sistemas de videoconferencia, multiventana y streaming en las salas multimedia\",\n          \"Configuración de procesadores de control y paneles de control en tabletas\",\n          \"Puesta en marcha y comprobación del correcto funcionamiento de todos los sistemas\",\n          \"Retirada y gestión de residuos de equipos antiguos si los hubiera (en este contrato se indica que no procede)\"\n        ]\n      },\n      \"equipamiento_requerido\": [\n        {\n          \"categoria\": \"Audio\",\n          \"items\": [\n            \"Adaptador altavoces (8 uds)\",\n            \"Altavoces array (14 uds)\",\n            \"Amplificador 4 canales clase D (3 uds)\",\n            \"Micrófonos de diadema: transmisor petaca (2 uds)\",\n            \"Micrófonos de diadema: diadema (2 uds)\",\n            \"Micrófonos de mano: receptor y micro (4 uds)\",\n            \"Receptor micros inalámbrico digital (6 uds)\",\n            \"Subwoofer 10\\\" (2 uds)\",\n            \"Soporte altavoz para arrays (8 uds)\"\n          ],\n          \"cantidad_aprox\": 49,\n          \"notas\": \"Equipamiento distribuido entre Escuela de Hostelería (restaurante) y Escuela Verde y de Oficios (salón de actos) para conformar salas multimedia.\"\n        },\n        {\n          \"categoria\": \"Vídeo y visualización\",\n          \"items\": [\n            \"Cámara PTZ 4K de instalación (2 uds)\",\n            \"Monitor de señalización digital de 32\\\" (1 ud)\",\n            \"Monitor de señalización digital de 43\\\" (4 uds)\",\n            \"Monitor señalización 55\\\" (5 uds)\",\n            \"Monitor señalización 65\\\" (1 ud)\",\n            \"Monitor señalización 98\\\" (3 uds)\",\n            \"Pantalla interactiva de 65\\\" (1 ud)\",\n            \"Pantalla LED indoor 3x2.3 m (1 ud)\",\n            \"Pantalla LED indoor 4,8x2,3 m (1 ud)\",\n            \"Pantalla LED indoor 4.2x1.6 m (1 ud)\",\n            \"Videowall formato 2x2 de 55\\\" (3 uds)\"\n          ],\n          \"cantidad_aprox\": 22,\n          \"notas\": \"Incluye pantallas LED de pixel pitch 1,25 mm con controladoras y módulos de repuesto, y videowalls 2x2 de 55\\\".\"\n        },\n        {\n          \"categoria\": \"Procesamiento, control y streaming\",\n          \"items\": [\n            \"Procesador de control tipo 1 (1 ud)\",\n            \"Procesador de control tipo 2 (1 ud)\",\n            \"Sistema multiventana (3 uds)\",\n            \"Sistema streaming / grabador H.264 (2 uds)\",\n            \"Sistema de videoconferencia (3 uds)\",\n            \"Tableta sistema de control (2 uds)\",\n            \"Servidor HW para cartelería digital (2 uds)\",\n            \"Software de cartelería digital (1 servidor, 15 clientes) (1 ud)\",\n            \"Software de cartelería digital (1 servidor, 2 clientes) (1 ud)\"\n          ],\n          \"cantidad_aprox\": 16,\n          \"notas\": \"Procesadores de audio/vídeo con 64x64 canales en red, sistemas de videoconferencia con compartición inalámbrica y software de cartelería digital centralizado.\"\n        },\n        {\n          \"categoria\": \"Informática y reproducción de contenidos\",\n          \"items\": [\n            \"NUC I5 8GB RAM (10 uds)\",\n            \"OPS I5 8GB RAM (8 uds)\"\n          ],\n          \"cantidad_aprox\": 18,\n          \"notas\": \"NUC asociados a monitores de 55\\\" y 43\\\" y a pantallas LED; OPS asociados a videowalls, monitores de 98\\\" y de 32\\\" y monitor de 65\\\".\"\n        },\n        {\n          \"categoria\": \"Red y conectividad\",\n          \"items\": [\n            \"Punto WiFi sistema de proyección (2 uds)\",\n            \"Switch 24 puertos 1Gbps PoE sistema de proyección (7 uds)\",\n            \"Dongle conexión USB-C/HDMI para compartición inalámbrica (3 uds)\"\n          ],\n          \"cantidad_aprox\": 12,\n          \"notas\": \"Infraestructura de red con switches PoE gestionables y puntos WiFi 6 para sistemas de proyección y videoconferencia.\"\n        },\n        {\n          \"categoria\": \"Soportes y racks\",\n          \"items\": [\n            \"Rack sistema de proyección 19\\\" 10U (4 uds)\",\n            \"Soporte 2x1 techo 43\\\" (2 uds)\",\n            \"Soporte a suelo monitor 98\\\" horizontal (1 ud)\",\n            \"Soporte altavoz para arrays (8 uds)\",\n            \"Soporte monitor 32\\\" (1 ud)\",\n            \"Soporte pantalla interactiva suelo móvil y motorizado (1 ud)\",\n            \"Soporte pantalla LED (para 4,8x2,3 m) (1 ud)\",\n            \"Soporte para videowalls 2x2 55\\\" (3 uds)\",\n            \"Soporte pared monitor 55\\\" (3 vertical y 2 horizontal) (5 uds)\",\n            \"Soporte pared monitor 98\\\" vertical (2 uds)\",\n            \"Soporte pared monitor señalización 65\\\" (1 ud)\",\n            \"Soporte pared pantalla LED indoor 3x2.3m + espaciador (2 uds, uno por sede)\",\n            \"Soporte pared pantalla LED indoor 4x1.6m (2 uds, uno por sede)\",\n            \"Soporte PTZ especial techo (2 uds)\"\n          ],\n          \"cantidad_aprox\": 33,\n          \"notas\": \"Incluye estructuras DVLED modulares certificadas TÜV, soportes antivandálicos y racks con ventilación y regletas.\"\n        },\n        {\n          \"categoria\": \"Servicios de instalación\",\n          \"items\": [\n            \"Instalación y puesta en marcha (1 lote)\"\n          ],\n          \"cantidad_aprox\": 1,\n          \"notas\": \"Incluye transporte, montaje, cableado de fuerza y datos hasta 5 m por punto, configuración de software y pruebas de funcionamiento en ambas sedes.\"\n        }\n      ],\n      \"integraciones_y_protocolos\": [\n        \"RTSP\", \"RTMP\", \"RTMPS\", \"SRT\", \"ONVIF\", \"GB/T28181\", \"VISCA over IP\",\n        \"IP VISCA\", \"H.264\", \"H.265\", \"HDMI 2.0\", \"3G-SDI\", \"DVI-I\", \"DisplayPort\",\n        \"USB 2.0\", \"USB 3.0\", \"USB-C\", \"Ethernet 10/100/1000Base-T(X)\", \"PoE y PoE+\",\n        \"WiFi 6\", \"AES WPA2-PSK\", \"Encriptación 256/1024 bits en compartición inalámbrica\",\n        \"AES67 o red QLAN equivalente\", \"RS-232\", \"RS-422/RS-485\", \"RJ45\", \"Micro SD\",\n        \"OPS\", \"HDCP 2.3\"\n      ],\n      \"fechas\": {\n        \"publicacion_pliego\": null,\n        \"visita_tecnica\": null,\n        \"fecha_limite_preguntas\": null,\n        \"fecha_entrega_oferta\": null,\n        \"inicio_estimado\": null,\n        \"fin_estimado\": null\n      },\n      \"presupuesto\": {\n        \"importe\": null,\n        \"moneda\": \"EUR\",\n        \"detalles\": null\n      },\n      \"criterios_adjudicacion\": [\n        {\n          \"criterio\": \"Precio\",\n          \"peso\": null,\n          \"detalle\": null\n        }\n      ],\n      \"requisitos_documentales\": [\n        \"Modelo de oferta económica según Anexo I, indicando importe total sin IVA y desglose por producto e instalación\",\n        \"Ficha técnica o descripción de los productos ofertados que acredite el cumplimiento de los requisitos técnicos mínimos y, en su caso, valorables\",\n        \"Indicación de marca y modelo de todos los productos ofertados\",\n        \"Declaración responsable manifestando la condición de fabricante o empresa filial de los bienes ofertados, incluyendo datos del servicio técnico oficial propio o concertado\",\n        \"En caso de no ser fabricante ni filial, contrato o documento del fabricante o distribuidor que autorice la comercialización de los bienes ofertados\",\n        \"Acreditación de disponer de servicio técnico oficial propio o concertado y su descripción\",\n        \"Dirección de correo electrónico de atención de incidencias exclusiva para el acuerdo marco\",\n        \"En caso de no presentar oferta, modelo de justificación de imposibilidad de presentar oferta válida según Anexo II, con documentación acreditativa (PVP, fichas técnicas, certificados de fabricante, etc.)\"\n      ],\n      \"requisitos_tecnicos_clave\": [\n        \"Cumplimiento de las especificaciones mínimas de cada suministro descritas en el Anexo III (resoluciones, brillos, tamaños, conectividad, protocolos, certificaciones, etc.)\",\n        \"Monitores de señalización con sistema operativo Android 10 o superior, conectividad WiFi y memoria mínima de 16 GB\",\n        \"Pantallas LED indoor con pixel pitch 1,25 mm, brillo mínimo 800 nits, tasa de refresco 3840 Hz y mantenimiento frontal\",\n        \"Procesadores de audio/vídeo con 64x64 canales de audio en red AES67 o equivalente\",\n        \"Sistemas de videoconferencia con compartición inalámbrica 4K, cifrado WPA2-PSK y encriptación 256/1024 bits\",\n        \"Cámaras PTZ 4K con zoom óptico mínimo 30x, múltiples salidas (HDMI, 3G-SDI, LAN, CVBS) y soporte de protocolos IP avanzados (RTSP, RTMP, SRT, NDI, etc.)\",\n        \"Switches gestionables con al menos 24 puertos 1G PoE+ (300W) y puertos SFP adicionales\",\n        \"OPS y NUC con procesadores Intel i5 o equivalentes, 8 GB RAM y SSD de al menos 256-512 GB\",\n        \"Pantalla interactiva de 65\\\" 4K con Android 13 o superior, 8 GB RAM, 128 GB almacenamiento y amplia conectividad frontal y trasera\",\n        \"Soportes y estructuras con certificaciones TÜV/TÜV Nord o equivalentes y compatibilidad VESA indicada\",\n        \"Cableado de fuerza y datos incluido hasta 5 m por ubicación y correcto anclaje estructural en paredes y suelos\",\n        \"Garantía mínima de 48 meses para el contrato\",\n        \"Precio unitario de cada producto no superior al precio unitario definido en el apartado 5 del documento de licitación\"\n      ],\n      \"riesgos_y_ambiguedades\": [\n        \"No se especifica fecha exacta de publicación ni de entrega de ofertas, solo el plazo de 10 días hábiles desde la invitación, lo que puede generar incertidumbre en la planificación\",\n        \"Limitación de los gastos de instalación al 35% del importe total del contrato basado puede tensionar el margen si la instalación resulta más compleja de lo previsto\",\n        \"Necesidad de adaptar la ubicación final de algunos equipos de control a las condiciones reales de cableado y cuartos de instalaciones, pudiendo requerir ajustes no detallados en planos\",\n        \"Exigencia de que los precios unitarios ofertados no superen los precios unitarios del pliego, reduciendo el margen de maniobra comercial\",\n        \"Requisito de servicio técnico oficial propio o concertado puede excluir a empresas sin red de soporte consolidada\",\n        \"Posibles incompatibilidades entre marcas si no se seleccionan soluciones integradas para procesadores, multiventana, streaming y cartelería digital\",\n        \"No se detallan explícitamente los requisitos de formación al personal de la AEM, pudiendo generar expectativas no recogidas en el pliego\",\n        \"La retirada de equipos antiguos se indica como \\\"No procede\\\" pero podría solicitarse en la práctica, generando trabajos adicionales no presupuestados\"\n      ],\n      \"preguntas_recomendadas_al_cliente\": [\n        \"¿Cuál es la fecha prevista de publicación en la Plataforma de Contratación y el calendario concreto de presentación de ofertas?\",\n        \"¿Se requiere formación específica al personal de la Escuela de Hostelería y de la Escuela Verde y de Oficios en el uso de los sistemas de cartelería digital, videoconferencia y control?\",\n        \"¿Existe alguna preferencia de marcas o compatibilidades con equipamiento audiovisual ya existente en las sedes?\",\n        \"¿Se prevé alguna limitación de horarios para la ejecución de las instalaciones en las escuelas (por clases, exámenes, eventos)?\",\n        \"¿Se deben contemplar servicios de mantenimiento preventivo y correctivo más allá del periodo de garantía estándar?\",\n        \"¿Hay requisitos de integración con sistemas de gestión de contenidos o plataformas corporativas del Ayuntamiento de Madrid?\",\n        \"¿Se aceptan propuestas de mejora técnica (p.ej. mayor brillo, más memoria, mejores procesadores) manteniendo o mejorando el precio unitario?\",\n        \"¿Se requiere documentación as-built (planos actualizados, esquemas de conexión, inventario detallado) al finalizar la instalación?\",\n        \"¿Qué procedimiento de coordinación se seguirá con los responsables de TI para la configuración de red, VLANs, direcciones IP y seguridad?\",\n        \"¿Se prevé la futura ampliación del número de clientes de cartelería digital o de puntos de visualización y debe dimensionarse el sistema para ello?\"\n      ],\n      \"secciones_importantes\": [\n        \"1. Organismo destinatario, responsable del contrato y datos de contacto\",\n        \"2. Necesidades a satisfacer con el suministro\",\n        \"3. Objeto. Bienes a suministrar\",\n        \"4. Instalación\",\n        \"5. Presupuesto base de licitación\",\n        \"6. Financiación\",\n        \"7. Criterios de valoración para la adjudicación del contrato basado\",\n        \"8. Procedimiento de valoración de las ofertas\",\n        \"9. Plazo máximo de ejecución del contrato\",\n        \"10. Lugares de entrega de los bienes a suministrar\",\n        \"12. Contenido mínimo de la oferta\",\n        \"13. Presentación de ofertas\",\n        \"15. Garantía\",\n        \"ANEXO I: Modelo de presentación de oferta\",\n        \"ANEXO II: Modelo de justificación de la imposibilidad de presentar oferta válida\",\n        \"ANEXO III: Descripción técnica detallada de los bienes e instalación\"\n      ],\n      \"secciones_poco_relevantes\": [\n        \"Información de firmantes del documento y CSV de verificación\",\n        \"Referencias genéricas a PRTR y fondos europeos que en este contrato se marcan como no aplicables\",\n        \"Modelos de declaración del Anexo II salvo en caso de no presentar oferta\",\n        \"Repeticiones de tablas de distribución de equipamiento ya detalladas\",\n        \"Notas sobre anexos y adendas de carácter general no específicos de este contrato basado\"\n      ],\n      \"palabras_clave\": [\n        \"suministro audiovisual\", \"cartelería digital\", \"videowall\", \"pantalla LED indoor\",\n        \"monitor de señalización\", \"cámara PTZ 4K\", \"sistema de videoconferencia\",\n        \"streaming H.264\", \"procesador de control\", \"sala multimedia\",\n        \"Escuela de Hostelería de Santa Eugenia\", \"Escuela Verde y de Oficios\",\n        \"Agencia para el Empleo de Madrid\", \"switch PoE\", \"OPS i5\", \"NUC i5\",\n        \"Acuerdo Marco AM 12/2021\", \"instalación y puesta en marcha\", \"racks 19 pulgadas\"\n      ],\n      \"clasificacion\": {\n        \"linea_negocio\": \"Instalaciones audiovisuales profesionales para educación y sector público\",\n        \"complejidad\": \"Alta\",\n        \"prioridad\": \"Alta\",\n        \"probabilidad_ganar\": \"Media\",\n        \"motivo\": \"Proyecto de importe medio-alto con fuerte componente de integración audiovisual y requisitos técnicos detallados; la competencia será elevada entre integradores AV homologados en el Acuerdo Marco, pero el pliego está muy alineado con capacidades de integradores especializados en cartelería digital, LED y salas multimedia.\"\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        208
+      ],
+      "id": "e9b84888-09cc-4975-911f-36d8dfcb27f0",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "id"
+        },
+        "builtInTools": {
+          "codeInterpreter": true
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        320
+      ],
+      "id": "f43d93ad-42a8-433f-b3bd-b62ff2fd59b5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oA6THKJAOrrLFbwX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://vectordb-api:8808/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ query: $fromAI('searchQuery', 'Término de búsqueda del producto AV. Sé específico: incluye tipo de producto y características clave.', 'string'), limit: 5 }) }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        304
+      ],
+      "id": "34d364b0-1aa4-4fe8-a261-865268c56879",
+      "name": "BUSQUEDA"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-08T12:11:34.749Z",
+      "createdAt": "2026-03-08T12:11:34.749Z",
+      "role": "workflow:owner",
+      "workflowId": "rGH8sBo0uN6LKWMEDjZdG",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-08T15:18:20.511Z",
+  "versionId": "09f10f13-4949-49a8-be15-c1198b828154"
+}
