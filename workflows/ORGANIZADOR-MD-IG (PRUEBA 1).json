@@ -167,9 +167,8 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "gpt-4o-mini",
           "mode": "list",
-          "cachedResultName": "GPT-4O-MINI"
+          "value": "gpt-4o-mini"
         },
         "responses": {
           "values": [
@@ -1018,6 +1017,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-01-07T04:58:32.000Z",
-  "versionId": "69a57b08-c23a-4208-9b38-e5028384e998"
+  "updatedAt": "2026-03-08T12:19:30.568Z",
+  "versionId": "336060c0-1ed9-45ef-aafe-dd8da5aa2b50"
 }
