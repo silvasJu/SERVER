@@ -332,8 +332,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1456,
-        128
+        1504,
+        144
       ],
       "id": "6a82bc67-e4a7-4203-8059-c11694642a87",
       "name": "Edit Fields",
@@ -371,6 +371,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-02-26T09:01:50.967Z",
-  "versionId": "71a4191a-ea8c-4d75-ab28-e4c164a1d73c"
+  "updatedAt": "2026-03-10T15:42:33.595Z",
+  "versionId": "49dd9bd1-e11b-43ef-8b0e-a35dc8435b60"
 }
