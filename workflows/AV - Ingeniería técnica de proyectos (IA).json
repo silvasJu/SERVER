@@ -5,20 +5,14 @@
   "connections": {
     "Webhook - Recibir análisis de pliego": {
       "main": [
-        [
-          {
-            "node": "Preparar contexto técnico",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Preparar contexto técnico": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "IA - Ingeniería técnica",
             "type": "main",
             "index": 0
           }
@@ -29,8 +23,19 @@
       "ai_languageModel": [
         [
           {
-            "node": "AI Agent",
+            "node": "IA - Ingeniería técnica",
             "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar_catalogo_av": {
+      "ai_tool": [
+        [
+          {
+            "node": "IA - Ingeniería técnica",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -38,7 +43,13 @@
     },
     "IA - Ingeniería técnica": {
       "main": [
-        []
+        [
+          {
+            "node": "Ensamblar JSON técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Ensamblar JSON técnico": {
@@ -65,64 +76,10 @@
     },
     "Code in JavaScript": {
       "main": [
-        []
-      ]
-    },
-    "Generar informe HTML": {
-      "main": [
         [
           {
-            "node": "extraer y codificar el HTML",
+            "node": "Preparar contexto técnico",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "extraer y codificar el HTML": {
-      "main": [
-        []
-      ]
-    },
-    "AI Agent": {
-      "main": [
-        [
-          {
-            "node": "Ensamblar JSON técnico",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Structured Output Parser": {
-      "ai_outputParser": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_outputParser",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Vector Store": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -139,6 +96,22 @@
   "nodes": [
     {
       "parameters": {
+        "content": "### Herramienta de Catálogos AV\n\nEl nodo **Buscar catálogo AV** conecta al agente con la API de búsqueda vectorial:\n\n**Endpoint:** `POST http://vectordb-api:8808/search`\n**Body:** `{\"query\": \"término\", \"limit\": 5}`\n\n**Catálogos indexados (9 PDFs, 749 vectores):**\n- Adam Hall (LD Systems, Cameo, Gravity, Palmer)\n- Fonestar (megafonía, audio instalación)\n- Work Pro (audio profesional)\n\n**Gestión de catálogos:**\n- Carpeta: `/home/server-silvasju/catalogos/activos/`\n- Re-indexar: `docker exec vectordb-api python ingest_files.py`\n- Verificar: `curl http://localhost:8808/health`\n\n**Red Docker:** vectordb-api y n8n están en `n8n-public_default`",
+        "height": 380,
+        "width": 440,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        160
+      ],
+      "id": "e2b5b810-9e41-4ffe-bd54-a41145adac0e",
+      "name": "NOTA - Catálogos AV"
+    },
+    {
+      "parameters": {
         "httpMethod": "POST",
         "path": "ingenieria-tecnica-av",
         "responseMode": "lastNode",
@@ -147,10 +120,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1168,
-        144
+        -448,
+        -432
       ],
-      "id": "12008305-d59c-4939-bc33-55a813275c3a",
+      "id": "cc169f1e-7537-4231-bd9d-f136f8fc2a32",
       "name": "Webhook - Recibir análisis de pliego",
       "webhookId": "b8c3d2e1-f0a1-2b3c-4d5e-6f7a8b9c0d1e"
     },
@@ -161,10 +134,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -768,
-        80
+        -96,
+        -144
       ],
-      "id": "51fee3c1-006a-405e-acf2-5664eb1b7437",
+      "id": "ca9530bf-dc97-46c9-99d9-da1deb4af57b",
       "name": "Preparar contexto técnico"
     },
     {
@@ -177,16 +150,16 @@
         },
         "builtInTools": {},
         "options": {
-          "temperature": 0
+          "temperature": 0.2
         }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -512,
-        384
+        192,
+        144
       ],
-      "id": "4b18501a-0925-44cc-8178-f8cdb1efa597",
+      "id": "7f1749e6-dbbb-4e14-93c3-364919437829",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -197,46 +170,63 @@
     },
     {
       "parameters": {
+        "promptType": "define",
         "text": "={{ $json._contexto_ingenieria }}",
-        "schemaType": "fromJson",
-        "jsonSchemaExample": "{\n  \"productos_recomendados\": [\n    {\n      \"categoria\": \"Pantallas comerciales\",\n      \"necesidad\": \"Pantallas 86\\\" 4K para salas de reunión\",\n      \"cantidad\": 2,\n      \"opciones\": [\n        {\n          \"fabricante\": \"Samsung\",\n          \"modelo\": \"QM86B-W\",\n          \"caracteristicas\": [\"86\\\" 4K UHD\", \"Control IP/RS-232\", \"500 nits\"],\n          \"justificacion\": \"Display comercial con garantía extendida y soporte de control integrado\"\n        },\n        {\n          \"fabricante\": \"LG\",\n          \"modelo\": \"86UL3J-E\",\n          \"caracteristicas\": [\"86\\\" 4K\", \"WebOS\", \"Control IP\"],\n          \"justificacion\": \"Alternativa con sistema operativo integrado para señalización digital\"\n        }\n      ],\n      \"notas_tecnicas\": \"Verificar compatibilidad de soporte de pared (VESA 600x400)\"\n    }\n  ],\n  \"configuraciones_requeridas\": {\n    \"programacion_control\": {\n      \"requerida\": true,\n      \"plataforma_recomendada\": \"Crestron\",\n      \"descripcion\": \"Programación de sala para control unificado de pantallas, audio y videoconferencia\",\n      \"horas_estimadas\": 40,\n      \"complejidad\": \"Alta\"\n    },\n    \"dsp_audio\": {\n      \"requerida\": true,\n      \"plataforma_recomendada\": \"Q-SYS\",\n      \"descripcion\": \"Configuración de red Dante para distribución de audio entre salas\",\n      \"horas_estimadas\": 16,\n      \"complejidad\": \"Media\"\n    },\n    \"integracion_red_it\": {\n      \"requerida\": true,\n      \"descripcion\": \"VLAN dedicada para tráfico AV, QoS para Dante/AES67\",\n      \"requisitos_red\": [\"VLAN AV segregada\", \"Switch PoE+ 24 puertos\", \"QoS Dante\"],\n      \"coordinacion_it_necesaria\": true\n    },\n    \"calibracion_puesta_marcha\": {\n      \"requerida\": true,\n      \"descripcion\": \"Ajuste acústico de sala, calibración de cámaras PTZ y verificación de control\",\n      \"dias_estimados\": 3,\n      \"requiere_visita_previa\": false\n    }\n  },\n  \"servicios_complementarios\": [\n    {\n      \"servicio\": \"Instalación de infraestructura\",\n      \"descripcion\": \"Canalización, cableado estructurado HDMI/HDBaseT y rack de comunicaciones\",\n      \"requerido\": true\n    }\n  ],\n  \"advertencias_tecnicas\": [\n    \"Verificar firmware de dispositivos existentes antes de integrar\",\n    \"Comprobar disponibilidad de alimentación PoE+ en el rack\"\n  ],\n  \"preguntas_a_resolver\": [\n    \"¿Existe infraestructura de red IT aprovechable?\",\n    \"¿Se mantiene algún equipo actual en la instalación?\"\n  ],\n  \"resumen_tecnico\": \"Proyecto de integración AV de complejidad alta con programación de control Crestron y red Dante. Requiere coordinación con IT para configuración de VLANs.\",\n  \"complejidad_integracion\": \"Alta\",\n  \"horas_estimadas_totales\": {\n    \"programacion_control\": 40,\n    \"configuracion_dsp\": 16,\n    \"instalacion\": 40,\n    \"puesta_marcha\": 24,\n    \"total\": 120\n  }\n}",
         "options": {
-          "systemPromptTemplate": "ROL\nEres un ingeniero técnico senior especializado en integración de sistemas audiovisuales profesionales: salas de reunión, auditorios, teatros, digital signage, sistemas de videoconferencia y sistemas de control automático (Crestron, AMX, Extron, Q-SYS, Biamp).\n\nTAREA\nAnalizarás los requisitos técnicos de un proyecto AV extraídos de un pliego de licitación y deberás:\n1.Analizar si hay equipos específicos obligatorios.\n2.Recomendar productos específicos (fabricante y modelo concreto) para cada categoría de equipamiento\n3. Determinar qué configuraciones especiales o programación son necesarias para el funcionamiento del proyecto\n\nREGLAS DE SALIDA (CRÍTICO)\n1. Devuelve únicamente JSON válido, sin markdown, sin bloques de código, sin texto extra\n2. Si una configuración no aplica al proyecto, usa false en 'requerida' y null/0 en el resto de campos\n3. Proporciona siempre al menos 2 opciones de producto por categoría cuando sea posible\n4. Basa las recomendaciones exclusivamente en fabricantes AV profesionales reales\n\nFABRICANTES DE REFERENCIA POR CATEGORÍA\n- Pantallas/proyectores: Samsung, LG, Philips, Sony, NEC, Barco, Christie, Epson\n- Control: Crestron, AMX, Extron, Control4, RTI\n- DSP/Audio: Q-SYS (QSC), Biamp, Dante (Audinate), Shure, Sennheiser, Beyerdynamic, Crown, BSS\n- Videoconferencia: Cisco (Webex), Poly (HP), Logitech, Neat, Yealink\n- Distribución vídeo: Crestron DM, Extron XTP, Kramer, Atlona, ZeeVee, Aurora, qsys\n- AV-over-IP: SDVoE (Semtech), NDI (Vizrt), Dante AV (Audinate), Haivision\n- Micrófonos/audio sala: Shure MXA, Sennheiser TeamConnect, Fonestar, Biamp Devio, ClearOne\n"
+          "systemMessage": "ROL\nEres un ingeniero técnico senior especializado en integración de sistemas audiovisuales profesionales.\n\nTAREA\nAnaliza los requisitos técnicos de un proyecto AV y:\n1. Busca productos en los catálogos reales usando buscar_catalogo_av\n2. Recomienda productos concretos por categoría\n3. Determina configuraciones especiales necesarias\n4. Estima horas de integración\n\nREGLAS DE BÚSQUEDA EN CATÁLOGO (CRÍTICO — CUMPLIR ESTRICTAMENTE)\n- Haz MÁXIMO 6 búsquedas en total. Planifica ANTES de buscar.\n- Usa términos AMPLIOS que cubran varios productos: \"altavoz amplificador audio\" en vez de buscar cada uno por separado.\n- UNA sola búsqueda por categoría. NUNCA repitas una búsqueda con términos similares.\n- Si no encuentras nada relevante, marca [NO EN CATÁLOGO] y continúa. NO reintentes.\n- NO busques: soportes, racks, cables, NUC, OPS, switches, WiFi — estos NO están en el catálogo.\n- Después de completar tus búsquedas, genera INMEDIATAMENTE el JSON final.\n\nPROCESO:\n1. Lee el proyecto e identifica 4-6 categorías de equipamiento AV principal\n2. Haz 1 búsqueda por categoría (solo audio, vídeo, micrófonos, control, videoconf)\n3. Con los resultados, genera el JSON de respuesta\n\nREGLAS DE SALIDA\n1. Responde ÚNICAMENTE con JSON válido — sin markdown, sin ```, sin texto extra\n2. Si una configuración no aplica: requerida=false, campos en null/0\n3. Al menos 2 opciones por categoría cuando sea posible\n4. Horas como números enteros\n5. Productos del catálogo: incluir referencia_catalogo. Resto: null\n\nFABRICANTES DE REFERENCIA\n- Pantallas: Samsung, LG, Sony, NEC, Barco, Christie, Epson\n- Control: Crestron, AMX, Extron, Q-SYS\n- Audio: QSC, Biamp, Shure, Sennheiser, Crown, BSS, Fonestar, LD Systems\n- Videoconferencia: Cisco, Poly, Logitech, Yealink\n- Distribución vídeo: Crestron DM, Extron, Kramer, Atlona\n\nESTIMACIÓN DE HORAS\n- Control simple (1-2 salas): 16-24h | media (3-5 salas): 32-48h | compleja: 60-100h\n- DSP básico: 8-16h | complejo (multi-zona, AEC): 24-40h\n- Calibración por sala: 4-8h\n\nJSON DE RESPUESTA (estructura exacta):\n{\n  \"productos_recomendados\": [{\"categoria\": \"\", \"necesidad\": \"\", \"cantidad\": 0, \"opciones\": [{\"fabricante\": \"\", \"modelo\": \"\", \"referencia_catalogo\": null, \"caracteristicas\": [], \"justificacion\": \"\"}], \"notas_tecnicas\": null}],\n  \"configuraciones_requeridas\": {\n    \"programacion_control\": {\"requerida\": false, \"plataforma_recomendada\": null, \"descripcion\": null, \"horas_estimadas\": 0, \"complejidad\": \"Media\"},\n    \"dsp_audio\": {\"requerida\": false, \"plataforma_recomendada\": null, \"descripcion\": null, \"horas_estimadas\": 0, \"complejidad\": \"Media\"},\n    \"integracion_red_it\": {\"requerida\": false, \"descripcion\": null, \"requisitos_red\": [], \"coordinacion_it_necesaria\": false},\n    \"calibracion_puesta_marcha\": {\"requerida\": false, \"descripcion\": null, \"dias_estimados\": 0, \"requiere_visita_previa\": false}\n  },\n  \"servicios_complementarios\": [],\n  \"advertencias_tecnicas\": [],\n  \"preguntas_a_resolver\": [],\n  \"resumen_tecnico\": \"\",\n  \"complejidad_integracion\": \"Media\",\n  \"horas_estimadas_totales\": {\"programacion_control\": 0, \"configuracion_dsp\": 0, \"instalacion\": 0, \"puesta_marcha\": 0, \"total\": 0}\n}",
+          "maxIterations": 20
         }
       },
-      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
-      "typeVersion": 1,
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
       "position": [
-        -432,
-        672
+        304,
+        -144
       ],
-      "id": "9cdce9da-5b88-4a9a-b3c6-682c180e28d5",
+      "id": "57541fc9-adb4-4aa5-8e0c-fd768bf797bd",
       "name": "IA - Ingeniería técnica"
     },
     {
       "parameters": {
-        "jsCode": "// Ensambla la respuesta JSON estructurada final con metadatos\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const ing = j.output || {};\n  const pliego = j._pliego_data || {};\n\n  const now = new Date().toISOString();\n  const engineering_id = `ING-${now.replace(/[-:TZ.]/g, '').slice(0, 14)}`;\n\n  const horas = ing.horas_estimadas_totales || {};\n  const configs = ing.configuraciones_requeridas || {};\n\n  const flagControl = configs.programacion_control?.requerida === true;\n  const flagDSP = configs.dsp_audio?.requerida === true;\n  const flagIT = configs.integracion_red_it?.requerida === true;\n  const flagCalib = configs.calibracion_puesta_marcha?.requerida === true;\n\n  const resumenFlags = [\n    flagControl ? 'Programación de control' : null,\n    flagDSP ? 'Config. DSP/Audio' : null,\n    flagIT ? 'Integración IT/Red' : null,\n    flagCalib ? 'Calibración y puesta en marcha' : null,\n  ].filter(Boolean).join(' | ') || 'Sin configuraciones especiales';\n\n  return {\n    json: {\n      engineering_id,\n      generado_en: now,\n      pliego_id: j.project_id || null,\n      cliente: pliego.cliente || null,\n      tipo_proyecto: pliego.tipo_proyecto || null,\n      complejidad: ing.complejidad_integracion || null,\n      horas_totales: horas.total || null,\n      flags_configuracion: resumenFlags,\n      ingenieria_tecnica: ing,\n      _pliego_data: pliego,\n    },\n  };\n});\n"
+        "method": "POST",
+        "url": "http://vectordb-api:8808/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ query: $fromAI('searchQuery', 'Término de búsqueda del producto AV. Sé específico: incluye tipo de producto y características clave.', 'string'), limit: 5 }) }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        144
+      ],
+      "id": "97a5923e-ec06-4130-9ef1-e432bbea6b98",
+      "name": "buscar_catalogo_av"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ensambla la respuesta JSON estructurada final con metadatos\n// Soporta tanto output de Information Extractor (objeto) como de Agent (string JSON)\n\nreturn items.map((item) => {\n  const j = item.json || {};\n\n  // El output puede ser un objeto (Information Extractor) o un string JSON (Agent)\n  let ing = j.output || {};\n  if (typeof ing === 'string') {\n    try {\n      // Limpiar posibles bloques de código markdown\n      const cleaned = ing.replace(/```json\\s*/gi, '').replace(/```\\s*/g, '').trim();\n      ing = JSON.parse(cleaned);\n    } catch(e) {\n      // Si no se puede parsear, envolver el texto en un objeto mínimo\n      ing = { resumen_tecnico: ing, error_parseo: true };\n    }\n  }\n\n  const pliego = j._pliego_data || {};\n\n  const now = new Date().toISOString();\n  const engineering_id = `ING-${now.replace(/[-:TZ.]/g, '').slice(0, 14)}`;\n\n  const horas = ing.horas_estimadas_totales || {};\n  const configs = ing.configuraciones_requeridas || {};\n\n  const flagControl = configs.programacion_control?.requerida === true;\n  const flagDSP = configs.dsp_audio?.requerida === true;\n  const flagIT = configs.integracion_red_it?.requerida === true;\n  const flagCalib = configs.calibracion_puesta_marcha?.requerida === true;\n\n  const resumenFlags = [\n    flagControl ? 'Programación de control' : null,\n    flagDSP ? 'Config. DSP/Audio' : null,\n    flagIT ? 'Integración IT/Red' : null,\n    flagCalib ? 'Calibración y puesta en marcha' : null,\n  ].filter(Boolean).join(' | ') || 'Sin configuraciones especiales';\n\n  return {\n    json: {\n      engineering_id,\n      generado_en: now,\n      pliego_id: j.project_id || null,\n      cliente: pliego.cliente || null,\n      tipo_proyecto: pliego.tipo_proyecto || null,\n      complejidad: ing.complejidad_integracion || null,\n      horas_totales: horas.total || null,\n      flags_configuracion: resumenFlags,\n      ingenieria_tecnica: ing,\n      _pliego_data: pliego,\n    },\n  };\n});\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        0
+        720,
+        -144
       ],
-      "id": "a0f410c9-eb3f-4aa2-a8e4-fd0b9e93e33c",
+      "id": "01788a9a-3fd0-4546-8d46-5486a76fb858",
       "name": "Ensamblar JSON técnico"
     },
     {
       "parameters": {
-        "jsCode": "// Genera un informe HTML legible para el equipo de ingeniería\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const ing = j.ingenieria_tecnica || {};\n  const configs = ing.configuraciones_requeridas || {};\n  const horas = ing.horas_estimadas_totales || {};\n\n  const col = (val) => val === true ? '✅' : '❌';\n\n  // ── Productos recomendados ──────────────────────────────────────────────\n  const productosHtml = (ing.productos_recomendados || []).map(cat => {\n    const opcionesHtml = (cat.opciones || []).map((op, i) => `\n      <tr class=\"${i === 0 ? 'opcion-principal' : 'opcion-alt'}\">\n        <td>${i === 0 ? '⭐ Principal' : 'Alternativa'}</td>\n        <td><strong>${op.fabricante ?? ''}</strong></td>\n        <td>${op.modelo ?? ''}</td>\n        <td>${(op.caracteristicas || []).join(', ')}</td>\n        <td>${op.justificacion ?? ''}</td>\n      </tr>`).join('');\n    return `\n    <div class=\"categoria\">\n      <h3>📦 ${cat.categoria} <span class=\"badge\">${cat.cantidad ?? ''} ud.</span></h3>\n      <p class=\"necesidad\">${cat.necesidad ?? ''}</p>\n      <table>\n        <thead><tr><th>Tipo</th><th>Fabricante</th><th>Modelo</th><th>Características</th><th>Justificación</th></tr></thead>\n        <tbody>${opcionesHtml}</tbody>\n      </table>\n      ${cat.notas_tecnicas ? `<p class=\"nota\">📝 ${cat.notas_tecnicas}</p>` : ''}\n    </div>`;\n  }).join('');\n\n  // ── Configuraciones requeridas ─────────────────────────────────────────\n  const configItems = [\n    { key: 'programacion_control',   label: 'Programación de control', icon: '⚙️' },\n    { key: 'dsp_audio',              label: 'DSP / Audio',             icon: '🎛️' },\n    { key: 'integracion_red_it',     label: 'Integración IT / Red',    icon: '🌐' },\n    { key: 'calibracion_puesta_marcha', label: 'Calibración y puesta en marcha', icon: '🔧' },\n  ];\n  const configsHtml = configItems.map(({ key, label, icon }) => {\n    const c = configs[key] || {};\n    const req = c.requerida;\n    return `\n    <div class=\"config-card ${req ? 'required' : 'not-required'}\">\n      <h4>${icon} ${label} ${col(req)}</h4>\n      ${req ? `\n        <p>${c.descripcion ?? ''}</p>\n        ${c.plataforma_recomendada ? `<p><strong>Plataforma:</strong> ${c.plataforma_recomendada}</p>` : ''}\n        ${c.horas_estimadas ? `<p><strong>Horas estimadas:</strong> ${c.horas_estimadas}h | <strong>Complejidad:</strong> ${c.complejidad ?? 'N/D'}</p>` : ''}\n        ${c.dias_estimados ? `<p><strong>Días estimados:</strong> ${c.dias_estimados} días</p>` : ''}\n        ${(c.requisitos_red || []).length > 0 ? `<ul>${c.requisitos_red.map(r => `<li>${r}</li>`).join('')}</ul>` : ''}\n        ${c.coordinacion_it_necesaria ? `<p>⚠️ Requiere coordinación con departamento IT del cliente</p>` : ''}\n      ` : '<p class=\"grey\">No requerido para este proyecto</p>'}\n    </div>`;\n  }).join('');\n\n  const html = `<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Informe Ingeniería - ${j.engineering_id}</title>\n  <style>\n    body { font-family: Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px; color: #222; }\n    h1 { color: #1a3c6e; border-bottom: 3px solid #1a3c6e; padding-bottom: 8px; }\n    h2 { color: #2c5f9e; margin-top: 32px; }\n    h3 { color: #444; }\n    .meta { background: #f5f7fa; border-radius: 8px; padding: 16px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }\n    .meta-item { display: flex; flex-direction: column; }\n    .meta-label { font-size: 11px; text-transform: uppercase; color: #888; }\n    .meta-value { font-weight: bold; font-size: 15px; }\n    .categoria { background: #fff; border: 1px solid #dde3ec; border-radius: 8px; padding: 20px; margin-bottom: 20px; }\n    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }\n    th { background: #1a3c6e; color: white; padding: 8px 12px; text-align: left; }\n    td { padding: 8px 12px; border-bottom: 1px solid #eee; }\n    .opcion-principal td { background: #f0f4ff; }\n    .badge { background: #1a3c6e; color: white; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin-left: 8px; }\n    .necesidad { color: #555; font-style: italic; margin: 4px 0 12px; }\n    .nota { background: #fffbe6; border-left: 3px solid #f0c000; padding: 8px 12px; border-radius: 0 4px 4px 0; font-size: 13px; }\n    .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }\n    .config-card { border-radius: 8px; padding: 16px; border: 1px solid #dde3ec; }\n    .config-card.required { border-color: #2c5f9e; background: #f7faff; }\n    .config-card.not-required { opacity: 0.5; }\n    .config-card h4 { margin: 0 0 10px; font-size: 15px; }\n    .grey { color: #999; font-style: italic; }\n    .horas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }\n    .hora-card { background: #f0f4ff; border-radius: 8px; padding: 14px; text-align: center; }\n    .hora-num { font-size: 28px; font-weight: bold; color: #1a3c6e; }\n    .hora-label { font-size: 11px; color: #666; text-transform: uppercase; margin-top: 4px; }\n    .hora-total { background: #1a3c6e; color: white; border-radius: 8px; padding: 14px; text-align: center; }\n    .advertencias { background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 0 8px 8px 0; padding: 16px; }\n    .preguntas { background: #e8f5e9; border-left: 4px solid #43a047; border-radius: 0 8px 8px 0; padding: 16px; }\n    ul { padding-left: 20px; margin: 8px 0; }\n    li { margin: 4px 0; }\n    .resumen-box { background: #1a3c6e; color: white; border-radius: 8px; padding: 20px; margin-bottom: 24px; }\n    footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 48px; border-top: 1px solid #eee; padding-top: 12px; }\n  </style>\n</head>\n<body>\n  <h1>📐 Informe de Ingeniería Técnica AV</h1>\n\n  <div class=\"meta\">\n    <div class=\"meta-item\"><span class=\"meta-label\">ID Informe</span><span class=\"meta-value\">${j.engineering_id}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Cliente</span><span class=\"meta-value\">${j.cliente ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Tipo de proyecto</span><span class=\"meta-value\">${j.tipo_proyecto ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Complejidad integración</span><span class=\"meta-value\">${j.complejidad ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Horas totales estimadas</span><span class=\"meta-value\">${j.horas_totales ?? 'N/D'}h</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Generado</span><span class=\"meta-value\">${new Date(j.generado_en).toLocaleDateString('es-ES')}</span></div>\n  </div>\n\n  <div class=\"resumen-box\">\n    <p style=\"margin:0;font-size:15px;\">📋 ${ing.resumen_tecnico ?? 'Sin resumen disponible'}</p>\n  </div>\n\n  <h2>🛒 Productos Recomendados</h2>\n  ${productosHtml || '<p>No se han identificado categorías de equipamiento.</p>'}\n\n  <h2>⚙️ Configuraciones y Programación Requeridas</h2>\n  <div class=\"config-grid\">${configsHtml}</div>\n\n  <h2>⏱️ Estimación de Horas</h2>\n  <div class=\"horas-grid\">\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.programacion_control ?? 0}</div><div class=\"hora-label\">Prog. control</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.configuracion_dsp ?? 0}</div><div class=\"hora-label\">DSP / Audio</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.instalacion ?? 0}</div><div class=\"hora-label\">Instalación</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.puesta_marcha ?? 0}</div><div class=\"hora-label\">Puesta en marcha</div></div>\n  </div>\n  <div class=\"hora-total\" style=\"text-align:center;border-radius:8px;padding:14px;margin-bottom:8px;\">\n    <span style=\"font-size:18px;font-weight:bold;\">TOTAL ESTIMADO: ${horas.total ?? 0} horas</span>\n  </div>\n\n  ${(ing.servicios_complementarios || []).length > 0 ? `\n  <h2>🔩 Servicios Complementarios</h2>\n  <ul>${(ing.servicios_complementarios || []).map(s => `<li><strong>${s.servicio}</strong>: ${s.descripcion}</li>`).join('')}</ul>` : ''}\n\n  ${(ing.advertencias_tecnicas || []).length > 0 ? `\n  <h2>⚠️ Advertencias Técnicas</h2>\n  <div class=\"advertencias\"><ul>${(ing.advertencias_tecnicas || []).map(a => `<li>${a}</li>`).join('')}</ul></div>` : ''}\n\n  ${(ing.preguntas_a_resolver || []).length > 0 ? `\n  <h2>❓ Preguntas a Resolver Antes de Ofertar</h2>\n  <div class=\"preguntas\"><ul>${(ing.preguntas_a_resolver || []).map(p => `<li>${p}</li>`).join('')}</ul></div>` : ''}\n\n  <footer>Generado automáticamente · ${j.engineering_id} · ${j.generado_en}</footer>\n</body>\n</html>`;\n\n  // Devuelve el JSON completo sin el campo interno _pliego_data\n  const { _pliego_data, _contexto_ingenieria, output, ...limpio } = j;\n  return {\n    json: {\n      ...limpio,\n      informe_html: html,\n    },\n  };\n});\n"
+        "jsCode": "// Genera un informe HTML legible para el equipo de ingeniería\n// Incluye columna de referencia de catálogo para productos reales\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const ing = j.ingenieria_tecnica || {};\n  const configs = ing.configuraciones_requeridas || {};\n  const horas = ing.horas_estimadas_totales || {};\n\n  const col = (val) => val === true ? '✅' : '❌';\n\n  // ── Productos recomendados ──────────────────────────────────────────────\n  const productosHtml = (ing.productos_recomendados || []).map(cat => {\n    const opcionesHtml = (cat.opciones || []).map((op, i) => `\n      <tr class=\"${i === 0 ? 'opcion-principal' : 'opcion-alt'}\">\n        <td>${i === 0 ? '⭐ Principal' : 'Alternativa'}</td>\n        <td><strong>${op.fabricante ?? ''}</strong></td>\n        <td>${op.modelo ?? ''}</td>\n        <td>${op.referencia_catalogo ? `📋 ${op.referencia_catalogo}` : '<span class=\"grey\">—</span>'}</td>\n        <td>${(op.caracteristicas || []).join(', ')}</td>\n        <td>${op.justificacion ?? ''}</td>\n      </tr>`).join('');\n    return `\n    <div class=\"categoria\">\n      <h3>📦 ${cat.categoria} <span class=\"badge\">${cat.cantidad ?? ''} ud.</span></h3>\n      <p class=\"necesidad\">${cat.necesidad ?? ''}</p>\n      <table>\n        <thead><tr><th>Tipo</th><th>Fabricante</th><th>Modelo</th><th>Ref. Catálogo</th><th>Características</th><th>Justificación</th></tr></thead>\n        <tbody>${opcionesHtml}</tbody>\n      </table>\n      ${cat.notas_tecnicas ? `<p class=\"nota\">📝 ${cat.notas_tecnicas}</p>` : ''}\n    </div>`;\n  }).join('');\n\n  // ── Configuraciones requeridas ─────────────────────────────────────────\n  const configItems = [\n    { key: 'programacion_control',   label: 'Programación de control', icon: '⚙️' },\n    { key: 'dsp_audio',              label: 'DSP / Audio',             icon: '🎛️' },\n    { key: 'integracion_red_it',     label: 'Integración IT / Red',    icon: '🌐' },\n    { key: 'calibracion_puesta_marcha', label: 'Calibración y puesta en marcha', icon: '🔧' },\n  ];\n  const configsHtml = configItems.map(({ key, label, icon }) => {\n    const c = configs[key] || {};\n    const req = c.requerida;\n    return `\n    <div class=\"config-card ${req ? 'required' : 'not-required'}\">\n      <h4>${icon} ${label} ${col(req)}</h4>\n      ${req ? `\n        <p>${c.descripcion ?? ''}</p>\n        ${c.plataforma_recomendada ? `<p><strong>Plataforma:</strong> ${c.plataforma_recomendada}</p>` : ''}\n        ${c.horas_estimadas ? `<p><strong>Horas estimadas:</strong> ${c.horas_estimadas}h | <strong>Complejidad:</strong> ${c.complejidad ?? 'N/D'}</p>` : ''}\n        ${c.dias_estimados ? `<p><strong>Días estimados:</strong> ${c.dias_estimados} días</p>` : ''}\n        ${(c.requisitos_red || []).length > 0 ? `<ul>${c.requisitos_red.map(r => `<li>${r}</li>`).join('')}</ul>` : ''}\n        ${c.coordinacion_it_necesaria ? `<p>⚠️ Requiere coordinación con departamento IT del cliente</p>` : ''}\n      ` : '<p class=\"grey\">No requerido para este proyecto</p>'}\n    </div>`;\n  }).join('');\n\n  const html = `<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Informe Ingeniería - ${j.engineering_id}</title>\n  <style>\n    body { font-family: Arial, sans-serif; max-width: 1100px; margin: 0 auto; padding: 24px; color: #222; }\n    h1 { color: #1a3c6e; border-bottom: 3px solid #1a3c6e; padding-bottom: 8px; }\n    h2 { color: #2c5f9e; margin-top: 32px; }\n    h3 { color: #444; }\n    .meta { background: #f5f7fa; border-radius: 8px; padding: 16px; margin-bottom: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }\n    .meta-item { display: flex; flex-direction: column; }\n    .meta-label { font-size: 11px; text-transform: uppercase; color: #888; }\n    .meta-value { font-weight: bold; font-size: 15px; }\n    .categoria { background: #fff; border: 1px solid #dde3ec; border-radius: 8px; padding: 20px; margin-bottom: 20px; }\n    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }\n    th { background: #1a3c6e; color: white; padding: 8px 12px; text-align: left; }\n    td { padding: 8px 12px; border-bottom: 1px solid #eee; }\n    .opcion-principal td { background: #f0f4ff; }\n    .badge { background: #1a3c6e; color: white; border-radius: 12px; padding: 2px 10px; font-size: 12px; margin-left: 8px; }\n    .necesidad { color: #555; font-style: italic; margin: 4px 0 12px; }\n    .nota { background: #fffbe6; border-left: 3px solid #f0c000; padding: 8px 12px; border-radius: 0 4px 4px 0; font-size: 13px; }\n    .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }\n    .config-card { border-radius: 8px; padding: 16px; border: 1px solid #dde3ec; }\n    .config-card.required { border-color: #2c5f9e; background: #f7faff; }\n    .config-card.not-required { opacity: 0.5; }\n    .config-card h4 { margin: 0 0 10px; font-size: 15px; }\n    .grey { color: #999; font-style: italic; }\n    .horas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }\n    .hora-card { background: #f0f4ff; border-radius: 8px; padding: 14px; text-align: center; }\n    .hora-num { font-size: 28px; font-weight: bold; color: #1a3c6e; }\n    .hora-label { font-size: 11px; color: #666; text-transform: uppercase; margin-top: 4px; }\n    .hora-total { background: #1a3c6e; color: white; border-radius: 8px; padding: 14px; text-align: center; }\n    .advertencias { background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 0 8px 8px 0; padding: 16px; }\n    .preguntas { background: #e8f5e9; border-left: 4px solid #43a047; border-radius: 0 8px 8px 0; padding: 16px; }\n    ul { padding-left: 20px; margin: 8px 0; }\n    li { margin: 4px 0; }\n    .resumen-box { background: #1a3c6e; color: white; border-radius: 8px; padding: 20px; margin-bottom: 24px; }\n    .catalogo-badge { background: #43a047; color: white; border-radius: 4px; padding: 1px 6px; font-size: 11px; }\n    footer { text-align: center; color: #aaa; font-size: 12px; margin-top: 48px; border-top: 1px solid #eee; padding-top: 12px; }\n  </style>\n</head>\n<body>\n  <h1>📐 Informe de Ingeniería Técnica AV</h1>\n\n  <div class=\"meta\">\n    <div class=\"meta-item\"><span class=\"meta-label\">ID Informe</span><span class=\"meta-value\">${j.engineering_id}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Cliente</span><span class=\"meta-value\">${j.cliente ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Tipo de proyecto</span><span class=\"meta-value\">${j.tipo_proyecto ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Complejidad integración</span><span class=\"meta-value\">${j.complejidad ?? 'N/D'}</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Horas totales estimadas</span><span class=\"meta-value\">${j.horas_totales ?? 'N/D'}h</span></div>\n    <div class=\"meta-item\"><span class=\"meta-label\">Generado</span><span class=\"meta-value\">${new Date(j.generado_en).toLocaleDateString('es-ES')}</span></div>\n  </div>\n\n  <div class=\"resumen-box\">\n    <p style=\"margin:0;font-size:15px;\">📋 ${ing.resumen_tecnico ?? 'Sin resumen disponible'}</p>\n  </div>\n\n  <h2>🛒 Productos Recomendados</h2>\n  ${productosHtml || '<p>No se han identificado categorías de equipamiento.</p>'}\n\n  <h2>⚙️ Configuraciones y Programación Requeridas</h2>\n  <div class=\"config-grid\">${configsHtml}</div>\n\n  <h2>⏱️ Estimación de Horas</h2>\n  <div class=\"horas-grid\">\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.programacion_control ?? 0}</div><div class=\"hora-label\">Prog. control</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.configuracion_dsp ?? 0}</div><div class=\"hora-label\">DSP / Audio</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.instalacion ?? 0}</div><div class=\"hora-label\">Instalación</div></div>\n    <div class=\"hora-card\"><div class=\"hora-num\">${horas.puesta_marcha ?? 0}</div><div class=\"hora-label\">Puesta en marcha</div></div>\n  </div>\n  <div class=\"hora-total\" style=\"text-align:center;border-radius:8px;padding:14px;margin-bottom:8px;\">\n    <span style=\"font-size:18px;font-weight:bold;\">TOTAL ESTIMADO: ${horas.total ?? 0} horas</span>\n  </div>\n\n  ${(ing.servicios_complementarios || []).length > 0 ? `\n  <h2>🔩 Servicios Complementarios</h2>\n  <ul>${(ing.servicios_complementarios || []).map(s => `<li><strong>${s.servicio}</strong>: ${s.descripcion}</li>`).join('')}</ul>` : ''}\n\n  ${(ing.advertencias_tecnicas || []).length > 0 ? `\n  <h2>⚠️ Advertencias Técnicas</h2>\n  <div class=\"advertencias\"><ul>${(ing.advertencias_tecnicas || []).map(a => `<li>${a}</li>`).join('')}</ul></div>` : ''}\n\n  ${(ing.preguntas_a_resolver || []).length > 0 ? `\n  <h2>❓ Preguntas a Resolver Antes de Ofertar</h2>\n  <div class=\"preguntas\"><ul>${(ing.preguntas_a_resolver || []).map(p => `<li>${p}</li>`).join('')}</ul></div>` : ''}\n\n  <footer>Generado automáticamente · ${j.engineering_id} · ${j.generado_en}</footer>\n</body>\n</html>`;\n\n  // Devuelve el JSON completo sin los campos internos\n  const { _pliego_data, _contexto_ingenieria, output, ...limpio } = j;\n  return {\n    json: {\n      ...limpio,\n      informe_html: html,\n    },\n  };\n});\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
-        80
+        1024,
+        -144
       ],
-      "id": "33b22e02-c7cd-4494-9b27-e614eff3ce49",
+      "id": "c5b0e5e7-4ed5-487a-95aa-9a03f56af75f",
       "name": "Generar informe HTML"
     },
     {
@@ -249,37 +239,53 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        272,
-        400
+        1024,
+        192
       ],
-      "id": "ede382dd-10cb-4f27-941e-e1255bfb8e02",
+      "id": "85af96a8-1fb3-42ac-b1bd-025b27c27515",
       "name": "NOTA - Generación de PDF"
     },
     {
       "parameters": {
-        "content": "### Workflow 2 · AV - Ingeniería Técnica\n\n**Input:** POST a `/ingenieria-tecnica-av`\nEnvía el JSON completo del Workflow 1 (pliegos) como body.\n\n**Output:**\n- `ingenieria_tecnica` → productos recomendados por categoría + configuraciones necesarias + estimación de horas\n- `informe_html` → informe visual listo para PDF\n- `flags_configuracion` → resumen de servicios especiales detectados\n\n**Pipeline completo:**\n1️⃣ Ingesta y análisis de pliegos (IA)\n2️⃣ **← Estás aquí →** Ingeniería técnica (IA)\n3️⃣ Presupuesto comercial (próximo workflow)",
-        "height": 240,
+        "content": "### Workflow 2 · AV - Ingeniería Técnica (con Catálogos)\n\n**Input:** POST a `/ingenieria-tecnica-av`\nEnvía el JSON completo del Workflow 1 (pliegos) como body.\n\n**Pipeline:**\n1. Preparar contexto técnico del pliego\n2. **AI Agent** busca productos reales en catálogos (máx 6 búsquedas)\n3. Ensamblar JSON estructurado\n4. Generar informe HTML\n\n**Output:**\n- `ingenieria_tecnica` → productos del catálogo + configuraciones + horas\n- `informe_html` → informe visual con referencias de catálogo\n- `flags_configuracion` → resumen de servicios especiales\n\n**Pipeline completo:**\n1️⃣ Ingesta y análisis de pliegos (IA)\n2️⃣ **← Estás aquí →** Ingeniería técnica (IA + Catálogos)\n3️⃣ Presupuesto comercial (próximo workflow)",
+        "height": 300,
         "width": 380,
         "color": 3
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1088,
-        368
+        -384,
+        144
       ],
-      "id": "58709bdd-2571-42d9-8eb1-e8dc8ff1059b",
+      "id": "508b2cba-519d-473f-9fb1-23ec7767b450",
       "name": "NOTA - Overview"
+    },
+    {
+      "parameters": {
+        "content": "### Herramienta de Catálogos AV\n\nEl nodo **buscar_catalogo_av** conecta al agente con la API de búsqueda vectorial:\n\n**Endpoint:** `POST http://vectordb-api:8808/search`\n**Body:** `{\"query\": \"término\", \"limit\": 5}`\n\n**Catálogos indexados (9 PDFs, 749 vectores):**\n- Adam Hall (LD Systems, Cameo, Gravity, Palmer)\n- Fonestar (megafonía, audio instalación)\n- Work Pro (audio profesional)\n\n**Gestión de catálogos:**\n- Carpeta: `/home/server-silvasju/catalogos/activos/`\n- Re-indexar: `docker exec vectordb-api python ingest_files.py`\n- Verificar: `curl http://localhost:8808/health`\n\n**Red Docker:** vectordb-api y n8n están en `n8n-public_default`",
+        "height": 380,
+        "width": 440,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        432,
+        336
+      ],
+      "id": "88d35981-a611-47c8-b987-a4efa3b0c9dd",
+      "name": "NOTA - Catálogos AV1"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1232,
-        -48
+        -880,
+        -96
       ],
-      "id": "f4cff5fb-9cd0-4b7b-9a48-2dd044a633c4",
+      "id": "f5095e28-f37c-4f3e-8275-8d3bb4ced4ed",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -289,99 +295,11 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1056,
-        -48
+        -464,
+        -144
       ],
-      "id": "9e5a1cd3-2737-41d6-a872-86347d4487e8",
+      "id": "421c5568-d07c-4374-8061-c12b8219c18a",
       "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
-        "operation": "pdf",
-        "binaryPropertyName": "={{ $json.informe_html }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1.1,
-      "position": [
-        480,
-        -160
-      ],
-      "id": "f4a1e690-9776-428e-8467-84e4bb68ead1",
-      "name": "Extract from File"
-    },
-    {
-      "parameters": {
-        "jsCode": "return items.map((item) => {\n  const html = item.json.informe_html || '';\n  const filename = `informe-ingenieria-${item.json.engineering_id}.html`;\n\n  // Limpiar campos internos del JSON antes de devolver\n  const { _pliego_data, _contexto_ingenieria, output, informe_html, ...jsonLimpio } = item.json;\n\n  return {\n    json: jsonLimpio,\n    binary: {\n      data: {\n        data: Buffer.from(html, 'utf-8').toString('base64'),\n        mimeType: 'text/html',\n        fileName: filename,\n        fileExtension: 'html',\n      }\n    }\n  };\n});\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        528,
-        80
-      ],
-      "id": "62efd0f9-189a-42c1-bcb5-d4bf66700895",
-      "name": "extraer y codificar el HTML"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $json.cliente }}",
-        "hasOutputParser": true,
-        "options": {
-          "systemMessage": "=ROL\nEres un ingeniero técnico senior especializado en integración de sistemas audiovisuales profesionales: salas de reunión, auditorios, teatros, digital signage, sistemas de videoconferencia y sistemas de control automático (Crestron, AMX, Extron, Q-SYS, Biamp).\n\nTAREA\nAnalizarás los requisitos técnicos de este proyecto AV extraídos de un pliego de licitación y deberás:\n1.Analizar si hay equipos específicos obligatorios.\n2.Recomendar productos específicos (fabricante y modelo concreto) para cada categoría de equipamiento\n3. Determinar qué configuraciones especiales o programación son necesarias para el funcionamiento del proyecto\n\nREGLAS DE SALIDA (CRÍTICO)\n1. Devuelve únicamente JSON válido, sin markdown, sin bloques de código, sin texto extra\n2. Si una configuración no aplica al proyecto, usa false en 'requerida' y null/0 en el resto de campos\n3. Proporciona siempre al menos 2 opciones de producto por categoría cuando sea posible\n4. Basa las recomendaciones exclusivamente en fabricantes AV profesionales reales\n\nFABRICANTES DE REFERENCIA POR CATEGORÍA\n- Pantallas/proyectores: Samsung, LG, Philips, Sony, NEC, Barco, Christie, Epson\n- Control: Crestron, AMX, Extron, Control4, RTI\n- DSP/Audio: Q-SYS (QSC), Biamp, Dante (Audinate), Shure, Sennheiser, Beyerdynamic, Crown, BSS\n- Videoconferencia: Cisco (Webex), Poly (HP), Logitech, Neat, Yealink\n- Distribución vídeo: Crestron DM, Extron XTP, Kramer, Atlona, ZeeVee, Aurora, qsys\n- AV-over-IP: SDVoE (Semtech), NDI (Vizrt), Dante AV (Audinate), Haivision\n- Micrófonos/audio sala: Shure MXA, Sennheiser TeamConnect, Fonestar, Biamp Devio, ClearOne"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [
-        -416,
-        32
-      ],
-      "id": "59debc5e-7a31-4e9d-96f3-fe9e82c699d9",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
-      "position": [
-        -368,
-        288
-      ],
-      "id": "62e63241-07ec-45ea-b443-be9c62cf9e1e",
-      "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "jsonSchemaExample": "{{\n  \"productos_recomendados\": [\n    {\n      \"categoria\": \"Pantallas comerciales\",\n      \"necesidad\": \"Pantallas 86\\\" 4K para salas de reunión\",\n      \"cantidad\": 2,\n      \"opciones\": [\n        {\n          \"fabricante\": \"Samsung\",\n          \"modelo\": \"QM86B-W\",\n          \"caracteristicas\": [\"86\\\" 4K UHD\", \"Control IP/RS-232\", \"500 nits\"],\n          \"justificacion\": \"Display comercial con garantía extendida y soporte de control integrado\"\n        },\n        {\n          \"fabricante\": \"LG\",\n          \"modelo\": \"86UL3J-E\",\n          \"caracteristicas\": [\"86\\\" 4K\", \"WebOS\", \"Control IP\"],\n          \"justificacion\": \"Alternativa con sistema operativo integrado para señalización digital\"\n        }\n      ],\n      \"notas_tecnicas\": \"Verificar compatibilidad de soporte de pared (VESA 600x400)\"\n    }\n  ],\n  \"configuraciones_requeridas\": {\n    \"programacion_control\": {\n      \"requerida\": true,\n      \"plataforma_recomendada\": \"Crestron\",\n      \"descripcion\": \"Programación de sala para control unificado de pantallas, audio y videoconferencia\",\n      \"horas_estimadas\": 40,\n      \"complejidad\": \"Alta\"\n    },\n    \"dsp_audio\": {\n      \"requerida\": true,\n      \"plataforma_recomendada\": \"Q-SYS\",\n      \"descripcion\": \"Configuración de red Dante para distribución de audio entre salas\",\n      \"horas_estimadas\": 16,\n      \"complejidad\": \"Media\"\n    },\n    \"integracion_red_it\": {\n      \"requerida\": true,\n      \"descripcion\": \"VLAN dedicada para tráfico AV, QoS para Dante/AES67\",\n      \"requisitos_red\": [\"VLAN AV segregada\", \"Switch PoE+ 24 puertos\", \"QoS Dante\"],\n      \"coordinacion_it_necesaria\": true\n    },\n    \"calibracion_puesta_marcha\": {\n      \"requerida\": true,\n      \"descripcion\": \"Ajuste acústico de sala, calibración de cámaras PTZ y verificación de control\",\n      \"dias_estimados\": 3,\n      \"requiere_visita_previa\": false\n    }\n  },\n  \"servicios_complementarios\": [\n    {\n      \"servicio\": \"Instalación de infraestructura\",\n      \"descripcion\": \"Canalización, cableado estructurado HDMI/HDBaseT y rack de comunicaciones\",\n      \"requerido\": true\n    }\n  ],\n  \"advertencias_tecnicas\": [\n    \"Verificar firmware de dispositivos existentes antes de integrar\",\n    \"Comprobar disponibilidad de alimentación PoE+ en el rack\"\n  ],\n  \"preguntas_a_resolver\": [\n    \"¿Existe infraestructura de red IT aprovechable?\",\n    \"¿Se mantiene algún equipo actual en la instalación?\"\n  ],\n  \"resumen_tecnico\": \"Proyecto de integración AV de complejidad alta con programación de control Crestron y red Dante. Requiere coordinación con IT para configuración de VLANs.\",\n  \"complejidad_integracion\": \"Alta\",\n  \"horas_estimadas_totales\": {\n    \"programacion_control\": 40,\n    \"configuracion_dsp\": 16,\n    \"instalacion\": 40,\n    \"puesta_marcha\": 24,\n    \"total\": 120\n  }\n}\n"
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.3,
-      "position": [
-        -160,
-        256
-      ],
-      "id": "79469f1d-72cc-4b60-a3a8-d55cba43de31",
-      "name": "Structured Output Parser"
-    },
-    {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "memoryKey": {
-          "__rl": true,
-          "mode": "list",
-          "value": "vector_store_key"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
-      "typeVersion": 1.3,
-      "position": [
-        0,
-        192
-      ],
-      "id": "5e8c9a68-0540-4dbe-ad6f-e140abbc1721",
-      "name": "Simple Vector Store"
     }
   ],
   "pinData": {},
@@ -402,6 +320,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-03-08T12:17:19.733Z",
-  "versionId": "69a3aa96-29ee-464f-949a-9295e290b9ff"
+  "updatedAt": "2026-03-10T14:42:11.044Z",
+  "versionId": "0bc04343-115a-4086-a49d-dfec7a6e399e"
 }
