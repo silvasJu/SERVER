@@ -2,7 +2,7 @@
 -- AUDITORIO Vallecas
 -- Q-SYS Core 8 Flex — Script de Control Principal
 -- Q-SYS Designer
--- Versión: 9.12  |  2026-03-19
+-- Versión: 9.12.1  |  2026-03-19
 -- ============================================================
 --
 -- CONTROLES QUE DEBE EXPONER EL COMPONENTE SCRIPT:
