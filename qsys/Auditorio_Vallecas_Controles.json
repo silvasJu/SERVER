@@ -1,7 +1,7 @@
 {
   "descripcion": "Referencia de controles a definir en el componente Script de Q-SYS Designer 9.12",
-  "proyecto": "Auditorio CC Buenavista — JMD Salamanca",
-  "componente": "Script (auditorio_buenavista.lua)",
+  "proyecto": "Auditorio Vallecas",
+  "componente": "Script (Auditorio_Vallecas.lua)",
 
   "controles": [
     {
