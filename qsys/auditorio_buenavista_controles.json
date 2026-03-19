@@ -1,0 +1,217 @@
+{
+  "descripcion": "Referencia de controles a definir en el componente Script de Q-SYS Designer 9.12",
+  "proyecto": "Auditorio CC Buenavista — JMD Salamanca",
+  "componente": "Script (auditorio_buenavista.lua)",
+
+  "controles": [
+    {
+      "nombre": "btn_conferencia",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Conferencia",
+      "uci_color": "blue",
+      "uci_pagina": "Escenas"
+    },
+    {
+      "nombre": "btn_musica",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Música / Espectáculo",
+      "uci_color": "purple",
+      "uci_pagina": "Escenas"
+    },
+    {
+      "nombre": "btn_cine",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Cine / Proyección",
+      "uci_color": "orange",
+      "uci_pagina": "Escenas"
+    },
+    {
+      "nombre": "btn_streaming",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Streaming",
+      "uci_color": "red",
+      "uci_pagina": "Escenas"
+    },
+    {
+      "nombre": "btn_standby",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Standby",
+      "uci_color": "gray",
+      "uci_pagina": "Escenas"
+    },
+    {
+      "nombre": "estado_escena",
+      "tipo": "Text",
+      "direccion": "Output",
+      "uci_label": "Escena activa",
+      "uci_pagina": "Escenas"
+    },
+    {
+      "nombre": "btn_cam",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Cámara",
+      "uci_color": "green",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "btn_pc_cabina",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "PC Cabina",
+      "uci_color": "blue",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "btn_aux_cabina",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Aux Cabina",
+      "uci_color": "blue",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "btn_aux_escenario",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Aux Escenario",
+      "uci_color": "blue",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "btn_freeze",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Freeze",
+      "uci_color": "yellow",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "btn_blank",
+      "tipo": "Button",
+      "direccion": "Input",
+      "uci_label": "Pantalla negra",
+      "uci_color": "black",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "freeze_activo",
+      "tipo": "Boolean",
+      "direccion": "Output",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "blank_activo",
+      "tipo": "Boolean",
+      "direccion": "Output",
+      "uci_pagina": "Vídeo"
+    },
+    {
+      "nombre": "proj_estado",
+      "tipo": "Text",
+      "direccion": "Output",
+      "uci_label": "Proyector",
+      "uci_pagina": "Estado"
+    },
+    {
+      "nombre": "batt_rf1",
+      "tipo": "Text",
+      "direccion": "Output",
+      "uci_label": "Micro 1",
+      "uci_pagina": "Estado"
+    },
+    {
+      "nombre": "batt_rf2",
+      "tipo": "Text",
+      "direccion": "Output",
+      "uci_label": "Micro 2",
+      "uci_pagina": "Estado"
+    },
+    {
+      "nombre": "batt_rf3",
+      "tipo": "Text",
+      "direccion": "Output",
+      "uci_label": "Micro 3",
+      "uci_pagina": "Estado"
+    },
+    {
+      "nombre": "batt_rf4",
+      "tipo": "Text",
+      "direccion": "Output",
+      "uci_label": "Micro 4",
+      "uci_pagina": "Estado"
+    },
+    {
+      "nombre": "batt_rf1_num",
+      "tipo": "Integer",
+      "direccion": "Output",
+      "uci_pagina": "Estado",
+      "rango": "0-5"
+    },
+    {
+      "nombre": "batt_rf2_num",
+      "tipo": "Integer",
+      "direccion": "Output",
+      "uci_pagina": "Estado",
+      "rango": "0-5"
+    },
+    {
+      "nombre": "batt_rf3_num",
+      "tipo": "Integer",
+      "direccion": "Output",
+      "uci_pagina": "Estado",
+      "rango": "0-5"
+    },
+    {
+      "nombre": "batt_rf4_num",
+      "tipo": "Integer",
+      "direccion": "Output",
+      "uci_pagina": "Estado",
+      "rango": "0-5"
+    }
+  ],
+
+  "uci_paginas": [
+    {
+      "nombre": "Escenas",
+      "descripcion": "Selección de modo de sala. Un botón activa la escena completa.",
+      "controles": ["btn_conferencia","btn_musica","btn_cine","btn_streaming","btn_standby","estado_escena"]
+    },
+    {
+      "nombre": "Vídeo",
+      "descripcion": "Control directo de fuente de vídeo y proyector.",
+      "controles": ["btn_cam","btn_pc_cabina","btn_aux_cabina","btn_aux_escenario","btn_freeze","btn_blank"]
+    },
+    {
+      "nombre": "Estado",
+      "descripcion": "Monitorización en tiempo real. Solo lectura.",
+      "controles": ["proj_estado","batt_rf1","batt_rf2","batt_rf3","batt_rf4"]
+    }
+  ],
+
+  "pasos_qsys_designer": [
+    "1. Abrir Q-SYS Designer 9.12 → New Design → seleccionar Core 8 Flex",
+    "2. Configurar IP del Core: Design Properties → Core Manager → 192.168.1.100",
+    "3. Arrastrar componente 'Script' al esquemático",
+    "4. Doble clic en Script → pegar contenido de auditorio_buenavista.lua",
+    "5. En el componente Script, añadir todos los controles listados en este archivo (pestaña Controls del componente)",
+    "6. Crear UCI: Design → UCI Editor → New UCI → orientación Landscape",
+    "7. Crear 3 páginas en el UCI: Escenas / Vídeo / Estado",
+    "8. Arrastrar los controles del Script a cada página según la columna uci_pagina",
+    "9. Conectar iPad a la misma red → instalar 'Q-SYS UCI Viewer' (App Store) → introducir IP 192.168.1.100",
+    "10. Deploy al Core: File → Deploy → Run"
+  ],
+
+  "notas_importantes": [
+    "El Epson EB-PU2010B tarda ~8 segundos en responder tras el encendido. El script ya incluye el delay.",
+    "Los snapshots del Midas M32 deben estar grabados en la propia consola antes de poner en marcha el sistema (1=Conferencia, 2=Música, 3=Cine, 4=Streaming, 5=Standby).",
+    "El streaming a través de PC no se automatiza desde Q-SYS; el operador debe iniciar OBS o el software de streaming manualmente cuando se active la escena Streaming.",
+    "Si los receptores Shure no responden al poll de batería, verificar que están en la misma VLAN y que el puerto 2202 TCP no está bloqueado.",
+    "Para actualizar la IP de cualquier dispositivo, modificar únicamente la tabla CFG al inicio del script Lua."
+  ]
+}
