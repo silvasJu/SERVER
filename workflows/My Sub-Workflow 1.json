@@ -17,7 +17,7 @@
   },
   "createdAt": "2026-02-26T08:48:57.706Z",
   "id": "dpoajZ8jUKeATmFi",
-  "isArchived": false,
+  "isArchived": true,
   "meta": null,
   "name": "My Sub-Workflow 1",
   "nodes": [
@@ -64,6 +64,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-02-26T08:50:58.025Z",
-  "versionId": "a86115a2-33e8-41c1-975d-150c67c73b8b"
+  "updatedAt": "2026-03-18T21:15:51.000Z",
+  "versionId": "8303eebb-b149-4c67-830c-967e1fce0fd9"
 }
