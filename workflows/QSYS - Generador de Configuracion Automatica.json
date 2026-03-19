@@ -1,0 +1,328 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook - Recibir Datos Proyecto": {
+      "main": [
+        [
+          {
+            "node": "Preparar y Validar Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "▶ Ejecutar Manualmente (Test)": {
+      "main": [
+        [
+          {
+            "node": "Datos de Ejemplo (Test)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos de Ejemplo (Test)": {
+      "main": [
+        [
+          {
+            "node": "Preparar y Validar Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar y Validar Input": {
+      "main": [
+        [
+          {
+            "node": "Generar Scripts Lua por Dispositivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Scripts Lua por Dispositivo": {
+      "main": [
+        [
+          {
+            "node": "Generar UCI Layout + Named Components",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar UCI Layout + Named Components": {
+      "main": [
+        [
+          {
+            "node": "Ensamblar Configuracion Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensamblar Configuracion Final": {
+      "main": [
+        [
+          {
+            "node": "Responder al Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-18T21:26:04.292Z",
+  "id": "vMwiovOO0qHS_mBVQIryZ",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "QSYS - Generador de Configuracion Automatica",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🎛️ Q-SYS Config Generator — Vitel SA\n\n**Propósito:** Recibe la lista de equipos de un proyecto de auditorio y genera automáticamente:\n- Scripts Lua para control de cada dispositivo TCP/IP\n- Especificación de layout UCI (tablet)\n- Lista de Named Components para Q-SYS Designer\n- Documentación HTML lista para entregar\n\n**Dispositivos soportados:**\n- Epson Projector (ESC/VP.net)\n- Roland V80HD Video Switcher\n- Lightware HDBaseT TX/RX (LW3)\n- Midas M32 Live (OSC/UDP)\n- Shure QLXD Wireless (SWP TCP)\n- Chamsys MagicQ (OSC/UDP)\n- Genérico TCP (cualquier dispositivo)\n\n**Uso:** POST a /qsys-config con JSON de dispositivos\no ejecutar manualmente con datos de ejemplo.",
+        "height": 540,
+        "width": 380,
+        "color": 4
+      },
+      "id": "33eedc8d-4a65-4243-8e30-8fb3f3ca032a",
+      "name": "📋 Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Formato de entrada (POST JSON)\n```json\n{\n  \"proyecto\": \"Auditorio CC Buenavista\",\n  \"cliente\": \"JMD Salamanca\",\n  \"sala\": \"Salón de Actos\",\n  \"core_modelo\": \"Core 8 Flex\",\n  \"core_ip\": \"192.168.1.100\",\n  \"dispositivos\": [\n    {\n      \"id\": \"proj1\",\n      \"tipo\": \"epson_projector\",\n      \"nombre\": \"Proyector Principal\",\n      \"ip\": \"192.168.1.101\",\n      \"puerto\": 3629,\n      \"descripcion\": \"EPSON EB-PU2010B\"\n    },\n    {\n      \"id\": \"rf1\",\n      \"tipo\": \"shure_qlxd\",\n      \"nombre\": \"Receptor RF 1\",\n      \"ip\": \"192.168.1.104\",\n      \"puerto\": 2202,\n      \"descripcion\": \"Shure QLXD4E\"\n    }\n  ]\n}\n```\n\n**Tipos válidos:**\n- `epson_projector`\n- `roland_v80hd`\n- `lightware_hdbaset`\n- `midas_m32`\n- `shure_qlxd`\n- `chamsys_magicq`\n- `generic_tcp`",
+        "height": 724,
+        "width": 360,
+        "color": 6
+      },
+      "id": "b3dbccb4-f590-4bbb-b9f4-9cd5db62834b",
+      "name": "📥 Formato de Entrada",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -64
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "qsys-config",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b35f4a18-ba98-4ec7-ac01-63ca2d2032ae",
+      "name": "Webhook - Recibir Datos Proyecto",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        832,
+        304
+      ],
+      "typeVersion": 2,
+      "webhookId": "qsys-config-vitelsa"
+    },
+    {
+      "parameters": {},
+      "id": "c784bc44-4af9-4260-ac30-963603dd1100",
+      "name": "▶ Ejecutar Manualmente (Test)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        832,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// DATOS DE EJEMPLO para test manual\n// En producción, los datos vienen del Webhook\n// ============================================================\nreturn [{\n  json: {\n    proyecto: \"Auditorio CC Buenavista\",\n    cliente: \"JMD Salamanca\",\n    sala: \"Salón de Actos\",\n    core_modelo: \"Core 8 Flex\",\n    core_ip: \"192.168.1.100\",\n    dispositivos: [\n      {\n        id: \"proj1\",\n        tipo: \"epson_projector\",\n        nombre: \"Proyector Principal\",\n        ip: \"192.168.1.101\",\n        puerto: 3629,\n        descripcion: \"EPSON EB-PU2010B\"\n      },\n      {\n        id: \"video1\",\n        tipo: \"roland_v80hd\",\n        nombre: \"Mesa de Video\",\n        ip: \"192.168.1.102\",\n        puerto: 8023,\n        descripcion: \"Roland V80HD\"\n      },\n      {\n        id: \"lw_tx\",\n        tipo: \"lightware_hdbaset\",\n        nombre: \"Extensor HDMI TX\",\n        ip: \"192.168.1.103\",\n        puerto: 6107,\n        descripcion: \"Lightware HDMI-TPS-TX86\"\n      },\n      {\n        id: \"lw_rx\",\n        tipo: \"lightware_hdbaset\",\n        nombre: \"Extensor HDMI RX\",\n        ip: \"192.168.1.110\",\n        puerto: 6107,\n        descripcion: \"Lightware HDMI-TPS-RX86\"\n      },\n      {\n        id: \"audio1\",\n        tipo: \"midas_m32\",\n        nombre: \"Mesa de Audio M32\",\n        ip: \"192.168.1.104\",\n        puerto: 10023,\n        descripcion: \"Midas M32 Live\"\n      },\n      {\n        id: \"rf1\",\n        tipo: \"shure_qlxd\",\n        nombre: \"Receptor RF 1\",\n        ip: \"192.168.1.105\",\n        puerto: 2202,\n        descripcion: \"Shure QLXD4E - Canal A\"\n      },\n      {\n        id: \"rf2\",\n        tipo: \"shure_qlxd\",\n        nombre: \"Receptor RF 2\",\n        ip: \"192.168.1.106\",\n        puerto: 2202,\n        descripcion: \"Shure QLXD4E - Canal B\"\n      },\n      {\n        id: \"luz1\",\n        tipo: \"chamsys_magicq\",\n        nombre: \"Mesa de Iluminacion\",\n        ip: \"192.168.1.107\",\n        puerto: 9000,\n        descripcion: \"Chamsys MagicQ MQ50\"\n      }\n    ]\n  }\n}];"
+      },
+      "id": "7b9c169b-b0e6-4db9-861f-d1cdead517ec",
+      "name": "Datos de Ejemplo (Test)",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1072,
+        480
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// PREPARAR INPUT desde Webhook o Test\n// ============================================================\nconst item = items[0].json;\n\n// Si viene del webhook, el body está en item.body\nconst data = item.body || item;\n\nconst dispositivos = data.dispositivos || [];\n\n// Validar que hay dispositivos\nif (!dispositivos.length) {\n  throw new Error('No se han proporcionado dispositivos. Incluye al menos un dispositivo en el array \"dispositivos\".');\n}\n\n// Validar campos requeridos de cada dispositivo\nfor (const d of dispositivos) {\n  if (!d.tipo) throw new Error(`Dispositivo ${d.id || 'sin ID'}: falta campo \"tipo\"`);\n  if (!d.nombre) throw new Error(`Dispositivo ${d.id || 'sin ID'}: falta campo \"nombre\"`);\n  if (!d.ip) throw new Error(`Dispositivo ${d.id || 'sin ID'}: falta campo \"ip\"`);\n}\n\nreturn [{ json: {\n  proyecto: data.proyecto || 'Proyecto Sin Nombre',\n  cliente: data.cliente || 'Cliente',\n  sala: data.sala || 'Sala Principal',\n  core_modelo: data.core_modelo || 'Core 8 Flex',\n  core_ip: data.core_ip || '192.168.1.100',\n  dispositivos,\n  fecha: new Date().toLocaleDateString('es-ES'),\n  timestamp: new Date().toISOString()\n}}];"
+      },
+      "id": "d8b78a92-b7d7-4838-926d-e03fdc4b1706",
+      "name": "Preparar y Validar Input",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1312,
+        384
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// GENERADOR DE SCRIPTS LUA PARA Q-SYS\n// Vitel SA — Core 8 Flex\n// ============================================================\n\nconst TEMPLATES = {\n\n  // ----------------------------------------------------------\n  // EPSON PROJECTOR — ESC/VP.net over TCP\n  // Puerto por defecto: 3629\n  // ----------------------------------------------------------\n  epson_projector: (d) => `-- ================================================================\n-- CONTROL PROYECTOR EPSON: ${d.nombre}\n-- Modelo: ${d.descripcion || 'Epson'}\n-- IP: ${d.ip} | Puerto: ${d.puerto}\n-- Protocolo: ESC/VP.net over TCP\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- ================================================================\n\nlocal ip    = \"${d.ip}\"\nlocal port  = ${d.puerto}\nlocal connected    = false\nlocal handshake_ok = false\nlocal rx_buffer    = \"\"\n\nlocal sock = TcpSocket.New()\nsock.ReadUpTo = \"\\\\r\\\\n\"\n\nlocal function Send(cmd)\n  if connected and handshake_ok then\n    sock:Write(cmd .. \"\\\\r\\\\n\")\n  end\nend\n\nlocal function UpdateStatus(str, val)\n  Controls[\"${d.nombre} - Estado\"].String = str\n  Controls[\"${d.nombre} - Estado\"].Value  = val or 0\nend\n\nlocal function ParseResponse(line)\n  line = line:gsub(\"[\\\\r\\\\n]\", \"\")\n  if line:find(\"^PWR=\") then\n    local state = line:match(\"PWR=(.+)\")\n    if state == \"01\" or state == \"04\" then\n      Controls[\"${d.nombre} - Encendido\"].Value  = 1\n      Controls[\"${d.nombre} - Encendido\"].String = \"Encendido\"\n    elseif state == \"00\" then\n      Controls[\"${d.nombre} - Encendido\"].Value  = 0\n      Controls[\"${d.nombre} - Encendido\"].String = \"Apagado\"\n    elseif state == \"02\" or state == \"03\" then\n      Controls[\"${d.nombre} - Encendido\"].String = \"Calentando/Enfriando\"\n    end\n  end\nend\n\nlocal reconnect_timer = Timer.New()\nreconnect_timer.EventHandler = function()\n  sock:Connect(ip, port)\nend\n\nsock.EventHandler = function(s, evt, err)\n  if evt == TcpSocket.Events.Connected then\n    connected = true\n    UpdateStatus(\"Handshake...\", 0.3)\n  elseif evt == TcpSocket.Events.Disconnected then\n    connected    = false\n    handshake_ok = false\n    UpdateStatus(\"Desconectado\", 0)\n    reconnect_timer:Start(15)\n  elseif evt == TcpSocket.Events.Data then\n    local data = s:Read(s.BufferLength)\n    rx_buffer = rx_buffer .. data\n    if not handshake_ok and rx_buffer:find(\"ESC/VP\") then\n      handshake_ok = true\n      rx_buffer    = \"\"\n      UpdateStatus(\"Conectado\", 1)\n      Send(\"PWR?\")\n      return\n    end\n    for line in rx_buffer:gmatch(\"([^\\\\r\\\\n]+)[\\\\r\\\\n]\") do\n      ParseResponse(line)\n    end\n    rx_buffer = rx_buffer:match(\"([^\\\\r\\\\n]*)$\") or \"\"\n  end\nend\n\n-- CONTROLES UCI\nControls[\"${d.nombre} - Encender\"].EventHandler = function()\n  Send(\"PWR ON\")\nend\n\nControls[\"${d.nombre} - Apagar\"].EventHandler = function()\n  Send(\"PWR OFF\")\nend\n\n-- Selector de entrada (0=HDMI1, 1=HDMI2, 2=VGA1)\nlocal INPUTS = { [0]=\"10\", [1]=\"A0\", [2]=\"20\" }\nControls[\"${d.nombre} - Entrada\"].EventHandler = function(ctrl)\n  local idx = math.floor(ctrl.Value)\n  if INPUTS[idx] then Send(\"SOURCE \" .. INPUTS[idx]) end\nend\n\nControls[\"${d.nombre} - AVMute\"].EventHandler = function(ctrl)\n  Send(ctrl.Value == 1 and \"MUTE ON\" or \"MUTE OFF\")\nend\n\nControls[\"${d.nombre} - Freeze\"].EventHandler = function(ctrl)\n  Send(ctrl.Value == 1 and \"FREEZE ON\" or \"FREEZE OFF\")\nend\n\n-- Polling de estado cada 10 segundos\nlocal poll = Timer.New()\npoll.EventHandler = function()\n  if connected and handshake_ok then Send(\"PWR?\") end\nend\npoll:Start(10)\n\n-- Conexión inicial\nsock:Connect(ip, port)\n`,\n\n  // ----------------------------------------------------------\n  // ROLAND V80HD — TCP Propietario\n  // Puerto por defecto: 8023\n  // ----------------------------------------------------------\n  roland_v80hd: (d) => `-- ================================================================\n-- CONTROL MESA DE VIDEO ROLAND: ${d.nombre}\n-- Modelo: ${d.descripcion || 'Roland V80HD'}\n-- IP: ${d.ip} | Puerto: ${d.puerto}\n-- Protocolo: Roland Remote Control TCP\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- ================================================================\n\nlocal ip   = \"${d.ip}\"\nlocal port = ${d.puerto}\nlocal connected = false\nlocal rx_buffer = \"\"\n\nlocal sock = TcpSocket.New()\nsock.ReadUpTo = \"\\\\n\"\n\nlocal function Send(cmd)\n  if connected then\n    sock:Write(cmd .. \"\\\\n\")\n  end\nend\n\nlocal function UpdateStatus(str, val)\n  Controls[\"${d.nombre} - Estado\"].String = str\n  Controls[\"${d.nombre} - Estado\"].Value  = val or 0\nend\n\nlocal reconnect_timer = Timer.New()\nreconnect_timer.EventHandler = function() sock:Connect(ip, port) end\n\nsock.EventHandler = function(s, evt, err)\n  if evt == TcpSocket.Events.Connected then\n    connected = true\n    UpdateStatus(\"Conectado\", 1)\n    Send(\"?\")\n  elseif evt == TcpSocket.Events.Disconnected then\n    connected = false\n    UpdateStatus(\"Desconectado\", 0)\n    reconnect_timer:Start(15)\n  elseif evt == TcpSocket.Events.Data then\n    local data = s:Read(s.BufferLength)\n    rx_buffer = rx_buffer .. data\n    -- Procesar respuestas Roland\n    for line in rx_buffer:gmatch(\"([^\\\\n]+)\\\\n\") do\n      line = line:gsub(\"\\\\r\", \"\")\n      -- Aqui procesar respuestas especificas del V80HD\n    end\n    rx_buffer = rx_buffer:match(\"([^\\\\n]*)$\") or \"\"\n  end\nend\n\n-- Seleccion de entrada de video (Roland V80HD usa comandos numericos)\n-- Ajustar comandos segun protocolo Roland especifico del modelo\nlocal SOURCES = {\n  [0] = \"HDMI1\",\n  [1] = \"HDMI2\",\n  [2] = \"HDMI3\",\n  [3] = \"HDMI4\",\n  [4] = \"INPUT5\",\n  [5] = \"INPUT6\"\n}\n\nControls[\"${d.nombre} - Entrada PGM\"].EventHandler = function(ctrl)\n  local idx = math.floor(ctrl.Value)\n  if SOURCES[idx] then\n    -- Formato Roland: SVSW PGM <source>\n    Send(\"SVSW PGM \" .. SOURCES[idx])\n    Controls[\"${d.nombre} - Fuente PGM\"].String = SOURCES[idx]\n  end\nend\n\nControls[\"${d.nombre} - Entrada PVW\"].EventHandler = function(ctrl)\n  local idx = math.floor(ctrl.Value)\n  if SOURCES[idx] then\n    Send(\"SVSW PVW \" .. SOURCES[idx])\n    Controls[\"${d.nombre} - Fuente PVW\"].String = SOURCES[idx]\n  end\nend\n\n-- Transicion / CUT\nControls[\"${d.nombre} - CUT\"].EventHandler = function()\n  Send(\"SVSW CUT\")\nend\n\n-- Auto transicion\nControls[\"${d.nombre} - AUTO\"].EventHandler = function()\n  Send(\"SVSW AUTO\")\nend\n\nsock:Connect(ip, port)\n`,\n\n  // ----------------------------------------------------------\n  // LIGHTWARE HDBaseT — LW3 Protocol over TCP\n  // Puerto por defecto: 6107\n  // ----------------------------------------------------------\n  lightware_hdbaset: (d) => `-- ================================================================\n-- CONTROL EXTENSOR HDBASET LIGHTWARE: ${d.nombre}\n-- Modelo: ${d.descripcion || 'Lightware HDBaseT'}\n-- IP: ${d.ip} | Puerto: ${d.puerto}\n-- Protocolo: LW3 over TCP\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- ================================================================\n\nlocal ip   = \"${d.ip}\"\nlocal port = ${d.puerto}\nlocal connected = false\nlocal rx_buffer = \"\"\n\nlocal sock = TcpSocket.New()\nsock.ReadUpTo = \"\\\\n\"\n\nlocal function Send(cmd)\n  if connected then\n    sock:Write(cmd .. \"\\\\r\\\\n\")\n  end\nend\n\nlocal function UpdateStatus(str, val)\n  Controls[\"${d.nombre} - Estado\"].String = str\n  Controls[\"${d.nombre} - Estado\"].Value  = val or 0\nend\n\nlocal function ParseLW3(line)\n  line = line:gsub(\"[\\\\r\\\\n]\", \"\")\n  -- Respuesta de propiedad: pw {Propiedad}=valor\n  local prop, val = line:match(\"pw%s+{(.-)%}=(.+)\")\n  if prop and val then\n    if prop:find(\"SignalPresent\") then\n      local present = val == \"true\"\n      Controls[\"${d.nombre} - Senal\"].Value  = present and 1 or 0\n      Controls[\"${d.nombre} - Senal\"].String = present and \"Señal OK\" or \"Sin señal\"\n    elseif prop:find(\"Resolution\") then\n      Controls[\"${d.nombre} - Resolucion\"].String = val\n    elseif prop:find(\"Hdcp\") then\n      Controls[\"${d.nombre} - HDCP\"].String = val\n    end\n  end\nend\n\nlocal reconnect_timer = Timer.New()\nreconnect_timer.EventHandler = function() sock:Connect(ip, port) end\n\nsock.EventHandler = function(s, evt, err)\n  if evt == TcpSocket.Events.Connected then\n    connected = true\n    UpdateStatus(\"Conectado\", 1)\n    -- Consultar estado inicial\n    Send(\"GET /MEDIA/VIDEO/I1{SignalPresent}\")\n    Send(\"GET /MEDIA/VIDEO/I1{Resolution}\")\n  elseif evt == TcpSocket.Events.Disconnected then\n    connected = false\n    UpdateStatus(\"Desconectado\", 0)\n    reconnect_timer:Start(15)\n  elseif evt == TcpSocket.Events.Data then\n    local data = s:Read(s.BufferLength)\n    rx_buffer = rx_buffer .. data\n    for line in rx_buffer:gmatch(\"([^\\\\n]+)\\\\n\") do\n      ParseLW3(line)\n    end\n    rx_buffer = rx_buffer:match(\"([^\\\\n]*)$\") or \"\"\n  end\nend\n\n-- Bloquear señal de salida\nControls[\"${d.nombre} - Lock\"].EventHandler = function(ctrl)\n  Send(\"SET /OUTPUTPORT/O1{Lock=\" .. (ctrl.Value == 1 and \"true\" or \"false\") .. \"}\")\nend\n\n-- Polling de estado\nlocal poll = Timer.New()\npoll.EventHandler = function()\n  if connected then\n    Send(\"GET /MEDIA/VIDEO/I1{SignalPresent}\")\n  end\nend\npoll:Start(30)\n\nsock:Connect(ip, port)\n`,\n\n  // ----------------------------------------------------------\n  // MIDAS M32 — OSC over UDP\n  // Puerto por defecto: 10023\n  // NOTA: Q-SYS no tiene UDP nativo; ver instrucciones\n  // ----------------------------------------------------------\n  midas_m32: (d) => `-- ================================================================\n-- CONTROL MESA DE AUDIO MIDAS M32: ${d.nombre}\n-- Modelo: ${d.descripcion || 'Midas M32'}\n-- IP: ${d.ip} | Puerto: ${d.puerto} (UDP)\n-- Protocolo: OSC over UDP\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- ================================================================\n--\n-- IMPORTANTE: El M32 usa OSC sobre UDP.\n-- Para integrar con Q-SYS tienes dos opciones:\n--\n-- OPCION A (RECOMENDADA):\n--   Usar el plugin oficial QSC para Midas M32/X32.\n--   Buscar en: https://q-syshelp.qsc.com -> Plugins\n--   El plugin gestiona la conexion OSC/UDP automaticamente.\n--\n-- OPCION B (Script personalizado):\n--   Anadir un componente \"Script\" con acceso a UDP.\n--   Q-SYS 9.x+ soporta UdpSocket en Lua.\n--\n-- Este script usa UdpSocket (Q-SYS 9.x+):\n-- ================================================================\n\nlocal ip   = \"${d.ip}\"\nlocal port = ${d.puerto}\n\n-- Funcion para construir paquete OSC\nlocal function OscString(s)\n  s = s .. \"\\0\"\n  while #s % 4 ~= 0 do s = s .. \"\\0\" end\n  return s\nend\n\nlocal function OscFloat(f)\n  -- Empaquetar float 32-bit big-endian\n  local b = string.pack(\">f\", f)\n  return b\nend\n\nlocal function OscInt(i)\n  return string.pack(\">i4\", i)\nend\n\nlocal function BuildOSC(address, ...)\n  local args  = {...}\n  local types = \",\"\n  local data  = \"\"\n  for _, v in ipairs(args) do\n    if type(v) == \"number\" then\n      if math.floor(v) == v then\n        types = types .. \"i\"\n        data  = data .. OscInt(v)\n      else\n        types = types .. \"f\"\n        data  = data .. OscFloat(v)\n      end\n    end\n  end\n  return OscString(address) .. OscString(types) .. data\nend\n\nlocal udp = UdpSocket.New()\n\nlocal function SendOSC(address, ...)\n  local packet = BuildOSC(address, ...)\n  udp:Send(ip, port, packet)\nend\n\n-- CONTROLES UCI para M32\n\n-- Fader maestro LR (0.0 a 1.0 en Q-SYS = dB en M32)\nControls[\"${d.nombre} - Master\"].EventHandler = function(ctrl)\n  -- /main/st/mix/fader float 0.0-1.0\n  SendOSC(\"/main/st/mix/fader\", ctrl.Value)\nend\n\n-- Mute canal (1=muted, 0=unmuted en M32)\nControls[\"${d.nombre} - Mute Ch 1\"].EventHandler = function(ctrl)\n  SendOSC(\"/ch/01/mix/on\", ctrl.Value == 1 and 0 or 1)\nend\n\nControls[\"${d.nombre} - Mute Ch 2\"].EventHandler = function(ctrl)\n  SendOSC(\"/ch/02/mix/on\", ctrl.Value == 1 and 0 or 1)\nend\n\n-- Cambio de escena (scene recall)\nControls[\"${d.nombre} - Escena\"].EventHandler = function(ctrl)\n  local scene = math.floor(ctrl.Value)\n  SendOSC(\"/load\", scene)\nend\n\n-- Keep-alive (el M32 requiere mensajes periodicos)\nlocal keepalive = Timer.New()\nkeepalive.EventHandler = function()\n  -- Solicitar estado del fader maestro\n  SendOSC(\"/main/st/mix/fader\")\nend\nkeepalive:Start(9)\n\nprint(\"${d.nombre}: Midas M32 iniciado - \" .. ip .. \":\" .. port)\n`,\n\n  // ----------------------------------------------------------\n  // SHURE QLXD — Shure Wireless Protocol (SWP) over TCP\n  // Puerto por defecto: 2202\n  // ----------------------------------------------------------\n  shure_qlxd: (d) => `-- ================================================================\n-- CONTROL MICROFONIA INALAMBRICA SHURE: ${d.nombre}\n-- Modelo: ${d.descripcion || 'Shure QLXD4E'}\n-- IP: ${d.ip} | Puerto: ${d.puerto}\n-- Protocolo: Shure Wireless Protocol (SWP) TCP\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- ================================================================\n\nlocal ip   = \"${d.ip}\"\nlocal port = ${d.puerto}\nlocal connected = false\nlocal rx_buffer = \"\"\n\nlocal sock = TcpSocket.New()\nsock.ReadUpTo = \">\"\n\nlocal function Send(cmd)\n  if connected then\n    sock:Write(cmd .. \" \")\n  end\nend\n\nlocal function UpdateStatus(str, val)\n  Controls[\"${d.nombre} - Estado\"].String = str\n  Controls[\"${d.nombre} - Estado\"].Value  = val or 0\nend\n\nlocal function ParseSWP(msg)\n  -- Formato: < REPORT channel PROPERTY value >\n  msg = msg:gsub(\"[<>]\", \"\"):gsub(\"^%s+\", \"\"):gsub(\"%s+$\", \"\")\n  local parts = {}\n  for w in msg:gmatch(\"%S+\") do parts[#parts+1] = w end\n  -- parts[1]=REPORT, parts[2]=channel, parts[3]=PROPERTY, parts[4]=value\n  if parts[1] ~= \"REPORT\" then return end\n  local prop = parts[3] or \"\"\n  local val  = parts[4] or \"\"\n\n  if prop == \"BATT_CHARGE\" then\n    local pct = tonumber(val) or 0\n    Controls[\"${d.nombre} - Bateria\"].Value  = pct / 100\n    Controls[\"${d.nombre} - Bateria\"].String = val .. \"%\"\n    if pct > 0 and pct <= 20 then\n      Controls[\"${d.nombre} - Alerta Bat\"].Value  = 1\n      Controls[\"${d.nombre} - Alerta Bat\"].String = \"⚠ BATERIA BAJA: \" .. val .. \"%\"\n    else\n      Controls[\"${d.nombre} - Alerta Bat\"].Value  = 0\n      Controls[\"${d.nombre} - Alerta Bat\"].String = \"OK\"\n    end\n\n  elseif prop == \"RF_LEVEL\" then\n    local rf = tonumber(val) or 0\n    Controls[\"${d.nombre} - RF\"].Value  = rf / 110\n    Controls[\"${d.nombre} - RF\"].String = val .. \" dBm\"\n\n  elseif prop == \"AUDIO_LEVEL\" then\n    local lvl = tonumber(val) or 0\n    Controls[\"${d.nombre} - Audio\"].Value  = lvl / 50\n    Controls[\"${d.nombre} - Audio\"].String = val .. \" dB\"\n\n  elseif prop == \"AUDIO_MUTE\" then\n    Controls[\"${d.nombre} - Mute\"].Value  = val == \"ON\" and 1 or 0\n    Controls[\"${d.nombre} - Mute\"].String = val\n\n  elseif prop == \"POWER_STATUS\" then\n    UpdateStatus(val, val == \"ON\" and 1 or 0)\n\n  elseif prop == \"CHAN_NAME\" then\n    Controls[\"${d.nombre} - Nombre Canal\"].String = val\n  end\nend\n\nlocal reconnect_timer = Timer.New()\nreconnect_timer.EventHandler = function() sock:Connect(ip, port) end\n\nsock.EventHandler = function(s, evt, err)\n  if evt == TcpSocket.Events.Connected then\n    connected = true\n    UpdateStatus(\"Conectado\", 1)\n    -- Solicitar todos los datos iniciales\n    Send(\"< GET 1 ALL >\")\n  elseif evt == TcpSocket.Events.Disconnected then\n    connected = false\n    UpdateStatus(\"Desconectado\", 0)\n    reconnect_timer:Start(15)\n  elseif evt == TcpSocket.Events.Data then\n    rx_buffer = rx_buffer .. s:Read(s.BufferLength)\n    local msg\n    while true do\n      msg = rx_buffer:match(\"(<[^>]+>)\")\n      if msg then\n        ParseSWP(msg)\n        rx_buffer = rx_buffer:sub(#msg + 1)\n      else\n        break\n      end\n    end\n  end\nend\n\n-- Control de mute desde UCI\nControls[\"${d.nombre} - Mute\"].EventHandler = function(ctrl)\n  Send(\"< SET 1 AUDIO_MUTE \" .. (ctrl.Value == 1 and \"ON\" or \"OFF\") .. \" >\")\nend\n\n-- Polling: bateria cada 5s, RF cada 2s\nlocal poll_bat = Timer.New()\npoll_bat.EventHandler = function()\n  if connected then\n    Send(\"< GET 1 BATT_CHARGE >\")\n    Send(\"< GET 1 POWER_STATUS >\")\n  end\nend\npoll_bat:Start(5)\n\nlocal poll_rf = Timer.New()\npoll_rf.EventHandler = function()\n  if connected then\n    Send(\"< GET 1 RF_LEVEL >\")\n    Send(\"< GET 1 AUDIO_LEVEL >\")\n  end\nend\npoll_rf:Start(2)\n\nsock:Connect(ip, port)\n`,\n\n  // ----------------------------------------------------------\n  // CHAMSYS MAGICQ — OSC over UDP\n  // Puerto por defecto: 9000\n  // ----------------------------------------------------------\n  chamsys_magicq: (d) => `-- ================================================================\n-- CONTROL ILUMINACION CHAMSYS MAGICQ: ${d.nombre}\n-- Modelo: ${d.descripcion || 'Chamsys MagicQ'}\n-- IP: ${d.ip} | Puerto: ${d.puerto} (UDP)\n-- Protocolo: OSC over UDP\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- ================================================================\n--\n-- CONFIGURACION EN MAGICQ:\n--   Setup > View Settings > Network > OSC\n--   - OSC Mode: Tx and Rx\n--   - OSC Tx IP: IP del Core Q-SYS\n--   - OSC Tx Port: 9000\n--   - OSC Rx Port: 9001\n--\n-- COMANDOS OSC disponibles en MagicQ:\n--   /pb/<n>/go      -> Ejecutar playback n\n--   /pb/<n>/stop    -> Parar playback n\n--   /pb/<n>/flash   -> Flash playback n\n--   /pb/<n>/level f -> Nivel 0.0-1.0 del playback n\n--   /dbo/level f    -> DBO Master (0=blackout, 1=full)\n-- ================================================================\n\nlocal ip   = \"${d.ip}\"\nlocal port = ${d.puerto}\n\nlocal function OscString(s)\n  s = s .. \"\\0\"\n  while #s % 4 ~= 0 do s = s .. \"\\0\" end\n  return s\nend\n\nlocal function BuildOSCf(address, f)\n  return OscString(address) .. OscString(\",f\") .. string.pack(\">f\", f)\nend\n\nlocal function BuildOSCi(address, i)\n  return OscString(address) .. OscString(\",i\") .. string.pack(\">i4\", i)\nend\n\nlocal udp = UdpSocket.New()\n\nlocal function PlaybackGo(n)\n  udp:Send(ip, port, BuildOSCi(\"/pb/\" .. n .. \"/go\", 1))\nend\n\nlocal function PlaybackStop(n)\n  udp:Send(ip, port, BuildOSCi(\"/pb/\" .. n .. \"/stop\", 1))\nend\n\nlocal function PlaybackLevel(n, val)\n  udp:Send(ip, port, BuildOSCf(\"/pb/\" .. n .. \"/level\", val))\nend\n\n-- CONTROLES UCI\n-- Playback 1 - Escena General\nControls[\"${d.nombre} - PB1 Go\"].EventHandler = function() PlaybackGo(1) end\nControls[\"${d.nombre} - PB1 Stop\"].EventHandler = function() PlaybackStop(1) end\nControls[\"${d.nombre} - PB1 Nivel\"].EventHandler = function(ctrl)\n  PlaybackLevel(1, ctrl.Value)\nend\n\n-- Playback 2 - Escena Presentacion\nControls[\"${d.nombre} - PB2 Go\"].EventHandler = function() PlaybackGo(2) end\nControls[\"${d.nombre} - PB2 Stop\"].EventHandler = function() PlaybackStop(2) end\nControls[\"${d.nombre} - PB2 Nivel\"].EventHandler = function(ctrl)\n  PlaybackLevel(2, ctrl.Value)\nend\n\n-- Playback 3 - Escena Videoconferencia\nControls[\"${d.nombre} - PB3 Go\"].EventHandler = function() PlaybackGo(3) end\nControls[\"${d.nombre} - PB3 Stop\"].EventHandler = function() PlaybackStop(3) end\n\n-- Playback 4 - Escena Recepcion/Descanso\nControls[\"${d.nombre} - PB4 Go\"].EventHandler = function() PlaybackGo(4) end\nControls[\"${d.nombre} - PB4 Stop\"].EventHandler = function() PlaybackStop(4) end\n\n-- DBO - Blackout general\nControls[\"${d.nombre} - Blackout\"].EventHandler = function(ctrl)\n  PlaybackLevel(0, ctrl.Value == 1 and 0.0 or 1.0)\nend\n\nprint(\"${d.nombre}: Chamsys MagicQ iniciado - \" .. ip .. \":\" .. port)\n`,\n\n  // ----------------------------------------------------------\n  // GENERICO TCP — para cualquier dispositivo\n  // ----------------------------------------------------------\n  generic_tcp: (d) => `-- ================================================================\n-- CONTROL TCP GENERICO: ${d.nombre}\n-- Descripcion: ${d.descripcion || 'Dispositivo TCP'}\n-- IP: ${d.ip} | Puerto: ${d.puerto}\n-- Generado por: Q-SYS Config Generator - Vitel SA\n-- NOTA: Ajustar comandos segun protocolo del fabricante\n-- ================================================================\n\nlocal ip   = \"${d.ip}\"\nlocal port = ${d.puerto}\nlocal connected = false\n\nlocal sock = TcpSocket.New()\nsock.ReadUpTo = \"\\\\n\"\n\nlocal function Send(cmd)\n  if connected then\n    sock:Write(cmd)\n  end\nend\n\nlocal function UpdateStatus(str, val)\n  Controls[\"${d.nombre} - Estado\"].String = str\n  Controls[\"${d.nombre} - Estado\"].Value  = val or 0\nend\n\nlocal reconnect_timer = Timer.New()\nreconnect_timer.EventHandler = function() sock:Connect(ip, port) end\n\nsock.EventHandler = function(s, evt, err)\n  if evt == TcpSocket.Events.Connected then\n    connected = true\n    UpdateStatus(\"Conectado\", 1)\n  elseif evt == TcpSocket.Events.Disconnected then\n    connected = false\n    UpdateStatus(\"Desconectado\", 0)\n    reconnect_timer:Start(15)\n  elseif evt == TcpSocket.Events.Data then\n    local data = s:Read(s.BufferLength)\n    -- TODO: procesar respuesta\n    print(\"${d.nombre} RX: \" .. data)\n  end\nend\n\n-- TODO: Definir controles UCI segun dispositivo\nControls[\"${d.nombre} - CMD 1\"].EventHandler = function()\n  Send(\"COMANDO_1\\\\r\\\\n\") -- Reemplazar con comando real\nend\n\nControls[\"${d.nombre} - CMD 2\"].EventHandler = function()\n  Send(\"COMANDO_2\\\\r\\\\n\") -- Reemplazar con comando real\nend\n\nsock:Connect(ip, port)\n`\n};\n\n// ============================================================\n// GENERAR SCRIPTS PARA TODOS LOS DISPOSITIVOS\n// ============================================================\nconst input = items[0].json;\nconst scripts = [];\nconst unknown = [];\n\nfor (const d of input.dispositivos) {\n  const templateFn = TEMPLATES[d.tipo];\n  if (templateFn) {\n    const code = templateFn(d);\n    scripts.push({\n      id: d.id,\n      nombre: d.nombre,\n      tipo: d.tipo,\n      ip: d.ip,\n      puerto: d.puerto,\n      descripcion: d.descripcion || '',\n      script: code,\n      filename: `CTRL_${d.nombre.replace(/[^a-zA-Z0-9_]/g, '_')}.lua`\n    });\n  } else {\n    unknown.push(d);\n    // Usar template generico para dispositivos desconocidos\n    const code = TEMPLATES.generic_tcp(d);\n    scripts.push({\n      id: d.id,\n      nombre: d.nombre,\n      tipo: 'generic_tcp',\n      ip: d.ip,\n      puerto: d.puerto,\n      descripcion: d.descripcion || '',\n      script: code,\n      filename: `CTRL_${d.nombre.replace(/[^a-zA-Z0-9_]/g, '_')}.lua`,\n      warning: `Tipo \"${d.tipo}\" no encontrado. Se ha generado un template generico TCP.`\n    });\n  }\n}\n\nreturn [{ json: { ...input, scripts, unknown_devices: unknown } }];"
+      },
+      "id": "8b6c6c35-3d6a-4d55-8fc2-997c542e568e",
+      "name": "Generar Scripts Lua por Dispositivo",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1552,
+        384
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// GENERADOR DE LAYOUT UCI + NAMED COMPONENTS\n// ============================================================\nconst input = items[0].json;\nconst dispositivos = input.dispositivos || [];\nconst scripts = input.scripts || [];\n\n// Definicion de controles UCI por tipo de dispositivo\nconst UCI_CONTROLS = {\n  epson_projector: [\n    { nombre: 'Estado',     tipo: 'Text Feedback',   descripcion: 'Estado conexion TCP' },\n    { nombre: 'Encendido',  tipo: 'Indicator',        descripcion: 'Indicador encendido/apagado' },\n    { nombre: 'Encender',   tipo: 'Momentary Button', descripcion: 'Boton encender proyector' },\n    { nombre: 'Apagar',     tipo: 'Momentary Button', descripcion: 'Boton apagar proyector' },\n    { nombre: 'Entrada',    tipo: 'Combo Box',        descripcion: 'Selector entrada video (0=HDMI1, 1=HDMI2, 2=VGA)' },\n    { nombre: 'AVMute',     tipo: 'Toggle Button',    descripcion: 'Apagar imagen (AV Mute)' },\n    { nombre: 'Freeze',     tipo: 'Toggle Button',    descripcion: 'Congelar imagen' }\n  ],\n  roland_v80hd: [\n    { nombre: 'Estado',      tipo: 'Text Feedback',   descripcion: 'Estado conexion TCP' },\n    { nombre: 'Entrada PGM', tipo: 'Combo Box',        descripcion: 'Fuente en programa (0=HDMI1..5=IN6)' },\n    { nombre: 'Entrada PVW', tipo: 'Combo Box',        descripcion: 'Fuente en preview' },\n    { nombre: 'Fuente PGM',  tipo: 'Text Feedback',   descripcion: 'Fuente actual PGM' },\n    { nombre: 'Fuente PVW',  tipo: 'Text Feedback',   descripcion: 'Fuente actual PVW' },\n    { nombre: 'CUT',         tipo: 'Momentary Button', descripcion: 'Corte directo a PGM' },\n    { nombre: 'AUTO',        tipo: 'Momentary Button', descripcion: 'Transicion automatica' }\n  ],\n  lightware_hdbaset: [\n    { nombre: 'Estado',     tipo: 'Text Feedback',   descripcion: 'Estado conexion TCP' },\n    { nombre: 'Senal',      tipo: 'Indicator',        descripcion: 'Presencia de senal HDMI' },\n    { nombre: 'Resolucion', tipo: 'Text Feedback',   descripcion: 'Resolucion detectada' },\n    { nombre: 'HDCP',       tipo: 'Text Feedback',   descripcion: 'Estado HDCP' },\n    { nombre: 'Lock',       tipo: 'Toggle Button',    descripcion: 'Bloquear salida' }\n  ],\n  midas_m32: [\n    { nombre: 'Master',     tipo: 'Fader',            descripcion: 'Fader master LR (0-1)' },\n    { nombre: 'Mute Ch 1',  tipo: 'Toggle Button',    descripcion: 'Mute canal 1' },\n    { nombre: 'Mute Ch 2',  tipo: 'Toggle Button',    descripcion: 'Mute canal 2' },\n    { nombre: 'Escena',     tipo: 'Knob',             descripcion: 'Recall de escena (numero)' }\n  ],\n  shure_qlxd: [\n    { nombre: 'Estado',      tipo: 'Text Feedback',   descripcion: 'Estado conexion / power' },\n    { nombre: 'Bateria',     tipo: 'Level Meter',      descripcion: 'Nivel bateria 0-100%' },\n    { nombre: 'RF',          tipo: 'Level Meter',      descripcion: 'Nivel RF 0-110' },\n    { nombre: 'Audio',       tipo: 'Level Meter',      descripcion: 'Nivel audio' },\n    { nombre: 'Mute',        tipo: 'Toggle Button',    descripcion: 'Mute del receptor' },\n    { nombre: 'Alerta Bat',  tipo: 'Text Feedback',   descripcion: 'Alerta bateria baja' },\n    { nombre: 'Nombre Canal',tipo: 'Text Feedback',   descripcion: 'Nombre del canal configurado' }\n  ],\n  chamsys_magicq: [\n    { nombre: 'PB1 Go',    tipo: 'Momentary Button', descripcion: 'Playback 1 - Ejecutar' },\n    { nombre: 'PB1 Stop',  tipo: 'Momentary Button', descripcion: 'Playback 1 - Parar' },\n    { nombre: 'PB1 Nivel', tipo: 'Fader',            descripcion: 'Playback 1 - Nivel' },\n    { nombre: 'PB2 Go',    tipo: 'Momentary Button', descripcion: 'Playback 2 - Ejecutar' },\n    { nombre: 'PB2 Stop',  tipo: 'Momentary Button', descripcion: 'Playback 2 - Parar' },\n    { nombre: 'PB2 Nivel', tipo: 'Fader',            descripcion: 'Playback 2 - Nivel' },\n    { nombre: 'PB3 Go',    tipo: 'Momentary Button', descripcion: 'Playback 3 - Ejecutar' },\n    { nombre: 'PB3 Stop',  tipo: 'Momentary Button', descripcion: 'Playback 3 - Parar' },\n    { nombre: 'PB4 Go',    tipo: 'Momentary Button', descripcion: 'Playback 4 - Ejecutar' },\n    { nombre: 'PB4 Stop',  tipo: 'Momentary Button', descripcion: 'Playback 4 - Parar' },\n    { nombre: 'Blackout',  tipo: 'Toggle Button',    descripcion: 'Blackout general' }\n  ],\n  generic_tcp: [\n    { nombre: 'Estado', tipo: 'Text Feedback',   descripcion: 'Estado conexion TCP' },\n    { nombre: 'CMD 1',  tipo: 'Momentary Button', descripcion: 'Comando 1 (definir segun equipo)' },\n    { nombre: 'CMD 2',  tipo: 'Momentary Button', descripcion: 'Comando 2 (definir segun equipo)' }\n  ]\n};\n\n// Generar lista de Named Components\nconst namedComponents = [];\nconst uciLayout = [];\n\nfor (const d of dispositivos) {\n  const tipo = d.tipo in UCI_CONTROLS ? d.tipo : 'generic_tcp';\n  const controls = UCI_CONTROLS[tipo] || [];\n  \n  // Named Component para este dispositivo\n  const nc = {\n    nombre_componente: d.nombre,\n    tipo_componente: 'Script',\n    descripcion: `Control TCP: ${d.descripcion || d.tipo} - ${d.ip}:${d.puerto}`,\n    script_file: `CTRL_${d.nombre.replace(/[^a-zA-Z0-9_]/g, '_')}.lua`,\n    controls: controls.map(c => ({\n      nombre_control: `${d.nombre} - ${c.nombre}`,\n      tipo_uci: c.tipo,\n      descripcion: c.descripcion\n    }))\n  };\n  namedComponents.push(nc);\n  \n  // Seccion en UCI\n  uciLayout.push({\n    dispositivo: d.nombre,\n    tipo: d.tipo,\n    descripcion: d.descripcion,\n    ip: d.ip,\n    puerto: d.puerto,\n    controles_uci: controls.map(c => `${d.nombre} - ${c.nombre}`),\n    notas_implementacion: getImplementationNotes(d.tipo)\n  });\n}\n\nfunction getImplementationNotes(tipo) {\n  const notes = {\n    epson_projector: 'Plugin alternativo disponible en QSC Plugin Store. ESC/VP.net requiere handshake inicial.',\n    roland_v80hd: 'Verificar numero de puerto TCP en configuracion de red del V80HD. Ajustar comandos SVSW segun version de firmware.',\n    lightware_hdbaset: 'LW3 Protocol. El Tx y Rx son unidades independientes con su propia IP. Verificar rutas /MEDIA/VIDEO segun modelo.',\n    midas_m32: 'OSC/UDP. Activar OSC en M32: Setup > Remote > Enable OSC. Q-SYS necesita UdpSocket (v9.x+) o plugin.',\n    shure_qlxd: 'SWP TCP. Activar control de red en Shure Wireless Workbench. Verificar que el receptor tiene IP fija asignada.',\n    chamsys_magicq: 'OSC/UDP. En MagicQ: Setup > Network > OSC. Ajustar numeros de playback segun programacion de luz.',\n    generic_tcp: 'Template generico. Revisar documentacion del fabricante para comandos especificos.'\n  };\n  return notes[tipo] || 'Consultar documentacion del fabricante.';\n}\n\n// Sugerencia de layout de paginas UCI\nconst uciPages = [\n  {\n    pagina: 1,\n    nombre: 'Control General',\n    descripcion: 'Vista rapida de todos los sistemas',\n    dispositivos_mostrados: dispositivos.map(d => d.nombre)\n  },\n  {\n    pagina: 2,\n    nombre: 'Audio',\n    descripcion: 'Control de mesa de audio y microfonia',\n    dispositivos_mostrados: dispositivos.filter(d => ['midas_m32', 'shure_qlxd'].includes(d.tipo)).map(d => d.nombre)\n  },\n  {\n    pagina: 3,\n    nombre: 'Video',\n    descripcion: 'Control de proyector y mesa de video',\n    dispositivos_mostrados: dispositivos.filter(d => ['epson_projector', 'roland_v80hd', 'lightware_hdbaset'].includes(d.tipo)).map(d => d.nombre)\n  },\n  {\n    pagina: 4,\n    nombre: 'Iluminacion',\n    descripcion: 'Control de mesa de luces',\n    dispositivos_mostrados: dispositivos.filter(d => d.tipo === 'chamsys_magicq').map(d => d.nombre)\n  }\n].filter(p => p.dispositivos_mostrados.length > 0);\n\nreturn [{ json: { ...input, named_components: namedComponents, uci_layout: uciLayout, uci_pages: uciPages } }];"
+      },
+      "id": "dda27d03-845a-4630-a9af-782e2d9f4cf7",
+      "name": "Generar UCI Layout + Named Components",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1792,
+        384
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// ENSAMBLAR SALIDA FINAL\n// HTML con toda la configuracion + JSON estructurado\n// ============================================================\nconst input = items[0].json;\nconst { proyecto, cliente, sala, core_modelo, core_ip, dispositivos,\n        scripts, named_components, uci_pages, uci_layout, fecha } = input;\n\n// --- Tabla de IPs ---\nconst ipTableRows = dispositivos.map(d => `\n  <tr>\n    <td><strong>${d.nombre}</strong></td>\n    <td>${d.descripcion || d.tipo}</td>\n    <td><code>${d.ip}</code></td>\n    <td>${d.puerto}</td>\n    <td>${d.tipo}</td>\n  </tr>`).join('');\n\n// --- Scripts Lua ---\nconst scriptSections = scripts.map(s => `\n  <div class=\"script-block\">\n    <div class=\"script-header\">\n      <span class=\"badge\">${s.tipo}</span>\n      <strong>${s.nombre}</strong> — <code>${s.filename}</code>\n      ${s.warning ? `<span class=\"warning\">⚠ ${s.warning}</span>` : ''}\n    </div>\n    <pre class=\"lua-code\">${s.script.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>\n  </div>`).join('');\n\n// --- Named Components ---\nconst ncRows = named_components.map(nc => `\n  <div class=\"nc-block\">\n    <h4>📦 Componente: <strong>${nc.nombre_componente}</strong></h4>\n    <p>${nc.descripcion}</p>\n    <p><em>Script:</em> <code>${nc.script_file}</code></p>\n    <table>\n      <thead><tr><th>Nombre Control</th><th>Tipo UCI</th><th>Descripcion</th></tr></thead>\n      <tbody>\n        ${nc.controls.map(c => `<tr><td><code>${c.nombre_control}</code></td><td>${c.tipo_uci}</td><td>${c.descripcion}</td></tr>`).join('')}\n      </tbody>\n    </table>\n  </div>`).join('');\n\n// --- Paginas UCI ---\nconst uciPagesHtml = uci_pages.map(p => `\n  <div class=\"uci-page\">\n    <h4>Pagina ${p.pagina}: ${p.nombre}</h4>\n    <p>${p.descripcion}</p>\n    <ul>${p.dispositivos_mostrados.map(d => `<li>${d}</li>`).join('')}</ul>\n  </div>`).join('');\n\n// --- Notas de implementacion ---\nconst notasHtml = uci_layout.map(d => `\n  <li><strong>${d.dispositivo}</strong> (${d.ip}:${d.puerto}): ${d.notas_implementacion}</li>`).join('');\n\n// --- HTML final ---\nconst html = `<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n<meta charset=\"UTF-8\">\n<title>Q-SYS Config — ${proyecto}</title>\n<style>\n  body { font-family: 'Segoe UI', sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; color: #1a1a2e; background: #f5f5f5; }\n  h1 { background: #1a1a2e; color: white; padding: 20px 30px; border-radius: 8px; }\n  h1 span { color: #e94560; }\n  h2 { border-left: 4px solid #e94560; padding-left: 12px; margin-top: 40px; }\n  h3 { color: #1a1a2e; }\n  .meta { background: white; padding: 16px; border-radius: 8px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }\n  .meta-item label { font-size: 11px; text-transform: uppercase; color: #999; display: block; }\n  .meta-item strong { font-size: 16px; }\n  table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.08); }\n  th { background: #1a1a2e; color: white; padding: 10px 14px; text-align: left; font-size: 12px; }\n  td { padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 13px; }\n  tr:hover td { background: #f0f0f0; }\n  code { background: #eee; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }\n  pre.lua-code { background: #0d1117; color: #c9d1d9; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.6; font-family: 'Consolas', 'Monaco', monospace; }\n  .script-block { margin: 20px 0; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }\n  .script-header { background: #1a1a2e; color: white; padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }\n  .badge { background: #e94560; padding: 2px 10px; border-radius: 12px; font-size: 11px; text-transform: uppercase; }\n  .warning { background: #ff9800; color: black; padding: 2px 10px; border-radius: 12px; font-size: 11px; }\n  .nc-block { background: white; padding: 16px; margin: 16px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }\n  .nc-block h4 { margin: 0 0 8px; }\n  .uci-page { background: white; padding: 14px 18px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #e94560; }\n  .step { background: white; padding: 16px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #1a1a2e; }\n  .step h4 { margin: 0 0 8px; color: #1a1a2e; }\n  footer { text-align: center; color: #999; margin-top: 40px; font-size: 12px; padding: 20px; border-top: 1px solid #eee; }\n</style>\n</head>\n<body>\n\n<h1>🎛️ Q-SYS Configuration — <span>${proyecto}</span></h1>\n\n<div class=\"meta\">\n  <div class=\"meta-item\"><label>Cliente</label><strong>${cliente}</strong></div>\n  <div class=\"meta-item\"><label>Sala</label><strong>${sala}</strong></div>\n  <div class=\"meta-item\"><label>Core Q-SYS</label><strong>${core_modelo}</strong></div>\n  <div class=\"meta-item\"><label>IP del Core</label><strong><code>${core_ip}</code></strong></div>\n  <div class=\"meta-item\"><label>Equipos</label><strong>${dispositivos.length} dispositivos</strong></div>\n  <div class=\"meta-item\"><label>Generado</label><strong>${fecha}</strong></div>\n</div>\n\n<h2>📡 Tabla de Direccionamiento IP</h2>\n<table>\n  <thead><tr><th>Dispositivo</th><th>Modelo</th><th>IP</th><th>Puerto</th><th>Tipo</th></tr></thead>\n  <tbody>\n    <tr><td><strong>Core Q-SYS</strong></td><td>${core_modelo}</td><td><code>${core_ip}</code></td><td>—</td><td>qsys_core</td></tr>\n    ${ipTableRows}\n  </tbody>\n</table>\n\n<h2>🗂️ Paginas UCI — Estructura Sugerida para Tablet</h2>\n${uciPagesHtml}\n<p><em>Implementar en Q-SYS Designer > UCI > New Page. Asignar controles Named segun lista de componentes.</em></p>\n\n<h2>📦 Named Components — Lista para Q-SYS Designer</h2>\n<p>Crear un componente <strong>Script</strong> por cada dispositivo y asignar los Named Controls indicados:</p>\n${ncRows}\n\n<h2>📝 Scripts Lua — Copiar en Q-SYS Designer</h2>\n<p>Para cada dispositivo: crear un componente <strong>Script</strong>, pegar el codigo y ajustar si es necesario.</p>\n${scriptSections}\n\n<h2>⚙️ Pasos de Implementacion en Q-SYS Designer</h2>\n<div class=\"step\"><h4>1. Abrir Q-SYS Designer y crear nuevo proyecto</h4><p>File > New Design. Seleccionar Core 8 Flex como procesador principal.</p></div>\n<div class=\"step\"><h4>2. Configurar red</h4><p>En el Core, asignar IP: <code>${core_ip}</code>. Verificar que todos los equipos son accesibles desde la misma subred.</p></div>\n<div class=\"step\"><h4>3. Crear Named Components (Script)</h4><p>Para cada dispositivo de la lista, arrastrar un componente <strong>Script</strong> al canvas. Nombrar exactamente como indica la columna \"Nombre Componente\".</p></div>\n<div class=\"step\"><h4>4. Pegar scripts Lua</h4><p>Doble clic en cada componente Script > pegar el codigo correspondiente. Los scripts ya tienen la IP y puerto correctos.</p></div>\n<div class=\"step\"><h4>5. Crear controles Named</h4><p>En cada Script Component > Pins > agregar los controles listados en la tabla de Named Components.</p></div>\n<div class=\"step\"><h4>6. Diseñar UCI</h4><p>Design > UCI > New Page. Arrastrar controles desde los Named Components a cada pagina segun la estructura sugerida.</p></div>\n<div class=\"step\"><h4>7. Desplegar y probar</h4><p>File > Deploy. En cada dispositivo verificar la conexion TCP/UDP y el estado de los controles.</p></div>\n\n<h2>📌 Notas de Implementacion por Equipo</h2>\n<ul>${notasHtml}</ul>\n\n<footer>Generado automaticamente por Q-SYS Config Generator — Vitel SA &nbsp;|&nbsp; ${new Date().toLocaleString('es-ES')}</footer>\n</body>\n</html>`;\n\n// JSON estructurado de la configuracion\nconst config_json = {\n  proyecto, cliente, sala, core_modelo, core_ip, fecha,\n  dispositivos: dispositivos.length,\n  scripts: scripts.map(s => ({ id: s.id, nombre: s.nombre, filename: s.filename, tipo: s.tipo, ip: s.ip, puerto: s.puerto })),\n  named_components: named_components.map(nc => nc.nombre_componente),\n  uci_pages: uci_pages.map(p => p.nombre)\n};\n\nreturn [{ json: {\n  success: true,\n  proyecto,\n  cliente,\n  html_report: html,\n  config_summary: config_json,\n  scripts_raw: scripts,\n  named_components_full: named_components,\n  uci_structure: uci_pages,\n  total_devices: dispositivos.length,\n  generated_at: new Date().toISOString()\n}}];"
+      },
+      "id": "b4915280-34d9-441b-9708-8fd0b6ac57b7",
+      "name": "Ensamblar Configuracion Final",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2032,
+        384
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "7f05ea55-d411-45c6-a625-93806ab4b389",
+      "name": "Responder al Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        2272,
+        304
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Salida del workflow\nEl JSON de respuesta contiene:\n- `html_report`: Informe HTML completo listo para abrir en navegador o convertir a PDF\n- `scripts_raw`: Array con todos los scripts Lua generados\n- `named_components_full`: Lista completa de Named Components con sus controles UCI\n- `uci_structure`: Estructura de páginas UCI sugerida\n- `config_summary`: Resumen del proyecto\n\n**Para obtener el HTML como archivo:**\nAnyadir un nodo adicional que guarde `html_report` en disco o lo envie por email.",
+        "height": 260,
+        "width": 340,
+        "color": 3
+      },
+      "id": "9821ceb5-6d08-41f6-95aa-31c39820456b",
+      "name": "📤 Salida",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2272,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        208
+      ],
+      "id": "d6facc74-dc63-4aa3-8451-904b627d8590",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "H8RsNJ9mV49W9UMq",
+          "name": "Google Drive account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-18T21:26:04.304Z",
+      "createdAt": "2026-03-18T21:26:04.304Z",
+      "role": "workflow:owner",
+      "workflowId": "vMwiovOO0qHS_mBVQIryZ",
+      "projectId": "u2lnFFYk1yGEaOcS"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-03-18T21:26:02.684Z",
+      "createdAt": "2026-03-18T21:26:02.684Z",
+      "id": "IWWHvrSRMSCIxA4O",
+      "name": "Vitel SA"
+    },
+    {
+      "updatedAt": "2026-03-18T21:26:02.690Z",
+      "createdAt": "2026-03-18T21:26:02.690Z",
+      "id": "YmUeuNS3aadAJZ0s",
+      "name": "Q-SYS"
+    },
+    {
+      "updatedAt": "2026-03-18T21:26:02.664Z",
+      "createdAt": "2026-03-18T21:26:02.664Z",
+      "id": "dkBod4PEJQtrDCnd",
+      "name": "Audiovisual"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-18T22:44:39.121Z",
+  "versionId": "1afcbcc4-4316-4a9b-97c9-388b7dfaae2a"
+}
