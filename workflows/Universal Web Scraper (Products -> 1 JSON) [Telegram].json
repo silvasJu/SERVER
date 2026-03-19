@@ -161,6 +161,11 @@
             "node": "IF No URLs",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Merge URL + HTML",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -177,11 +182,6 @@
         [
           {
             "node": "Fetch Product Pages",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Merge URL + HTML",
             "type": "main",
             "index": 0
           }
@@ -244,57 +244,41 @@
       ]
     }
   },
-  "createdAt": "2026-02-17T23:46:05.580Z",
-  "id": "on8ZObk61sqPeS7lcj3Bj",
-  "isArchived": false,
-  "meta": null,
+  "createdAt": "2026-02-16T15:49:04.797Z",
+  "id": "1O6u05RMHqps04JGr-GBQ",
+  "isArchived": true,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
   "name": "Universal Web Scraper (Products -> 1 JSON) [Telegram]",
   "nodes": [
     {
       "parameters": {
-        "jsCode": "// Entrada esperada (Chat Trigger):\n// { sessionId, action, chatInput: \"https://fonestar.com max=200\" }\n\nconst raw = String($json.chatInput ?? '').trim();\nif (!raw) throw new Error('Falta chatInput. Ej: https://fonestar.com max=200');\n\n// Normalizar texto\nconst text = raw\n  .replace(/[\\u200B-\\u200D\\uFEFF]/g, '')   // invisibles\n  .replace(/\\r\\n|\\r|\\n/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// max=NN (opcional)\nlet maxProducts = 200;\nconst mm = text.match(/(?:^|\\s)max\\s*=\\s*(\\d+)/i);\nif (mm?.[1]) {\n  const n = parseInt(mm[1], 10);\n  if (Number.isFinite(n)) maxProducts = Math.min(Math.max(n, 1), 2000);\n}\n\n\n// chatId=NNN (opcional, para enviar el JSON por Telegram)\nlet chatId = null;\nconst mc = text.match(/(?:^|\\s)chatid\\s*=\\s*(\\d+)/i);\nif (mc?.[1]) {\n  const n = parseInt(mc[1], 10);\n  if (Number.isFinite(n)) chatId = n;\n}\n\n// Sacar URL/dominio (primer token razonable)\nconst tokens = text.split(' ');\nlet candidate = '';\n\nfor (let t of tokens) {\n  t = t.trim()\n    .replace(/^[<(\"'[{]+/g, '')\n    .replace(/[>\\)\"'\\]}.,;:!?]+$/g, '');\n  if (!t) continue;\n\n  if (\n    t.startsWith('http://') ||\n    t.startsWith('https://') ||\n    t.startsWith('//') ||\n    t.startsWith('www.') ||\n    t.includes('.')\n  ) {\n    candidate = t;\n    break;\n  }\n}\n\nif (!candidate) {\n  throw new Error('No encontré URL/dominio en el mensaje. Ej: https://fonestar.com max=200');\n}\n\n// Normalizar URL (sin usar new URL)\ncandidate = candidate\n  .replace(/(https?)\\s*:\\s*\\/\\//i, '$1://') // \"https : //\"\n  .replace(/(https?)\\s+\\/\\//i, '$1://');    // \"https //\"\n\nif (candidate.startsWith('//')) candidate = 'https:' + candidate;\nif (candidate.startsWith('www.')) candidate = 'https://' + candidate;\nif (!/^https?:\\/\\//i.test(candidate)) candidate = 'https://' + candidate;\n\n// origin\nconst mOrigin = candidate.match(/^(https?:\\/\\/[^\\/?#]+)/i);\nif (!mOrigin) throw new Error(`URL inválida: \"${candidate}\"`);\n\nconst origin = mOrigin[1];\n\nreturn [{\n  json: {\n    inputText: text,\n    targetUrl: candidate,\n    origin,\n    maxProducts,\n    userAgent: 'Mozilla/5.0 (n8n-scraper)',\n    chatId\n  }\n}];\n"
+        "jsCode": "// Entrada esperada (Chat Trigger):\n// { sessionId, action, chatInput: \"https://fonestar.com max=200\" }\n\nconst raw = String($json.chatInput ?? '').trim();\nif (!raw) throw new Error('Falta chatInput. Ej: https://fonestar.com max=20');\n\n// Normalizar texto\nconst text = raw\n  .replace(/[\\u200B-\\u200D\\uFEFF]/g, '')   // invisibles\n  .replace(/\\r\\n|\\r|\\n/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// max=NN (opcional)\nlet maxProducts = 20;\nconst mm = text.match(/(?:^|\\s)max\\s*=\\s*(\\d+)/i);\nif (mm?.[1]) {\n  const n = parseInt(mm[1], 10);\n  if (Number.isFinite(n)) maxProducts = Math.min(Math.max(n, 1), 2000);\n}\n\n// Sacar URL/dominio (primer token razonable)\nconst tokens = text.split(' ');\nlet candidate = '';\n\nfor (let t of tokens) {\n  t = t.trim()\n    .replace(/^[<(\"'[{]+/g, '')\n    .replace(/[>\\)\"'\\]}.,;:!?]+$/g, '');\n  if (!t) continue;\n\n  if (\n    t.startsWith('http://') ||\n    t.startsWith('https://') ||\n    t.startsWith('//') ||\n    t.startsWith('www.') ||\n    t.includes('.')\n  ) {\n    candidate = t;\n    break;\n  }\n}\n\nif (!candidate) {\n  throw new Error('No encontré URL/dominio en el mensaje. Ej: https://fonestar.com max=200');\n}\n\n// Normalizar URL (sin usar new URL)\ncandidate = candidate\n  .replace(/(https?)\\s*:\\s*\\/\\//i, '$1://') // \"https : //\"\n  .replace(/(https?)\\s+\\/\\//i, '$1://');    // \"https //\"\n\nif (candidate.startsWith('//')) candidate = 'https:' + candidate;\nif (candidate.startsWith('www.')) candidate = 'https://' + candidate;\nif (!/^https?:\\/\\//i.test(candidate)) candidate = 'https://' + candidate;\n\n// origin\nconst mOrigin = candidate.match(/^(https?:\\/\\/[^\\/?#]+)/i);\nif (!mOrigin) throw new Error(`URL inválida: \"${candidate}\"`);\n\nconst origin = mOrigin[1];\n\nreturn [{\n  json: {\n    inputText: text,\n    targetUrl: candidate,\n    origin,\n    maxProducts,\n    userAgent: 'Mozilla/5.0 (n8n-scraper)'\n  }\n}];\n"
       },
-      "id": "23f56af4-71a6-4d40-be82-4d9e4732738e",
+      "id": "eeef0838-1896-4b12-9e4b-1499420879e0",
       "name": "Parse Chat Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1632,
-        176
+        -1776,
+        144
       ]
     },
     {
       "parameters": {
         "url": "={{$items('Parse Chat Command')[0].json.origin + '/robots.txt'}}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "User-Agent",
-              "value": "={{$items(\"Parse Chat Command\")[0].json.userAgent}}"
-            },
-            {
-              "name": "Accept",
-              "value": "text/plain,*/*;q=0.8"
-            }
-          ]
-        },
         "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text"
-            }
-          },
           "timeout": 30000
         }
       },
-      "id": "b1bca803-acc3-4150-9ad7-d1a677fde45a",
+      "id": "1fd86777-0f85-4131-bfad-ecd9bcda0303",
       "name": "Get robots.txt",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -1472,
-        80
+        -1616,
+        48
       ],
       "continueOnFail": true
     },
@@ -302,13 +286,13 @@
       "parameters": {
         "jsCode": "/**\n * Build Candidates (simple y robusto)\n * Entrada:\n *  - origin (desde Parse Chat Command, vía Include Input Data o Merge)\n *  - robots.txt en data/body/text\n * Salida:\n *  - items { candidateUrl }\n */\n\n// --- Obtener origin de forma robusta ---\nlet origin = $json.origin;\n\nif (!origin) {\n  try {\n    origin = $items('Parse Chat Command')[0].json.origin;\n  } catch (e) {}\n}\n\norigin = String(origin || '').replace(/\\/+$/,'').trim();\n\nif (!origin) {\n  throw new Error('Falta origin. Asegura Include Input Data o usa Merge.');\n}\n\n// --- Obtener contenido robots.txt ---\nfunction getRobots(obj) {\n  for (const k of ['body','data','text','response']) {\n    if (typeof obj?.[k] === 'string' && obj[k].trim()) return obj[k];\n  }\n  for (const v of Object.values(obj || {})) {\n    if (typeof v === 'string' && v.trim()) return v;\n  }\n  return '';\n}\n\nconst robotsStr = getRobots($json);\n\nif (!robotsStr) {\n  // Si no hay robots, seguimos con defaults\n  console.log('robots.txt vacío, usando fallbacks.');\n}\n\n// --- Extraer Sitemap: del robots ---\nconst found = [];\nconst lines = String(robotsStr || '').split(/\\r?\\n/);\n\nfor (const line of lines) {\n  const match = line.match(/^\\s*sitemap:\\s*(\\S+)/i);\n  if (match && match[1]) {\n    found.push(match[1].trim());\n  }\n}\n\n// --- Fallbacks típicos ---\nconst defaults = [\n  origin + '/sitemap.xml',\n  origin + '/sitemap_index.xml',\n  origin + '/sitemap-index.xml',\n  origin + '/sitemapindex.xml',\n  origin + '/wp-sitemap.xml'\n];\n\n// Opcionales HTML (por si no hay XML)\nconst html = [\n  origin + '/sitemap',\n  origin + '/en/sitemap',\n  origin + '/es/sitemap',\n  origin + '/de/sitemap'\n];\n\n// --- Combinar y deduplicar ---\nconst candidates = [...found, ...defaults, ...html]\n  .filter(Boolean);\n\nconst uniq = [...new Set(candidates)];\n\n// --- Output ---\nreturn uniq.map(u => ({\n  json: {\n    candidateUrl: u\n  }\n}));\n"
       },
-      "id": "da8608a3-e3fe-4b11-b046-30b7e41e6a22",
+      "id": "dd774cdf-9a96-4081-94e7-72be8dc84d4c",
       "name": "Build Candidates",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1248,
-        176
+        -1392,
+        144
       ]
     },
     {
@@ -336,41 +320,38 @@
           "timeout": 30000
         }
       },
-      "id": "eab205e7-a7d7-4c4f-b1ad-1b15e948a648",
+      "id": "e6123b6f-73d4-45c0-94a2-e2f2e28363dc",
       "name": "Fetch Candidate",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -1024,
-        304
+        -1168,
+        272
       ],
       "continueOnFail": true
     },
     {
-      "parameters": {
-        "mode": "mergeByIndex",
-        "options": {}
-      },
-      "id": "85176ff8-786b-42ed-bf8b-9f813f45d2e5",
+      "parameters": {},
+      "id": "7a5ed551-599a-4b33-9bb5-745ab92d6cd9",
       "name": "Merge Candidate + Body",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        -800,
-        192
+        -944,
+        160
       ]
     },
     {
       "parameters": {
         "jsCode": "/**\n * Pick + Parse Candidate (robusto y sencillo)\n * Limitado a maxProducts (200 por defecto)\n */\n\n// 1) Obtener origin y meta\nconst firstIn = $input.first()?.json ?? {};\nconst meta = (() => {\n  try { return $items('Parse Chat Command')[0].json; } catch (e) { return {}; }\n})();\n\nconst origin = firstIn.origin || meta.origin || '';\nconst MAX_ITEMS = meta.maxProducts || 200;\n\n// limpiar invisibles\nconst clean = (s) => String(s || '').replace(/[\\u200B-\\u200D\\uFEFF]/g, '').trim();\n\n// host sin new URL\nconst originHost = (() => {\n  const m = clean(origin).match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n})();\n\n// 2) Obtener bodies\nconst all = $input.all().map(x => x.json);\n\nfunction getBody(o) {\n  for (const k of ['body', 'data', 'response', 'text']) {\n    if (typeof o?.[k] === 'string' && o[k].trim()) return o[k];\n  }\n  for (const v of Object.values(o || {})) {\n    if (typeof v === 'string' && v.length > 50) return v;\n  }\n  return '';\n}\n\nfunction decodeEntities(s) {\n  return String(s || '')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&quot;/g, '\"')\n    .replace(/&#39;/g, \"'\");\n}\n\nfunction toAbsoluteUrl(href) {\n  const h = clean(decodeEntities(href));\n  if (!h) return '';\n\n  if (\n    h.startsWith('#') ||\n    h.startsWith('mailto:') ||\n    h.startsWith('tel:') ||\n    h.startsWith('javascript:')\n  ) return '';\n\n  if (/^https?:\\/\\//i.test(h)) return h;\n\n  if (h.startsWith('//')) {\n    const scheme = clean(origin).startsWith('http://') ? 'http:' : 'https:';\n    return scheme + h;\n  }\n\n  if (origin) {\n    if (h.startsWith('/')) return clean(origin).replace(/\\/+$/,'') + h;\n    return clean(origin).replace(/\\/+$/,'') + '/' + h;\n  }\n\n  return '';\n}\n\nfunction sameHost(url) {\n  if (!originHost) return true;\n  const m = clean(url).match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() === originHost : false;\n}\n\n// 3) Elegir mejor body\nlet bestScore = 0;\nlet bestBody = '';\n\nfor (const o of all) {\n  const body = clean(getBody(o));\n  if (!body) continue;\n\n  const b = body.toLowerCase();\n  let score = 0;\n  if (b.includes('<urlset')) score = 3;\n  else if (b.includes('<sitemapindex')) score = 2;\n  else if (b.includes('<html')) score = 1;\n\n  if (score > bestScore) {\n    bestScore = score;\n    bestBody = body;\n  }\n}\n\n// 4) Parsear\nlet pageUrls = [];\nlet childSitemaps = [];\n\nif (bestScore === 3) {\n  const locRe = /<loc>\\s*([^<\\s]+)\\s*<\\/loc>/gi;\n  for (const m of bestBody.matchAll(locRe)) {\n    const u = clean(decodeEntities(m[1]));\n    if (!u) continue;\n    if (!sameHost(u)) continue;\n    pageUrls.push(u);\n  }\n} else if (bestScore === 2) {\n  const locRe = /<loc>\\s*([^<\\s]+)\\s*<\\/loc>/gi;\n  for (const m of bestBody.matchAll(locRe)) {\n    const u = clean(decodeEntities(m[1]));\n    if (!u) continue;\n\n    const lu = u.toLowerCase();\n    const looksSitemap = lu.includes('sitemap') || lu.endsWith('.xml') || lu.endsWith('.xml.gz');\n    if (looksSitemap) childSitemaps.push(u);\n  }\n} else if (bestScore === 1) {\n  const hrefRe = /href=[\"']([^\"']+)[\"']/gi;\n  for (const m of bestBody.matchAll(hrefRe)) {\n    const abs = toAbsoluteUrl(m[1]);\n    if (!abs) continue;\n    if (!sameHost(abs)) continue;\n\n    const lu = abs.toLowerCase();\n    const looksSitemap = lu.includes('sitemap') || lu.endsWith('.xml') || lu.endsWith('.xml.gz');\n    if (looksSitemap) childSitemaps.push(abs);\n    else pageUrls.push(abs);\n  }\n}\n\n// dedupe\npageUrls = [...new Set(pageUrls)];\nchildSitemaps = [...new Set(childSitemaps)];\n\n// 🔒 LIMITAR RESULTADOS\npageUrls = pageUrls.slice(0, MAX_ITEMS);\n\nif (pageUrls.length < MAX_ITEMS) {\n  childSitemaps = childSitemaps.slice(0, MAX_ITEMS - pageUrls.length);\n} else {\n  childSitemaps = [];\n}\n\n// 5) Output\nconst out = [];\n\nif (pageUrls.length === 0) {\n  out.push({ json: { kind: 'pageUrl', url: '', isDummy: true } });\n} else {\n  for (const u of pageUrls) {\n    out.push({ json: { kind: 'pageUrl', url: u, isDummy: false } });\n  }\n}\n\nif (childSitemaps.length === 0) {\n  out.push({ json: { kind: 'childSitemap', url: '', isDummy: true } });\n} else {\n  for (const u of childSitemaps) {\n    out.push({ json: { kind: 'childSitemap', url: u, isDummy: false } });\n  }\n}\n\nreturn out;\n"
       },
-      "id": "f59df141-5365-42ce-a147-4a191d9d9bd7",
+      "id": "a05d0ae0-b6be-4a0e-ad85-cc6f97422cf2",
       "name": "Pick + Parse Candidate",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -624,
-        128
+        -768,
+        96
       ]
     },
     {
@@ -398,13 +379,13 @@
         },
         "options": {}
       },
-      "id": "ee499e8d-a7d8-4011-a737-58778f1add2f",
+      "id": "668936df-a48b-4e15-8379-8c34878efab8",
       "name": "IF Is Child Sitemap",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -416,
-        208
+        -560,
+        176
       ]
     },
     {
@@ -430,111 +411,93 @@
             {
               "id": "c9bac9a6-8cc1-45b9-96d5-7ceb412f1eb8",
               "leftValue": "={{$json.isDummy}}",
-              "rightValue": false,
+              "rightValue": "false",
               "operator": {
-                "type": "boolean",
+                "type": "string",
                 "operation": "equals"
               }
             }
           ],
-          "combinator": "and"
+          "combinator": "or"
         },
         "options": {
           "looseTypeValidation": true
         }
       },
-      "id": "7560d929-3a8f-4c90-b011-b6983e332248",
+      "id": "cd750105-a332-425b-9c54-1c4a26d3826c",
       "name": "IF Child URL Present",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -208,
-        128
+        -352,
+        96
       ]
     },
     {
       "parameters": {
         "url": "={{$json.url}}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "User-Agent",
-              "value": "={{$items(\"Parse Chat Command\")[0].json.userAgent}}"
-            },
-            {
-              "name": "Accept",
-              "value": "application/xml,text/xml,text/html;q=0.9,*/*;q=0.8"
-            }
-          ]
-        },
         "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text"
-            }
-          },
           "timeout": 30000
         }
       },
-      "id": "25b40862-dff0-49c2-aade-8279890e5f87",
+      "id": "a236d503-c113-4d68-a627-e99a2b9a6d16",
       "name": "Fetch Child Sitemap",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        0,
-        0
+        -144,
+        -32
       ],
       "continueOnFail": true
     },
     {
       "parameters": {
-        "jsCode": "/**\n * Parse Child Sitemap (simple y robusto)\n * Entrada: items con el XML del child sitemap en body/data/text/response\n * Output: items { kind:'pageUrl', url, isDummy }\n */\n\n\n// meta (para límites)\nlet meta = {};\ntry { meta = $items('Parse Chat Command')[0].json; } catch (e) { meta = {}; }\nconst CAP = Math.min((meta.maxProducts || 200) * 5, 5000);\n\n// 1) origin / host (robusto)\nconst firstIn = $input.first()?.json ?? {};\nlet origin = firstIn.origin;\n\nif (!origin) {\n  // fallback: intentar leer del nodo Parse Chat Command si existe\n  try { origin = $items('Parse Chat Command')[0].json.origin; } catch (e) {}\n}\n\norigin = String(origin || '').trim();\n\n// host sin new URL()\nconst originHost = (() => {\n  const m = origin.match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n})();\n\nfunction getBody(o) {\n  for (const k of ['body', 'data', 'response', 'text']) {\n    if (typeof o?.[k] === 'string' && o[k].trim()) return o[k];\n  }\n  for (const v of Object.values(o || {})) {\n    if (typeof v === 'string' && v.length > 50) return v;\n  }\n  return '';\n}\n\nfunction decodeEntities(s) {\n  return String(s || '')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&quot;/g, '\"')\n    .replace(/&#39;/g, \"'\");\n}\n\nfunction strip(s) {\n  return String(s || '')\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, '') // invisibles\n    .trim();\n}\n\nfunction sameHost(url) {\n  if (!originHost) return true; // si no sabemos host, no filtramos\n  const m = strip(url).match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() === originHost : false;\n}\n\nfunction toAbsolute(u) {\n  let s = strip(decodeEntities(u));\n  if (!s) return '';\n\n  // si ya es absoluta\n  if (/^https?:\\/\\//i.test(s)) return s;\n\n  // protocol-relative\n  if (s.startsWith('//')) {\n    const scheme = origin.startsWith('http://') ? 'http:' : 'https:';\n    return scheme + s;\n  }\n\n  // relativa\n  if (origin) {\n    const base = origin.replace(/\\/+$/g, '');\n    if (s.startsWith('/')) return base + s;\n    return base + '/' + s;\n  }\n\n  return '';\n}\n\n// 2) parse <loc> en todos los inputs\nconst all = $input.all().map(i => i.json);\nconst pageUrls = [];\n\nconst locRe = /<loc>\\s*([^<\\s]+)\\s*<\\/loc>/gi;\n\nfor (const o of all) {\n  const body = strip(getBody(o));\n  if (!body) continue;\n\n  for (const m of body.matchAll(locRe)) {\n    const rawLoc = m[1];\n    const abs = toAbsolute(rawLoc);\n    if (!abs) continue;\n\n    const lu = abs.toLowerCase();\n    // excluir sitemaps\n    if (lu.endsWith('.xml') || lu.endsWith('.xml.gz') || lu.includes('sitemap')) continue;\n\n    if (!sameHost(abs)) continue;\n\n    pageUrls.push(abs);\n    if (pageUrls.length >= CAP) break;\n  }\n  if (pageUrls.length >= CAP) break;\n}\n\n// 3) dedupe + output\nconst uniq = [...new Set(pageUrls)].slice(0, CAP);\n\nif (uniq.length === 0) {\n  return [{ json: { kind: 'pageUrl', url: '', isDummy: true } }];\n}\n\nreturn uniq.map(u => ({ json: { kind: 'pageUrl', url: u, isDummy: false } }));"
+        "jsCode": "/**\n * Parse Child Sitemap (simple y robusto)\n * Entrada: items con el XML del child sitemap en body/data/text/response\n * Output: items { kind:'pageUrl', url, isDummy }\n */\n\n// 1) origin / host (robusto)\nconst firstIn = $input.first()?.json ?? {};\nlet origin = firstIn.origin;\n\nif (!origin) {\n  // fallback: intentar leer del nodo Parse Chat Command si existe\n  try { origin = $items('Parse Chat Command')[0].json.origin; } catch (e) {}\n}\n\norigin = String(origin || '').trim();\n\n// host sin new URL()\nconst originHost = (() => {\n  const m = origin.match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n})();\n\nfunction getBody(o) {\n  for (const k of ['body', 'data', 'response', 'text']) {\n    if (typeof o?.[k] === 'string' && o[k].trim()) return o[k];\n  }\n  for (const v of Object.values(o || {})) {\n    if (typeof v === 'string' && v.length > 50) return v;\n  }\n  return '';\n}\n\nfunction decodeEntities(s) {\n  return String(s || '')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&quot;/g, '\"')\n    .replace(/&#39;/g, \"'\");\n}\n\nfunction strip(s) {\n  return String(s || '')\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, '') // invisibles\n    .trim();\n}\n\nfunction sameHost(url) {\n  if (!originHost) return true; // si no sabemos host, no filtramos\n  const m = strip(url).match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() === originHost : false;\n}\n\nfunction toAbsolute(u) {\n  let s = strip(decodeEntities(u));\n  if (!s) return '';\n\n  // si ya es absoluta\n  if (/^https?:\\/\\//i.test(s)) return s;\n\n  // protocol-relative\n  if (s.startsWith('//')) {\n    const scheme = origin.startsWith('http://') ? 'http:' : 'https:';\n    return scheme + s;\n  }\n\n  // relativa\n  if (origin) {\n    const base = origin.replace(/\\/+$/g, '');\n    if (s.startsWith('/')) return base + s;\n    return base + '/' + s;\n  }\n\n  return '';\n}\n\n// 2) parse <loc> en todos los inputs\nconst all = $input.all().map(i => i.json);\nconst pageUrls = [];\n\nconst locRe = /<loc>\\s*([^<\\s]+)\\s*<\\/loc>/gi;\n\nfor (const o of all) {\n  const body = strip(getBody(o));\n  if (!body) continue;\n\n  for (const m of body.matchAll(locRe)) {\n    const rawLoc = m[1];\n    const abs = toAbsolute(rawLoc);\n    if (!abs) continue;\n\n    const lu = abs.toLowerCase();\n    // excluir sitemaps\n    if (lu.endsWith('.xml') || lu.endsWith('.xml.gz') || lu.includes('sitemap')) continue;\n\n    if (!sameHost(abs)) continue;\n\n    pageUrls.push(abs);\n  }\n}\n\n// 3) dedupe + output\nconst uniq = [...new Set(pageUrls)];\n\nif (uniq.length === 0) {\n  return [{ json: { kind: 'pageUrl', url: '', isDummy: true } }];\n}\n\nreturn uniq.map(u => ({ json: { kind: 'pageUrl', url: u, isDummy: false } }));\n"
       },
-      "id": "1cc91e81-b75f-454c-b9b6-81e0f87cad54",
+      "id": "1259481f-6f4d-4a69-abca-9ed793bf27cb",
       "name": "Parse Child Sitemap",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        176,
-        96
+        32,
+        64
       ]
     },
     {
       "parameters": {
         "jsCode": "return [{json:{kind:'pageUrl',url:'',isDummy:true}}];"
       },
-      "id": "16c908ef-f7d4-4aed-b2e2-2a141edb3a0a",
+      "id": "e30c1f75-96d9-4d57-a721-37360a7ebaa0",
       "name": "Child Dummy -> Page Dummy",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        176
+        -144,
+        144
       ]
     },
     {
       "parameters": {},
-      "id": "ed45cf3b-ed8a-4ac4-909b-398cc994f7c3",
+      "id": "f2743b89-b59f-4afa-adbc-4b0b31778e14",
       "name": "Merge Page URLs",
       "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
+      "typeVersion": 2,
       "position": [
-        368,
-        352
+        224,
+        320
       ]
     },
     {
       "parameters": {
         "jsCode": "/**\n * Filter + Limit URLs (sin new URL)\n * Entrada: items { kind:'pageUrl', url }\n * Usa meta de Parse Chat Command: origin + maxProducts\n * Salida: items { url } o { noUrls:true }\n */\n\n// --- meta robusto ---\nlet meta = {};\ntry { meta = $items('Parse Chat Command')[0].json; } catch (e) { meta = {}; }\n\nconst origin = String(meta.origin || '').trim();\nconst max = Number(meta.maxProducts || 200);\n\nif (!origin) throw new Error('Falta origin (desde Parse Chat Command).');\n\nconst originHost = (() => {\n  const m = origin.match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n})();\n\nconst originScheme = origin.startsWith('http://') ? 'http:' : 'https:';\n\nconst cleanStr = (s) =>\n  String(s || '')\n    .replace(/[\\u200B-\\u200D\\uFEFF]/g, '') // invisibles\n    .replace(/\\s+/g, ' ')\n    .trim();\n\nconst decodeEntities = (s) =>\n  String(s || '').replace(/&amp;/g, '&');\n\nfunction getHost(u) {\n  const m = cleanStr(u).match(/^https?:\\/\\/([^\\/?#]+)/i);\n  return m ? m[1].toLowerCase() : '';\n}\n\nfunction getPath(u) {\n  // devuelve pathname sin query/fragment\n  const s = cleanStr(u);\n  const m = s.match(/^https?:\\/\\/[^\\/?#]+(\\/[^?#]*)?/i);\n  return (m && m[1]) ? m[1] : '/';\n}\n\nfunction normalizeUrl(u) {\n  let s = cleanStr(decodeEntities(u));\n\n  if (!s) return '';\n\n  // arreglos básicos si vienen partidos\n  s = s.replace(/(https?)\\s*:\\s*\\/\\//i, '$1://');\n  s = s.replace(/(https?)\\s+\\/\\//i, '$1://');\n\n  // quitar fragment\n  s = s.split('#')[0];\n\n  // protocol-relative\n  if (s.startsWith('//')) s = originScheme + s;\n\n  // relativo a origin\n  if (s.startsWith('/')) s = origin.replace(/\\/+$/,'') + s;\n\n  // relativo sin slash\n  if (!/^https?:\\/\\//i.test(s)) s = origin.replace(/\\/+$/,'') + '/' + s;\n\n  return s;\n}\n\n// --- recolectar urls pageUrl ---\nconst urls = [];\nfor (const it of $input.all()) {\n  const j = it.json || {};\n  if (j.kind === 'pageUrl' && j.url) urls.push(j.url);\n}\n\n// --- dedupe (antes de normalizar) ---\nconst ded = [...new Set(urls.map(cleanStr).filter(Boolean))];\n\n// --- filtros ---\nconst badExt = [\n  '.jpg','.jpeg','.png','.gif','.webp','.svg',\n  '.css','.js','.pdf','.zip','.rar','.7z',\n  '.mp4','.mp3','.wav','.ico',\n  '.woff','.woff2','.ttf','.eot'\n];\n\nconst cleaned = [];\n\nfor (const raw of ded) {\n  const abs = normalizeUrl(raw);\n  if (!abs) continue;\n\n  // filtrar host (si lo conocemos)\n  if (originHost) {\n    const h = getHost(abs);\n    if (!h || h !== originHost) continue;\n  }\n\n  const p = getPath(abs).toLowerCase();\n  if (badExt.some(ext => p.endsWith(ext))) continue;\n\n  cleaned.push(abs);\n}\n\n// dedupe final\nconst cleanedUniq = [...new Set(cleaned)];\n\n// --- priorizar posibles páginas de producto ---\nconst productHints = [\n  '/product/','/products/','/producto/','/productos/',\n  '/shop/','/store/','/tienda/',\n  '/catalog','/catalogo',\n  '/item/','/p/','/prod'\n];\n\nconst hinted = cleanedUniq.filter(u =>\n  productHints.some(h => u.toLowerCase().includes(h))\n);\n\n// regla: si hay suficientes “hinted”, usa esas; si no, usa todas\nconst threshold = Math.min(50, max);\nconst chosen = (hinted.length >= threshold) ? hinted : cleanedUniq;\n\nconst final = chosen.slice(0, max);\n\nif (final.length === 0) {\n  return [{ json: { noUrls: true } }];\n}\n\nreturn final.map(u => ({ json: { url: u } }));\n"
       },
-      "id": "19705c06-2336-47b1-8da7-3f3d52ecf751",
+      "id": "29f39985-f1f5-4a68-891e-77bd073b6835",
       "name": "Filter + Limit URLs",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        512,
-        96
+        368,
+        64
       ]
     },
     {
@@ -550,10 +513,11 @@
             {
               "id": "b82da05d-4d12-4536-bcad-655098bb0996",
               "leftValue": "$json.noUrls",
-              "rightValue": true,
+              "rightValue": "true",
               "operator": {
-                "type": "boolean",
-                "operation": "equals"
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
               }
             }
           ],
@@ -564,106 +528,82 @@
           "looseTypeValidation": true
         }
       },
-      "id": "e0801a19-993d-4640-987b-a6549af14993",
+      "id": "c41949cb-c419-48df-8729-7d0f10324885",
       "name": "IF No URLs",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        688,
-        208
+        544,
+        176
       ]
     },
     {
       "parameters": {
         "url": "={{$json.url}}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "User-Agent",
-              "value": "={{$items(\"Parse Chat Command\")[0].json.userAgent}}"
-            },
-            {
-              "name": "Accept",
-              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-            }
-          ]
-        },
         "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text"
-            }
-          },
           "timeout": 30000
         }
       },
-      "id": "1458970b-6355-48cf-b892-8194e9a02748",
+      "id": "126358f6-5bc8-43d4-b150-9d4807ee6c21",
       "name": "Fetch Product Pages",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        880,
-        304
+        736,
+        272
       ],
       "continueOnFail": true
     },
     {
-      "parameters": {
-        "mode": "mergeByIndex",
-        "options": {}
-      },
-      "id": "d0275ff0-f360-4d08-b1d8-8a1df96e54ae",
+      "parameters": {},
+      "id": "25c446b7-6c5b-4247-a85f-14107b8dea04",
       "name": "Merge URL + HTML",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
       "position": [
-        880,
-        16
+        736,
+        -16
       ]
     },
     {
       "parameters": {
-        "jsCode": "/**\n * Parse Product Data (multimarca, robusto)\n * Entrada: { url } + HTML en body/data/response/text\n * Salida: { url, isProduct, name, price, currency, category, sku, detectedBy }\n */\n\nconst meta = (() => { try { return $items('Parse Chat Command')[0].json; } catch (e) { return {}; } })();\n\nfunction getBody(o) {\n  for (const k of ['body','data','response','text']) {\n    if (typeof o?.[k] === 'string' && o[k].trim()) return o[k];\n  }\n  for (const v of Object.values(o || {})) {\n    if (typeof v === 'string' && v.length > 200) return v;\n  }\n  return '';\n}\n\nconst clean = (s) => String(s || '')\n  .replace(/[\\u200B-\\u200D\\uFEFF]/g, '')\n  .trim();\n\nconst stripTags = (s) => clean(String(s || '').replace(/<[^>]+>/g, ' ').replace(/\\s+/g, ' '));\n\nfunction decodeEntities(s) {\n  return String(s || '')\n    .replace(/&amp;/g, '&')\n    .replace(/&lt;/g, '<')\n    .replace(/&gt;/g, '>')\n    .replace(/&quot;/g, '\"')\n    .replace(/&#39;/g, \"'\");\n}\n\nfunction typeHas(t, val) {\n  if (!t) return false;\n  if (Array.isArray(t)) return t.map(x => String(x)).some(x => x === val || x.includes(val));\n  const s = String(t);\n  return s === val || s.includes(val);\n}\n\nfunction parseNumberMaybe(x) {\n  if (x === null || x === undefined) return null;\n  const s = String(x)\n    .replace(/\\s/g, '')\n    .replace(/\\./g, '')              // miles\n    .replace(/,(\\d{2})$/, '.$1')      // decimal europeo al final\n    .replace(/[^0-9.]/g, '');\n  const n = parseFloat(s);\n  return Number.isFinite(n) ? n : null;\n}\n\nfunction currencyFromSymbol(s) {\n  const t = String(s || '');\n  if (t.includes('€')) return 'EUR';\n  if (t.includes('$')) return 'USD';\n  if (t.includes('£')) return 'GBP';\n  if (t.includes('CHF')) return 'CHF';\n  return null;\n}\n\nfunction firstMeta(html, attr, key) {\n  // attr: 'property' o 'name' o 'itemprop'\n  const re = new RegExp(`<meta[^>]+${attr}=[\"']${key}[\"'][^>]*>`, 'i');\n  const m = html.match(re);\n  if (!m) return null;\n  const tag = m[0];\n  const c = tag.match(/content=[\"']([^\"']+)[\"']/i);\n  return c ? clean(decodeEntities(c[1])) : null;\n}\n\nfunction firstTagContent(html, tagName) {\n  const re = new RegExp(`<${tagName}[^>]*>([\\\\s\\\\S]*?)</${tagName}>`, 'i');\n  const m = html.match(re);\n  return m ? stripTags(m[1]) : '';\n}\n\nfunction firstH1(html) {\n  const re = /<h1[^>]*>([\\s\\S]*?)<\\/h1>/i;\n  const m = html.match(re);\n  return m ? stripTags(m[1]) : '';\n}\n\nfunction extractJsonLdObjects(html) {\n  const re = /<script[^>]*type=[\"']application\\/ld\\+json[\"'][^>]*>([\\s\\S]*?)<\\/script>/gi;\n  const scripts = [];\n  let m;\n  while ((m = re.exec(html)) !== null) scripts.push(clean(m[1]));\n  const objs = [];\n  for (const s0 of scripts) {\n    if (!s0) continue;\n    const s = s0\n      .replace(/^\\s*<!--/,'')\n      .replace(/-->\\s*$/,'')\n      .trim();\n    try {\n      const parsed = JSON.parse(s);\n      const arr = Array.isArray(parsed) ? parsed : [parsed];\n      for (const o of arr) {\n        if (o && typeof o === 'object') {\n          if (Array.isArray(o['@graph'])) {\n            for (const g of o['@graph']) if (g && typeof g === 'object') objs.push(g);\n          }\n          objs.push(o);\n        }\n      }\n    } catch (e) {\n      // ignorar JSON-LD inválido\n    }\n  }\n  return objs;\n}\n\nfunction looksLikeAddToCart(html) {\n  const h = html.toLowerCase();\n  return h.includes('add-to-cart') || h.includes('add_to_cart') || h.includes('variations_form') || h.includes('product-form');\n}\n\nfunction normalizeCategoryFromUrl(url) {\n  try {\n    // si URL constructor no está disponible o falla, usamos regex\n    const m = String(url).match(/^https?:\\/\\/[^\\/?#]+(\\/[^?#]*)?/i);\n    const path = m && m[1] ? m[1] : '/';\n    const segs = path.split('/').filter(Boolean);\n\n    // quitar idioma común\n    const langs = new Set(['es','en','fr','de','pt','it','nl','pl','sv','no','da','fi','cs']);\n    const cleaned = segs.filter((s, idx) => !(idx === 0 && langs.has(s.toLowerCase())));\n\n    // quedarnos con 1-3 segmentos previos al slug final\n    if (cleaned.length <= 1) return '';\n    const head = cleaned.slice(0, Math.min(3, cleaned.length - 1));\n    return head.map(s => decodeURIComponent(s)).join(' > ');\n  } catch (e) {\n    return '';\n  }\n}\n\nconst out = [];\nfor (const it of $input.all()) {\n  const j = it.json || {};\n  const url = clean(j.url || j.link || j.href || '');\n  const html = clean(getBody(j));\n\n  if (!url) {\n    out.push({ json: { url: '', isProduct: false, detectedBy: 'no_url' } });\n    continue;\n  }\n\n  if (!html || html.length < 300) {\n    out.push({ json: { url, isProduct: false, detectedBy: 'no_html' } });\n    continue;\n  }\n\n  const detected = [];\n  const objs = extractJsonLdObjects(html);\n\n  let prod = null;\n  let bc = null;\n\n  for (const o of objs) {\n    if (o && typeHas(o['@type'], 'Product')) { prod = o; break; }\n  }\n  for (const o of objs) {\n    if (o && typeHas(o['@type'], 'BreadcrumbList')) { bc = o; break; }\n  }\n\n  // --- NAME ---\n  let name = prod?.name ? clean(prod.name) : '';\n  if (!name) name = firstMeta(html, 'property', 'og:title') || '';\n  if (!name) name = firstMeta(html, 'name', 'twitter:title') || '';\n  if (!name) name = firstH1(html) || '';\n  if (!name) name = firstTagContent(html, 'title').split('|')[0].split('-')[0].trim();\n\n  // --- SKU ---\n  let sku = prod?.sku ? clean(prod.sku) : '';\n  if (!sku) {\n    const skuMeta = firstMeta(html, 'itemprop', 'sku') || firstMeta(html, 'name', 'sku');\n    if (skuMeta) sku = skuMeta;\n  }\n  if (!sku) {\n    const mSku = html.match(/(?:SKU|Ref\\.?|Referencia|Item\\s*No\\.?)\\s*[:\\-]?\\s*([A-Z0-9][A-Z0-9\\-_.\\/]+)/i);\n    if (mSku) sku = clean(mSku[1]);\n  }\n\n  // --- PRICE & CURRENCY ---\n  let price = null;\n  let currency = null;\n\n  // JSON-LD offers\n  if (prod?.offers) {\n    const off = Array.isArray(prod.offers) ? prod.offers[0] : prod.offers;\n    currency = off?.priceCurrency ? clean(off.priceCurrency) : currency;\n    const pr = off?.price ?? off?.priceSpecification?.price ?? null;\n    const pnum = parseNumberMaybe(pr);\n    if (pnum !== null) price = pnum;\n    detected.push('jsonld');\n  }\n\n  // meta tags fallback\n  if (price === null) {\n    const p = firstMeta(html, 'property', 'product:price:amount')\n           || firstMeta(html, 'property', 'og:price:amount')\n           || firstMeta(html, 'name', 'product:price:amount')\n           || firstMeta(html, 'name', 'price')\n           || null;\n    const c = firstMeta(html, 'property', 'product:price:currency')\n           || firstMeta(html, 'property', 'og:price:currency')\n           || firstMeta(html, 'name', 'currency')\n           || null;\n\n    const pnum = parseNumberMaybe(p);\n    if (pnum !== null) {\n      price = pnum;\n      currency = currency || (c ? clean(c) : null);\n      detected.push('meta');\n    }\n  }\n\n  // microdata itemprop price\n  if (price === null) {\n    const mP = html.match(/itemprop=[\"']price[\"'][^>]*(?:content=[\"']([^\"']+)[\"']|>\\s*([^<]+)\\s*<)/i);\n    if (mP) {\n      const pnum = parseNumberMaybe(mP[1] || mP[2]);\n      if (pnum !== null) {\n        price = pnum;\n        detected.push('microdata');\n      }\n    }\n    const mC = html.match(/itemprop=[\"']priceCurrency[\"'][^>]*(?:content=[\"']([^\"']+)[\"']|>\\s*([^<]+)\\s*<)/i);\n    if (mC) currency = currency || clean(mC[1] || mC[2]);\n  }\n\n  // woocommerce / common price blocks\n  if (price === null) {\n    const mW = html.match(/woocommerce-Price-amount[^>]*>\\s*([^<]{1,40})</i);\n    if (mW) {\n      const txt = clean(stripTags(mW[1]));\n      const pnum = parseNumberMaybe(txt);\n      if (pnum !== null) {\n        price = pnum;\n        currency = currency || currencyFromSymbol(txt);\n        detected.push('regex');\n      }\n    }\n  }\n\n  // currency from symbols anywhere near price\n  if (!currency && price !== null) {\n    // buscar símbolo cerca de números\n    const mSym = html.match(/([€$£])\\s*[0-9]/);\n    if (mSym) currency = currencyFromSymbol(mSym[1]);\n  }\n\n  // --- CATEGORY ---\n  let category = '';\n  if (bc?.itemListElement) {\n    const els = Array.isArray(bc.itemListElement) ? bc.itemListElement : [bc.itemListElement];\n    const names = [];\n    for (const el of els) {\n      const item = el?.item ? el.item : el;\n      const nm = item?.name || el?.name || '';\n      if (nm) names.push(clean(nm));\n    }\n    const cleaned = names.filter(x => x && !['home','inicio','start'].includes(x.toLowerCase()));\n    if (cleaned.length > 0) {\n      const last = cleaned[cleaned.length - 1];\n      if (name && last && last.toLowerCase() === name.toLowerCase()) cleaned.pop();\n      category = cleaned.join(' > ');\n      detected.push('breadcrumb');\n    }\n  }\n  if (!category) category = normalizeCategoryFromUrl(url);\n  if (!category) category = 'Sin categoria';\n\n  // --- isProduct heuristic ---\n  const ogType = (firstMeta(html, 'property', 'og:type') || '').toLowerCase();\n  const hasProductSignals = looksLikeAddToCart(html) || ogType.includes('product');\n  const isProduct = !!prod || (name && hasProductSignals) || (name && price !== null);\n\n  out.push({\n    json: {\n      url,\n      isProduct,\n      name: name || null,\n      price,\n      currency: currency || null,\n      category,\n      sku: sku || null,\n      detectedBy: detected.length ? [...new Set(detected)].join(',') : null\n    }\n  });\n}\n\nreturn out;\n"
+        "jsCode": "const meta=$items('Parse Chat Command')[0].json;const origin=meta.origin;function getBody(o){for(const k of ['body','data','response','text']){if(typeof o[k]==='string')return o[k];}for(const v of Object.values(o)){if(typeof v==='string'&&v.length>50)return v;}return '';}function stripTags(s){return String(s||'').replace(/<[^>]+>/g,' ').replace(/\\s+/g,' ').trim();}function typeHas(t,val){if(!t)return false;if(Array.isArray(t))return t.map(x=>String(x)).some(x=>x===val||x.includes(val));const s=String(t);return s===val||s.includes(val);}const items=$input.all();const out=[];for(const it of items){const j=it.json||{};const url=j.url||j.candidateUrl||j.link||'';const html=getBody(j)||'';if(!url||!html||html.length<200){out.push({json:{url,isProduct:false}});continue;}const re=new RegExp('<script[^>]*application/ld\\\\+json[^>]*>([\\\\s\\\\S]*?)</script>','gi');const scripts=[];let m;while((m=re.exec(html))!==null){scripts.push((m[1]||'').trim());}const objs=[];for(const s of scripts){if(!s)continue;try{const parsed=JSON.parse(s);const arr=Array.isArray(parsed)?parsed:[parsed];for(const o of arr){if(o&&typeof o==='object'){if(Array.isArray(o['@graph'])){for(const g of o['@graph'])objs.push(g);}objs.push(o);}}}catch(e){}}let prod=null;for(const o of objs){if(o&&typeHas(o['@type'],'Product')){prod=o;break;}}let bc=null;for(const o of objs){if(o&&typeHas(o['@type'],'BreadcrumbList')){bc=o;break;}}let name=(prod&&prod.name)?String(prod.name).trim():'';if(!name){const titleMatch=html.match(new RegExp('<title[^>]*>([\\\\s\\\\S]*?)</title>','i'));if(titleMatch)name=stripTags(titleMatch[1]).split('|')[0].split('-')[0].trim();}let price=null;let currency=null;if(prod&&prod.offers){const off=Array.isArray(prod.offers)?prod.offers[0]:prod.offers;currency=off&&off.priceCurrency?String(off.priceCurrency):null;let pr=null;if(off){pr=off.price??(off.priceSpecification&&off.priceSpecification.price)??null;}if(pr!=null){const s=String(pr).replace(',','.').replace(/[^0-9.]/g,'');const n=parseFloat(s);if(Number.isFinite(n))price=n;}}let categoryPath='';if(bc&&bc.itemListElement){const els=Array.isArray(bc.itemListElement)?bc.itemListElement:[bc.itemListElement];const names=[];for(const el of els){const item=el&&el.item?el.item:el;const nm=(item&&item.name)?item.name:(el&&el.name)?el.name:'';if(nm)names.push(String(nm).trim());}const cleaned=names.filter(x=>x&&x.toLowerCase()!=='home'&&x.toLowerCase()!=='inicio');if(cleaned.length>0){let last=cleaned[cleaned.length-1];if(name&&last&&last.toLowerCase()===name.toLowerCase())cleaned.pop();categoryPath=cleaned.join(' > ');}}if(!categoryPath){try{const p=new URL(url).pathname.split('/').filter(Boolean);const seg=p.slice(0,Math.max(1,Math.min(3,p.length-1)));categoryPath=seg.map(s=>decodeURIComponent(s)).join(' > ');}catch(e){categoryPath='';}}let sku='';const itemNo=html.match(/Item\\s*No\\.?\\s*[:\\-]?\\s*([A-Z0-9\\-_.]+)/i);if(itemNo)sku=String(itemNo[1]).trim();const isProduct=!!prod||!!(name&&price!==null);out.push({json:{url,isProduct,name,price,currency,category:categoryPath||'Sin categoria',sku}});}return out;"
       },
-      "id": "09a37a0e-a7b8-4fb4-95ec-e97352fdc517",
+      "id": "bbe4194a-bedb-43bd-962f-73ddd4419214",
       "name": "Parse Product Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1056,
-        16
+        912,
+        -16
       ]
     },
     {
       "parameters": {
         "jsCode": "/**\n * Build JSON File (robusto y compatible con tu entorno)\n * Genera binario JSON listo para enviar por Telegram\n */\n\n// --- META ---\nlet meta = {};\ntry { meta = $items('Parse Chat Command')[0].json; } catch (e) { meta = {}; }\n\nconst chatId = meta.chatId || null;\nconst src = meta.targetUrl || '';\nconst origin = meta.origin || '';\nconst now = new Date().toISOString();\n\n// --- INPUT ITEMS ---\nconst items = $input.all().map(i => i.json || {});\n\n// --- PRODUCTOS VÁLIDOS ---\nconst validProducts = items.filter(p => p && p.isProduct && p.name);\n\n// --- LISTA PLANA ---\nconst products = validProducts.map(p => ({\n  name: p.name || null,\n  price: p.price ?? null,\n  currency: p.currency ?? null,\n  url: p.url || null,\n  sku: p.sku || null\n}));\n\n// --- AGRUPAR POR CATEGORÍA ---\nconst byCat = new Map();\n\nfor (const p of validProducts) {\n  let c = (p.category || 'Sin categoria');\n  c = String(c).trim();\n  if (!c) c = 'Sin categoria';\n\n  if (!byCat.has(c)) byCat.set(c, []);\n\n  byCat.get(c).push({\n    name: p.name || null,\n    price: p.price ?? null,\n    currency: p.currency ?? null,\n    url: p.url || null,\n    sku: p.sku || null\n  });\n}\n\n// --- ORDENAR CATEGORÍAS ---\nconst categories = [...byCat.entries()]\n  .sort((a, b) => a[0].localeCompare(b[0]))\n  .map(([name, prods]) => ({\n    name,\n    products: prods\n  }));\n\n// --- CATALOGO FINAL ---\nconst catalog = {\n  source: src,\n  generated_at: now,\n  total_products: products.length,\n  categories\n};\n\nconst jsonStr = JSON.stringify(catalog, null, 2);\n\n// --- HOST SEGURO (sin new URL) ---\nlet host = 'unknown';\n\nconst hostMatch = String(origin).match(/^https?:\\/\\/([^\\/?#]+)/i);\nif (hostMatch) {\n  host = hostMatch[1].replace(/[^a-zA-Z0-9.-]/g, '_');\n}\n\nconst fileName = `catalog_${host}_${Date.now()}.json`;\n\n// --- OUTPUT BINARIO ---\nreturn [{\n  json: {\n    chatId,\n    fileName,\n    total_products: products.length\n  },\n  binary: {\n    data: {\n      data: Buffer.from(jsonStr, 'utf8').toString('base64'),\n      mimeType: 'application/json',\n      fileName\n    }\n  }\n}];\n"
       },
-      "id": "7f9c2473-922d-432f-b47d-978bcff53f11",
+      "id": "ef50a9e6-e4dd-4ad6-88d2-b8ad3a660a09",
       "name": "Build JSON File",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1088,
-        256
+        944,
+        224
       ]
     },
     {
       "parameters": {
-        "operation": "sendDocument",
-        "chatId": "={{$json.chatId}}",
-        "binaryData": true,
-        "additionalFields": {
-          "caption": "={{\"Catálogo: \" + ($json.fileName || \"catalog.json\") + \" (\" + ($json.total_products || 0) + \" productos)\"}}"
-        }
+        "resource": "file",
+        "fileId": "data",
+        "additionalFields": {}
       },
-      "id": "570d4cb3-66d0-4778-8861-d6dadd21b222",
+      "id": "b7987d72-bf05-4e95-8ebd-182cdaba894e",
       "name": "Send JSON (Telegram)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
       "position": [
-        1264,
-        432
+        1120,
+        400
       ],
       "webhookId": "a10dc2a0-6aae-47ec-b2bf-26e606268575",
       "credentials": {
@@ -671,8 +611,7 @@
           "id": "9OJrrfByOP432mSc",
           "name": "Telegram account 3"
         }
-      },
-      "continueOnFail": true
+      }
     },
     {
       "parameters": {
@@ -681,10 +620,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "position": [
-        -1840,
-        80
+        -1984,
+        48
       ],
-      "id": "b2e6784a-82de-4b6e-ba62-5a77afa3c62d",
+      "id": "72dfad9d-0829-45f0-bcdb-f4788fb23d8c",
       "name": "When chat message received",
       "webhookId": "b2395d30-08dd-4c8f-8d19-0a121c85d1f9",
       "alwaysOutputData": true
@@ -698,16 +637,16 @@
   },
   "shared": [
     {
-      "updatedAt": "2026-02-17T23:46:05.585Z",
-      "createdAt": "2026-02-17T23:46:05.585Z",
+      "updatedAt": "2026-02-16T15:49:04.806Z",
+      "createdAt": "2026-02-16T15:49:04.806Z",
       "role": "workflow:owner",
-      "workflowId": "on8ZObk61sqPeS7lcj3Bj",
+      "workflowId": "1O6u05RMHqps04JGr-GBQ",
       "projectId": "u2lnFFYk1yGEaOcS"
     }
   ],
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-02-17T23:46:05.580Z",
-  "versionId": "dae7c753-14b0-42b9-b94a-18f45deed469"
+  "updatedAt": "2026-03-18T21:15:38.000Z",
+  "versionId": "b4b60554-79fc-49fb-a81b-cc0a6c57af83"
 }
