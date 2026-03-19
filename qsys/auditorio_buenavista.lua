@@ -1,8 +1,8 @@
 -- ============================================================
--- AUDITORIO CC BUENAVISTA — JMD SALAMANCA
+-- AUDITORIO Vallecas
 -- Q-SYS Core 8 Flex — Script de Control Principal
--- Q-SYS Designer 9.12
--- Versión: 1.0  |  2026-03-19
+-- Q-SYS Designer
+-- Versión: 9.12  |  2026-03-19
 -- ============================================================
 --
 -- CONTROLES QUE DEBE EXPONER EL COMPONENTE SCRIPT:
