@@ -54,6 +54,11 @@
         ]
       ]
     },
+    "Webhook - Recibir pliego1": {
+      "main": [
+        []
+      ]
+    },
     "Webhook - Recibir pliego": {
       "main": [
         [
@@ -80,7 +85,29 @@
       "main": [
         [
           {
-            "node": "Resumen de decisión",
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Call 'My Sub-Workflow 1'",
             "type": "main",
             "index": 0
           }
@@ -88,9 +115,9 @@
       ]
     }
   },
-  "createdAt": "2026-03-08T12:11:34.736Z",
-  "id": "rGH8sBo0uN6LKWMEDjZdG",
-  "isArchived": false,
+  "createdAt": "2026-02-17T17:53:43.261Z",
+  "id": "cpIHPZYkg1J3P1GyISGla",
+  "isArchived": true,
   "meta": {
     "templateCredsSetupCompleted": true
   },
@@ -105,23 +132,23 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        -144,
-        336
+        208,
+        320
       ],
-      "id": "970f4757-ccc6-421a-9ea3-a5edc6cc3cd8",
+      "id": "c478a259-e258-491d-ad03-501616f7cd0a",
       "name": "Extraer texto del archivo"
     },
     {
       "parameters": {
-        "jsCode": "// Normaliza texto extraído del PDF.\n// - Limpia whitespace y saltos de línea redundantes.\n// - Trunca a 100.000 caracteres para proteger la ventana de contexto del LLM.\n\nconst MAX_CHARS = 100000;\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const bin = item.binary?.data || {};\n\n  let text = \"\";\n\n  if (typeof j.text === \"string\") text = j.text;\n  else if (typeof j.data === \"string\") text = j.data;\n  else if (Array.isArray(j.data)) text = j.data.join(\"\\n\");\n  else if (typeof j.content === \"string\") text = j.content;\n  else if (typeof j.body === \"string\") text = j.body;\n\n  text = (text || \"\")\n    .replace(/\\r/g, \"\")\n    .replace(/[ \\t]+\\n/g, \"\\n\")\n    .replace(/\\n{3,}/g, \"\\n\\n\")\n    .trim();\n\n  const text_original_length = text.length;\n  const truncated = text.length > MAX_CHARS;\n  if (truncated) {\n    text = text.substring(0, MAX_CHARS);\n  }\n\n  item.json = {\n    ...j,\n    document_text: text,\n    text_original_length,\n    text_truncated: truncated,\n    file_name: bin.fileName ?? j.file_name ?? null,\n    mime_type: bin.mimeType ?? j.mime_type ?? null,\n    received_at: j.received_at ?? new Date().toISOString(),\n  };\n\n  return item;\n});\n"
+        "jsCode": "// Normaliza para que siempre exista $json.document_text\n// y añade metadatos básicos (file_name, mime_type, received_at)\n\nreturn items.map((item) => {\n  const j = item.json || {};\n  const bin = item.binary?.data || {};\n\n  let text = \"\";\n\n  // Tu nodo \"Extraer texto del archivo\" devuelve j.text\n  if (typeof j.text === \"string\") text = j.text;\n  else if (typeof j.data === \"string\") text = j.data;\n  else if (Array.isArray(j.data)) text = j.data.join(\"\\n\");\n  else if (typeof j.content === \"string\") text = j.content;\n  else if (typeof j.body === \"string\") text = j.body;\n\n  text = (text || \"\")\n    .replace(/\\r/g, \"\")\n    .replace(/[ \\t]+\\n/g, \"\\n\")\n    .replace(/\\n{3,}/g, \"\\n\\n\")\n    .trim();\n\n  item.json = {\n    ...j,\n    document_text: text,\n    file_name: bin.fileName ?? j.file_name ?? null,\n    mime_type: bin.mimeType ?? j.mime_type ?? null,\n    received_at: j.received_at ?? new Date().toISOString(),\n  };\n\n  return item;\n});\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        112,
-        336
+        448,
+        320
       ],
-      "id": "3e925c69-4633-4fdb-bd01-2b36096489e7",
+      "id": "86982558-feff-40a3-a589-1b5003fd3798",
       "name": "Normalizar texto"
     },
     {
@@ -139,10 +166,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        352,
-        336
+        688,
+        320
       ],
-      "id": "b6b4e4ec-68b7-4255-aa6e-3574d8decd2c",
+      "id": "80bbc589-6c81-4c5d-8361-6b2c5410791f",
       "name": "¿Texto extraído?"
     },
     {
@@ -161,10 +188,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        704,
-        608
+        1040,
+        592
       ],
-      "id": "6bca44e4-b808-429d-8f62-19bb62bdcb9f",
+      "id": "dfa61710-c47e-4b1a-8f44-a1b5ee8975ff",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -175,15 +202,15 @@
     },
     {
       "parameters": {
-        "jsCode": "// Salida estructurada: ensambla metadatos + output de la IA.\n\nreturn items.map((item) => {\n  const data = item.json || {};\n  const o = data.output || {};\n\n  const now = new Date().toISOString();\n  const project_id = `PLIEGO-${now.replace(/[-:TZ.]/g, \"\").slice(0, 14)}`;\n\n  item.json = {\n    project_id,\n    processed_at: now,\n    source: {\n      file_name: data.file_name ?? null,\n      mime_type: data.mime_type ?? null,\n      received_at: data.received_at ?? null,\n      text_original_length: data.text_original_length ?? null,\n      text_truncated: data.text_truncated ?? false,\n    },\n    ...data,\n  };\n\n  return item;\n});\n"
+        "jsCode": "// Salida estructurada final (para Webhook Response: \"Last Node\")\n// Modo: Run once for all items\n\nreturn items.map((item) => {\n  const data = item.json || {};\n  const o = data.output || {}; // <- contenido real extraído por la IA\n\n  const now = new Date().toISOString();\n  const project_id = `PLIEGO-${now.replace(/[-:TZ.]/g, \"\").slice(0, 14)}`;\n\n  const ubic = o.ubicacion || {};\n  const clas = o.clasificacion || {};\n  const fechas = o.fechas || {};\n  const pres = o.presupuesto || {};\n\n  const ubicTxt = `${ubic.ciudad ?? \"\"} ${ubic.provincia ?? \"\"} ${ubic.pais ?? \"\"}`\n    .replace(/\\s+/g, \" \")\n    .trim();\n\n  const resumen = [\n    `Cliente: ${o.cliente ?? \"N/D\"}`,\n    `Ubicación: ${ubicTxt || \"N/D\"}`,\n    `Tipo: ${o.tipo_proyecto ?? \"N/D\"}`,\n    `Línea negocio: ${clas.linea_negocio ?? \"N/D\"}`,\n    `Complejidad: ${clas.complejidad ?? \"N/D\"} | Prioridad: ${clas.prioridad ?? \"N/D\"}`,\n    `Entrega oferta: ${fechas.fecha_entrega_oferta ?? \"N/D\"}`,\n    `Presupuesto: ${(pres.importe ?? \"N/D\")} ${(pres.moneda ?? \"\")}`.trim(),\n  ].join(\"\\n\");\n\n  return {\n    json: {\n      project_id,\n      processed_at: now,\n      source: {\n        file_name: data.file_name ?? null,\n        mime_type: data.mime_type ?? null,\n        received_at: data.received_at ?? null,\n      },\n      ...data, // incluye output intacto\n      resumen_para_email: resumen,\n    },\n  };\n});\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1008,
-        320
+        1344,
+        304
       ],
-      "id": "f82e359e-0075-467c-ab00-a2788a493b06",
+      "id": "3694ed98-7826-4548-bee9-e5540bbd384d",
       "name": "Salida estructurada (respuesta)"
     },
     {
@@ -193,26 +220,46 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        400,
-        544
+        736,
+        528
       ],
-      "id": "29b3537a-ce70-46a3-a535-ee9df27ae984",
+      "id": "5675296d-4873-4292-8961-be112430509b",
       "name": "Salida error (sin texto)"
     },
     {
       "parameters": {
-        "content": "### Flujo WF1: Ingesta y análisis de pliegos AV\n\n**Trigger** → Extraer PDF → Normalizar (trunca a 100K) → IF texto → IA GPT-5.1 → Salida estructurada → **Resumen de decisión**\n\nEl nodo final muestra un resumen con los datos clave para decidir si lanzar el WF2 (Ingeniería técnica).\n",
+        "content": "### Siguientes pasos (opcional)\n\n**Airtable / Excel / Email**\n\n1) Después de `Salida estructurada (respuesta)`, añade:\n- **Airtable (Create/Upsert)** en tu tabla `PROYECTOS`.\n  - Campos recomendados: project_id, cliente, ubicacion, tipo_proyecto, linea_negocio, prioridad, complejidad, fecha_entrega_oferta, presupuesto, resumen_para_email, json_completo.\n- **Google Sheets (Append Row)** si quieres “Excel”.\n- **Email Send / Gmail** para enviar el resumen.\n\n2) Si activas nodos que vayan *después* de la respuesta, cambia el Webhook a **Response Mode: Response Node** y usa un nodo **Respond to Webhook** para controlar exactamente qué se devuelve.\n\n**Consejo**: guarda siempre el JSON completo en un campo largo para auditoría.\n",
+        "height": 260,
         "width": 560,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -80,
-        48
+        272,
+        32
       ],
-      "id": "41607751-d4dc-44ef-9fe6-88adea4d94db",
+      "id": "5d3cb82f-cded-409d-928e-1ad0ae38c06e",
       "name": "NOTA"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pliego-av-ingesta",
+        "responseMode": "lastNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        96
+      ],
+      "id": "20f6e031-a52a-4eef-87a4-8a2a88a09eea",
+      "name": "Webhook - Recibir pliego1",
+      "webhookId": "f2b7a0d4-9e6a-4e3a-9c4a-3b0f2d2b7c11"
     },
     {
       "parameters": {
@@ -223,10 +270,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "position": [
-        -528,
-        320
+        -176,
+        304
       ],
-      "id": "eb2c3a1c-e17b-4b25-82bf-d9456a3eed09",
+      "id": "0a4b9dab-e15f-46a5-a204-49e28edc7b11",
       "name": "Webhook - Recibir pliego",
       "webhookId": "9b62726c-c6f4-4a44-9831-1492f805f688"
     },
@@ -234,52 +281,96 @@
       "parameters": {
         "text": "={{ $json.document_text }}",
         "schemaType": "fromJson",
-        "jsonSchemaExample": "{\n  \"cliente\": \"ACME S.L.\",\n  \"ubicacion\": {\n    \"direccion\": \"Calle Ejemplo 123\",\n    \"ciudad\": \"Madrid\",\n    \"provincia\": \"Madrid\",\n    \"pais\": \"ES\"\n  },\n  \"tipo_proyecto\": \"Sala de reuniones\",\n  \"resumen_ejecutivo\": \"Resumen breve y claro del encargo.\",\n  \"alcance_tecnico\": {\n    \"descripcion\": \"Qué hay que instalar/mantener y hasta dónde llega el alcance.\",\n    \"sistemas\": [\n      \"Audiovisuales\",\n      \"Control\",\n      \"Videoconferencia\",\n      \"Streaming\",\n      \"Cartelería digital\",\n      \"Audio\",\n      \"Iluminación\",\n      \"Red\"\n    ],\n    \"tareas_principales\": [\n      \"Suministro\",\n      \"Instalación\",\n      \"Configuración\",\n      \"Integración\",\n      \"Puesta en marcha\",\n      \"Formación\",\n      \"Mantenimiento\"\n    ]\n  },\n  \"equipamiento_requerido\": [\n    {\n      \"categoria\": \"Pantallas\",\n      \"items\": [\n        \"Pantalla 86\\\" 4K\"\n      ],\n      \"cantidad_aprox\": 2,\n      \"notas\": \"Si el pliego no indica cantidades, usar null en cantidad_aprox.\"\n    }\n  ],\n  \"integraciones_y_protocolos\": [\n    \"HDMI\",\n    \"HDBaseT\",\n    \"Dante\",\n    \"AES67\",\n    \"NDI\",\n    \"SDVoE\",\n    \"Q-SYS\",\n    \"Crestron\",\n    \"Extron\",\n    \"RS-232\",\n    \"IP\",\n    \"PJLink\"\n  ],\n  \"fechas\": {\n    \"publicacion_pliego\": null,\n    \"visita_tecnica\": null,\n    \"fecha_limite_preguntas\": null,\n    \"fecha_entrega_oferta\": null,\n    \"inicio_estimado\": null,\n    \"fin_estimado\": null\n  },\n  \"presupuesto\": {\n    \"importe\": null,\n    \"moneda\": \"EUR\",\n    \"detalles\": null\n  },\n  \"criterios_adjudicacion\": [\n    { \"criterio\": \"Precio\", \"peso\": null, \"detalle\": null },\n    { \"criterio\": \"Calidad técnica\", \"peso\": null, \"detalle\": null },\n    { \"criterio\": \"Plazo\", \"peso\": null, \"detalle\": null }\n  ],\n  \"requisitos_documentales\": [\n    \"Documentación administrativa\",\n    \"Memoria técnica\",\n    \"Planificación\"\n  ],\n  \"requisitos_tecnicos_clave\": [\n    \"Compatibilidad con infraestructura existente\",\n    \"Garantías\",\n    \"SLA\"\n  ],\n  \"riesgos_y_ambiguedades\": [\n    \"Puntos del pliego poco claros o contradictorios\"\n  ],\n  \"preguntas_recomendadas_al_cliente\": [\n    \"Preguntas para aclarar alcance, obra civil, red, plazos, marcas admitidas\"\n  ],\n  \"secciones_importantes\": [\n    \"Objeto\",\n    \"Alcance\",\n    \"Prescripciones técnicas\",\n    \"Criterios\",\n    \"Plazos\"\n  ],\n  \"secciones_poco_relevantes\": [\n    \"Historia de la entidad\"\n  ],\n  \"palabras_clave\": [\n    \"sala\",\n    \"auditorio\",\n    \"pantallas\",\n    \"microfonía\",\n    \"DSP\",\n    \"control\",\n    \"videoconferencia\"\n  ],\n  \"clasificacion\": {\n    \"linea_negocio\": \"Salas de reuniones\",\n    \"complejidad\": \"Media\",\n    \"prioridad\": \"Media\",\n    \"probabilidad_ganar\": \"Media\",\n    \"motivo\": \"Justificación corta basada en señales del pliego (plazo, requisitos, competencia, etc.)\"\n  }\n}",
+        "jsonSchemaExample": "{\n  \"cliente\": \"ACME S.L.\",\n  \"ubicacion\": {\n    \"direccion\": \"Calle Ejemplo 123\",\n    \"ciudad\": \"Madrid\",\n    \"provincia\": \"Madrid\",\n    \"pais\": \"ES\"\n  },\n  \"tipo_proyecto\": \"Sala de reuniones\",\n  \"resumen_ejecutivo\": \"Resumen breve y claro del encargo.\",\n  \"alcance_tecnico\": {\n    \"descripcion\": \"Qué hay que instalar/mantener y hasta dónde llega el alcance.\",\n    \"sistemas\": [\n      \"Audiovisuales\",\n      \"Control\",\n      \"Videoconferencia\",\n      \"Streaming\",\n      \"Cartelería digital\",\n      \"Audio\",\n      \"Iluminación\",\n      \"Red\"\n    ],\n    \"tareas_principales\": [\n      \"Suministro\",\n      \"Instalación\",\n      \"Configuración\",\n      \"Integración\",\n      \"Puesta en marcha\",\n      \"Formación\",\n      \"Mantenimiento\"\n    ]\n  },\n  \"equipamiento_requerido\": [\n    {\n      \"categoria\": \"Pantallas\",\n      \"items\": [\n        \"Pantalla 86\\\" 4K\"\n      ],\n      \"cantidad_aprox\": 2,\n      \"notas\": \"Si el pliego no indica cantidades, usar null en cantidad_aprox.\"\n    }\n  ],\n  \"integraciones_y_protocolos\": [\n    \"HDMI\",\n    \"HDBaseT\",\n    \"Dante\",\n    \"AES67\",\n    \"NDI\",\n    \"SDVoE\",\n    \"Q-SYS\",\n    \"Crestron\",\n    \"Extron\",\n    \"RS-232\",\n    \"IP\",\n    \"PJLink\"\n  ],\n  \"fechas\": {\n    \"publicacion_pliego\": null,\n    \"visita_tecnica\": null,\n    \"fecha_limite_preguntas\": null,\n    \"fecha_entrega_oferta\": null,\n    \"inicio_estimado\": null,\n    \"fin_estimado\": null\n  },\n  \"presupuesto\": {\n    \"importe\": 100000,\n    \"moneda\": \"EUR\",\n    \"detalles\": null\n  },\n  \"criterios_adjudicacion\": [\n    { \"criterio\": \"Precio\", \"peso\": null, \"detalle\": null },\n    { \"criterio\": \"Calidad técnica\", \"peso\": null, \"detalle\": null },\n    { \"criterio\": \"Plazo\", \"peso\": null, \"detalle\": null }\n  ],\n  \"requisitos_documentales\": [\n    \"Documentación administrativa\",\n    \"Memoria técnica\",\n    \"Planificación\"\n  ],\n  \"requisitos_tecnicos_clave\": [\n    \"Compatibilidad con infraestructura existente\",\n    \"Garantías\",\n    \"SLA\"\n  ],\n  \"riesgos_y_ambiguedades\": [\n    \"Puntos del pliego poco claros o contradictorios\"\n  ],\n  \"preguntas_recomendadas_al_cliente\": [\n    \"Preguntas para aclarar alcance, obra civil, red, plazos, marcas admitidas\"\n  ],\n  \"secciones_importantes\": [\n    \"Objeto\",\n    \"Alcance\",\n    \"Prescripciones técnicas\",\n    \"Criterios\",\n    \"Plazos\"\n  ],\n  \"secciones_poco_relevantes\": [\n    \"Historia de la entidad\"\n  ],\n  \"palabras_clave\": [\n    \"sala\",\n    \"auditorio\",\n    \"pantallas\",\n    \"microfonía\",\n    \"DSP\",\n    \"control\",\n    \"videoconferencia\"\n  ],\n  \"clasificacion\": {\n    \"linea_negocio\": \"Salas de reuniones\",\n    \"complejidad\": \"Media\",\n    \"prioridad\": \"Media\",\n    \"probabilidad_ganar\": \"Media\",\n    \"motivo\": \"Justificación corta basada en señales del pliego (plazo, requisitos, competencia, etc.)\"\n  }\n}",
         "options": {
-          "systemPromptTemplate": "ROL\nAnalista experto en licitaciones de instalaciones audiovisuales profesionales.\n\nTAREA\nExtrae los datos del pliego y devuelve UN ÚNICO JSON válido.\n\nREGLAS (CRÍTICO)\n1. Solo JSON válido. Sin markdown, sin bloques de código, sin texto extra.\n2. Dato ausente → null. Lista ausente → [].\n3. Fechas: YYYY-MM-DD o null.\n4. presupuesto.importe: número o null (sin símbolos €/$).\n5. criterios_adjudicacion.peso: número 0-100 o null.\n6. equipamiento_requerido.cantidad_aprox: número o null.\n7. pais: código ISO 2 letras (ES, FR, US…).\n8. No inventes datos.\n\nESTRUCTURA EXACTA\n- cliente, ubicacion (direccion, ciudad, provincia, pais)\n- tipo_proyecto, resumen_ejecutivo\n- alcance_tecnico (descripcion, sistemas[], tareas_principales[])\n- equipamiento_requerido: lista de (categoria, items[], cantidad_aprox, notas)\n- integraciones_y_protocolos: lista\n- fechas (publicacion_pliego, visita_tecnica, fecha_limite_preguntas, fecha_entrega_oferta, inicio_estimado, fin_estimado)\n- presupuesto (importe, moneda, detalles)\n- criterios_adjudicacion: lista de (criterio, peso, detalle)\n- requisitos_documentales, requisitos_tecnicos_clave: listas\n- riesgos_y_ambiguedades, preguntas_recomendadas_al_cliente: listas\n- secciones_importantes, secciones_poco_relevantes, palabras_clave: listas\n- clasificacion (linea_negocio, complejidad, prioridad, probabilidad_ganar, motivo)"
+          "systemPromptTemplate": "=ROL\nEres un analista experto en licitaciones y pliegos técnicos de instalaciones audiovisuales.\n\nTAREA\nExtrae del texto del pliego los datos y devuelve UN ÚNICO JSON válido, sin texto adicional.\n\nREGLAS DE SALIDA (CRÍTICO)\n1) Devuelve únicamente JSON válido.\n2) Prohibido usar Markdown, prohibido usar bloques de código.\n3) No añadas texto antes ni después del JSON.\n4) Si un dato no aparece, usa null.\n5) Si un listado no aparece, usa una lista vacía: []\n6) Fechas en formato YYYY-MM-DD o null.\n7) presupuesto.importe debe ser número o null. Si viene con símbolos dejalos (si aparece el precio por equipo se añade o sino null)\n8) criterios_adjudicacion.peso debe ser número 0 a 100 o null. Si viene como 100%, conviértelo a 100.\n9) equipamiento_requerido.cantidad_aprox debe ser número o null.\n\nESTRUCTURA QUE DEBES DEVOLVER (CLAVES EXACTAS)\n- cliente: string o null\n- ubicacion: objeto con direccion, ciudad, provincia, pais (pais preferible ES si aplica)\n- tipo_proyecto: string o null\n- resumen_ejecutivo: string o null\n- alcance_tecnico: objeto con descripcion, sistemas (lista), tareas_principales (lista)\n- equipamiento_requerido: lista de objetos con categoria, items (lista), cantidad_aprox, precio, notas\n- integraciones_y_protocolos: lista\n- fechas: objeto con publicacion_pliego, visita_tecnica, fecha_limite_preguntas, fecha_entrega_oferta, inicio_estimado, fin_estimado\n- presupuesto: objeto con importe, moneda (EUR), detalles\n- criterios_adjudicacion: lista de objetos con criterio, peso, detalle\n- requisitos_documentales: lista\n- requisitos_tecnicos_clave: lista\n- riesgos_y_ambiguedades: lista\n- preguntas_recomendadas_al_cliente: lista\n- secciones_importantes: lista\n- secciones_poco_relevantes: lista\n- palabras_clave: lista\n- clasificacion: objeto con linea_negocio, complejidad, prioridad, probabilidad_ganar, motivo"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1,
       "position": [
-        656,
-        288
+        992,
+        272
       ],
-      "id": "f6dc5851-cafe-40ff-9633-eb42c1f0d80a",
+      "id": "0ef2faf6-2dc6-4908-a758-f9c8dd817817",
       "name": "IA - Extraer datos del pliego"
     },
     {
       "parameters": {
-        "jsCode": "// Resumen de decisión: muestra datos clave para decidir si ejecutar WF2.\n\nconst data = $input.first().json;\nconst o = data.output || {};\nconst clas = o.clasificacion || {};\nconst pres = o.presupuesto || {};\nconst fechas = o.fechas || {};\nconst ubic = o.ubicacion || {};\nconst equip = o.equipamiento_requerido || [];\n\n// Contar items totales\nconst totalItems = equip.reduce((sum, cat) => sum + (cat.items?.length || 0), 0);\nconst categorias = equip.map(e => `  - ${e.categoria}: ${e.items?.length || 0} items${e.cantidad_aprox ? ` (×${e.cantidad_aprox})` : ''}`).join('\\n');\n\nconst ubicTxt = [ubic.ciudad, ubic.provincia, ubic.pais].filter(Boolean).join(', ');\n\nconst importe = pres.importe != null\n  ? `${Number(pres.importe).toLocaleString('es-ES')} ${pres.moneda || 'EUR'}`\n  : 'No especificado';\n\nconst resumen = [\n  '═══════════════════════════════════════════',\n  '  RESUMEN DE ANÁLISIS — DECISIÓN WF2',\n  '═══════════════════════════════════════════',\n  '',\n  `📋 Proyecto: ${data.project_id}`,\n  `📄 Archivo:  ${data.source?.file_name || 'N/D'}`,\n  `🕐 Procesado: ${data.processed_at}`,\n  '',\n  '───────────────────────────────────────────',\n  '  DATOS CLAVE',\n  '───────────────────────────────────────────',\n  `Cliente:      ${o.cliente || 'N/D'}`,\n  `Ubicación:    ${ubicTxt || 'N/D'}`,\n  `Tipo:         ${o.tipo_proyecto || 'N/D'}`,\n  `Presupuesto:  ${importe}`,\n  '',\n  '───────────────────────────────────────────',\n  '  CLASIFICACIÓN',\n  '───────────────────────────────────────────',\n  `Línea negocio:     ${clas.linea_negocio || 'N/D'}`,\n  `Complejidad:       ${clas.complejidad || 'N/D'}`,\n  `Prioridad:         ${clas.prioridad || 'N/D'}`,\n  `Prob. ganar:       ${clas.probabilidad_ganar || 'N/D'}`,\n  `Motivo:            ${clas.motivo || 'N/D'}`,\n  '',\n  '───────────────────────────────────────────',\n  '  EQUIPAMIENTO',\n  '───────────────────────────────────────────',\n  `Categorías: ${equip.length} | Items totales: ${totalItems}`,\n  categorias || '  (sin equipamiento detectado)',\n  '',\n  '───────────────────────────────────────────',\n  '  FECHAS CLAVE',\n  '───────────────────────────────────────────',\n  `Entrega oferta:  ${fechas.fecha_entrega_oferta || 'N/D'}`,\n  `Inicio estimado: ${fechas.inicio_estimado || 'N/D'}`,\n  `Fin estimado:    ${fechas.fin_estimado || 'N/D'}`,\n  '',\n  '───────────────────────────────────────────',\n  '  RESUMEN EJECUTIVO',\n  '───────────────────────────────────────────',\n  o.resumen_ejecutivo || 'No disponible',\n  '',\n  '═══════════════════════════════════════════',\n  '  ¿Ejecutar WF2 (Ingeniería técnica)?',\n  '  → Lanza el workflow 2 con el JSON de',\n  '    salida de este análisis.',\n  '═══════════════════════════════════════════',\n].join('\\n');\n\nreturn [{\n  json: {\n    ...data,\n    _resumen_decision: resumen,\n  }\n}];\n"
+        "workflowId": {
+          "__rl": true,
+          "value": "dpoajZ8jUKeATmFi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/dpoajZ8jUKeATmFi",
+          "cachedResultName": "My Sub-Workflow 1"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
       "position": [
-        1264,
-        320
+        1632,
+        304
       ],
-      "id": "5edd9a92-df2b-4109-ab86-0f89659e50f1",
-      "name": "Resumen de decisión"
+      "id": "c76aa75c-b855-44db-95e7-c5ea3404568b",
+      "name": "Call 'My Sub-Workflow 1'"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "[\n  {\n    \"output\": {\n      \"cliente\": \"Agencia para el Empleo de Madrid\",\n      \"ubicacion\": {\n        \"direccion\": \"\",\n        \"ciudad\": \"Madrid\",\n        \"provincia\": \"Madrid\",\n        \"pais\": \"ES\"\n      },\n      \"tipo_proyecto\": \"Suministro e instalación de material audiovisual para centros de formación\",\n      \"resumen_ejecutivo\": \"Contrato basado del Acuerdo Marco AM 12/2021 para el suministro, instalación y puesta en funcionamiento de diverso material audiovisual en la Escuela de Hostelería de Santa Eugenia y en la Escuela Verde y de Oficios de la Agencia para el Empleo de Madrid, incluyendo sistemas de cartelería digital, videowalls, pantallas LED indoor, monitores de señalización, sistemas de audio, videoconferencia, streaming, control y cableado asociado.\",\n      \"alcance_tecnico\": {\n        \"descripcion\": \"Suministro, instalación, configuración y puesta en marcha de equipos audiovisuales completos (audio, vídeo, cartelería digital, videoconferencia, streaming y control) en dos sedes de la Agencia para el Empleo de Madrid, incluyendo transporte, montaje, conexión, cableado de fuerza y datos hasta 5 m por punto, estructuras de soporte, racks, servidores y software de gestión de contenidos.\",\n        \"sistemas\": [\n          \"Sistemas de audio (altavoces array, subwoofers, amplificadores, micrófonos inalámbricos)\",\n          \"Sistemas de vídeo (monitores de señalización de 32\\\", 43\\\", 55\\\", 65\\\" y 98\\\", pantallas LED indoor de gran formato, videowalls 2x2)\",\n          \"Sistemas de cartelería digital (servidores HW, software de gestión, clientes OPS/NUC)\",\n          \"Sistemas de videoconferencia con compartición inalámbrica\",\n          \"Sistemas de procesamiento de vídeo multiventana\",\n          \"Sistemas de streaming y grabación H.264\",\n          \"Sistemas de control audiovisual centralizado (procesadores de control, tabletas de control)\",\n          \"Infraestructura de red y conectividad (switches PoE, puntos WiFi, cableado de fuerza y datos)\",\n          \"Estructuras y soportes para monitores, pantallas LED, videowalls y cámaras PTZ\",\n          \"Racks de 19\\\" para sistemas de proyección y control\"\n        ],\n        \"tareas_principales\": [\n          \"Suministro de todos los equipos audiovisuales especificados en el Anexo III\",\n          \"Transporte y entrega en las dos sedes indicadas en Madrid\",\n          \"Montaje físico de monitores, pantallas LED, videowalls, altavoces, cámaras PTZ y racks\",\n          \"Instalación de soportes de pared, techo y suelo específicos para cada equipo\",\n          \"Tendido de cableado de fuerza y datos hasta un máximo de 5 metros por ubicación\",\n          \"Configuración de servidores y software de cartelería digital para gestionar todos los elementos de audio y vídeo\",\n          \"Instalación y configuración de OPS y NUC en monitores y videowalls según distribución\",\n          \"Integración de sistemas de videoconferencia, multiventana y streaming en las salas multimedia\",\n          \"Configuración de procesadores de control y paneles de control en tabletas\",\n          \"Puesta en marcha y comprobación del correcto funcionamiento de todos los sistemas\",\n          \"Retirada y gestión de residuos de equipos antiguos si los hubiera (en este contrato se indica que no procede)\"\n        ]\n      },\n      \"equipamiento_requerido\": [\n        {\n          \"categoria\": \"Audio\",\n          \"items\": [\n            \"Adaptador altavoces (8 uds)\",\n            \"Altavoces array (14 uds)\",\n            \"Amplificador 4 canales clase D (3 uds)\",\n            \"Micrófonos de diadema: transmisor petaca (2 uds)\",\n            \"Micrófonos de diadema: diadema (2 uds)\",\n            \"Micrófonos de mano: receptor y micro (4 uds)\",\n            \"Receptor micros inalámbrico digital (6 uds)\",\n            \"Subwoofer 10\\\" (2 uds)\",\n            \"Soporte altavoz para arrays (8 uds)\"\n          ],\n          \"cantidad_aprox\": 49,\n          \"notas\": \"Equipamiento distribuido entre Escuela de Hostelería (restaurante) y Escuela Verde y de Oficios (salón de actos) para conformar salas multimedia.\"\n        },\n        {\n          \"categoria\": \"Vídeo y visualización\",\n          \"items\": [\n            \"Cámara PTZ 4K de instalación (2 uds)\",\n            \"Monitor de señalización digital de 32\\\" (1 ud)\",\n            \"Monitor de señalización digital de 43\\\" (4 uds)\",\n            \"Monitor señalización 55\\\" (5 uds)\",\n            \"Monitor señalización 65\\\" (1 ud)\",\n            \"Monitor señalización 98\\\" (3 uds)\",\n            \"Pantalla interactiva de 65\\\" (1 ud)\",\n            \"Pantalla LED indoor 3x2.3 m (1 ud)\",\n            \"Pantalla LED indoor 4,8x2,3 m (1 ud)\",\n            \"Pantalla LED indoor 4.2x1.6 m (1 ud)\",\n            \"Videowall formato 2x2 de 55\\\" (3 uds)\"\n          ],\n          \"cantidad_aprox\": 22,\n          \"notas\": \"Incluye pantallas LED de pixel pitch 1,25 mm con controladoras y módulos de repuesto, y videowalls 2x2 de 55\\\".\"\n        },\n        {\n          \"categoria\": \"Procesamiento, control y streaming\",\n          \"items\": [\n            \"Procesador de control tipo 1 (1 ud)\",\n            \"Procesador de control tipo 2 (1 ud)\",\n            \"Sistema multiventana (3 uds)\",\n            \"Sistema streaming / grabador H.264 (2 uds)\",\n            \"Sistema de videoconferencia (3 uds)\",\n            \"Tableta sistema de control (2 uds)\",\n            \"Servidor HW para cartelería digital (2 uds)\",\n            \"Software de cartelería digital (1 servidor, 15 clientes) (1 ud)\",\n            \"Software de cartelería digital (1 servidor, 2 clientes) (1 ud)\"\n          ],\n          \"cantidad_aprox\": 16,\n          \"notas\": \"Procesadores de audio/vídeo con 64x64 canales en red, sistemas de videoconferencia con compartición inalámbrica y software de cartelería digital centralizado.\"\n        },\n        {\n          \"categoria\": \"Informática y reproducción de contenidos\",\n          \"items\": [\n            \"NUC I5 8GB RAM (10 uds)\",\n            \"OPS I5 8GB RAM (8 uds)\"\n          ],\n          \"cantidad_aprox\": 18,\n          \"notas\": \"NUC asociados a monitores de 55\\\" y 43\\\" y a pantallas LED; OPS asociados a videowalls, monitores de 98\\\" y de 32\\\" y monitor de 65\\\".\"\n        },\n        {\n          \"categoria\": \"Red y conectividad\",\n          \"items\": [\n            \"Punto WiFi sistema de proyección (2 uds)\",\n            \"Switch 24 puertos 1Gbps PoE sistema de proyección (7 uds)\",\n            \"Dongle conexión USB-C/HDMI para compartición inalámbrica (3 uds)\"\n          ],\n          \"cantidad_aprox\": 12,\n          \"notas\": \"Infraestructura de red con switches PoE gestionables y puntos WiFi 6 para sistemas de proyección y videoconferencia.\"\n        },\n        {\n          \"categoria\": \"Soportes y racks\",\n          \"items\": [\n            \"Rack sistema de proyección 19\\\" 10U (4 uds)\",\n            \"Soporte 2x1 techo 43\\\" (2 uds)\",\n            \"Soporte a suelo monitor 98\\\" horizontal (1 ud)\",\n            \"Soporte altavoz para arrays (8 uds)\",\n            \"Soporte monitor 32\\\" (1 ud)\",\n            \"Soporte pantalla interactiva suelo móvil y motorizado (1 ud)\",\n            \"Soporte pantalla LED (para 4,8x2,3 m) (1 ud)\",\n            \"Soporte para videowalls 2x2 55\\\" (3 uds)\",\n            \"Soporte pared monitor 55\\\" (3 vertical y 2 horizontal) (5 uds)\",\n            \"Soporte pared monitor 98\\\" vertical (2 uds)\",\n            \"Soporte pared monitor señalización 65\\\" (1 ud)\",\n            \"Soporte pared pantalla LED indoor 3x2.3m + espaciador (2 uds, uno por sede)\",\n            \"Soporte pared pantalla LED indoor 4x1.6m (2 uds, uno por sede)\",\n            \"Soporte PTZ especial techo (2 uds)\"\n          ],\n          \"cantidad_aprox\": 33,\n          \"notas\": \"Incluye estructuras DVLED modulares certificadas TÜV, soportes antivandálicos y racks con ventilación y regletas.\"\n        },\n        {\n          \"categoria\": \"Servicios de instalación\",\n          \"items\": [\n            \"Instalación y puesta en marcha (1 lote)\"\n          ],\n          \"cantidad_aprox\": 1,\n          \"notas\": \"Incluye transporte, montaje, cableado de fuerza y datos hasta 5 m por punto, configuración de software y pruebas de funcionamiento en ambas sedes.\"\n        }\n      ],\n      \"integraciones_y_protocolos\": [\n        \"RTSP\",\n        \"RTMP\",\n        \"RTMPS\",\n        \"SRT\",\n        \"ONVIF\",\n        \"GB/T28181\",\n        \"VISCA over IP\",\n        \"IP VISCA\",\n        \"H.264\",\n        \"H.265\",\n        \"HDMI 2.0\",\n        \"3G-SDI\",\n        \"DVI-I\",\n        \"DisplayPort\",\n        \"USB 2.0\",\n        \"USB 3.0\",\n        \"USB-C\",\n        \"Ethernet 10/100/1000Base-T(X)\",\n        \"PoE y PoE+\",\n        \"WiFi 6\",\n        \"AES WPA2-PSK\",\n        \"Encriptación 256/1024 bits en compartición inalámbrica\",\n        \"AES67 o red QLAN equivalente\",\n        \"RS-232\",\n        \"RS-422/RS-485\",\n        \"RJ45\",\n        \"Micro SD\",\n        \"OPS\",\n        \"HDCP 2.3\"\n      ],\n      \"fechas\": {\n        \"publicacion_pliego\": null,\n        \"visita_tecnica\": null,\n        \"fecha_limite_preguntas\": null,\n        \"fecha_entrega_oferta\": null,\n        \"inicio_estimado\": null,\n        \"fin_estimado\": null\n      },\n      \"presupuesto\": {\n        \"importe\": null,\n        \"moneda\": \"EUR\",\n        \"detalles\": null\n      },\n      \"criterios_adjudicacion\": [\n        {\n          \"criterio\": \"Precio\",\n          \"peso\": null,\n          \"detalle\": null\n        }\n      ],\n      \"requisitos_documentales\": [\n        \"Modelo de oferta económica según Anexo I, indicando importe total sin IVA y desglose por producto e instalación\",\n        \"Ficha técnica o descripción de los productos ofertados que acredite el cumplimiento de los requisitos técnicos mínimos y, en su caso, valorables\",\n        \"Indicación de marca y modelo de todos los productos ofertados\",\n        \"Declaración responsable manifestando la condición de fabricante o empresa filial de los bienes ofertados, incluyendo datos del servicio técnico oficial propio o concertado\",\n        \"En caso de no ser fabricante ni filial, contrato o documento del fabricante o distribuidor que autorice la comercialización de los bienes ofertados\",\n        \"Acreditación de disponer de servicio técnico oficial propio o concertado y su descripción\",\n        \"Dirección de correo electrónico de atención de incidencias exclusiva para el acuerdo marco\",\n        \"En caso de no presentar oferta, modelo de justificación de imposibilidad de presentar oferta válida según Anexo II, con documentación acreditativa (PVP, fichas técnicas, certificados de fabricante, etc.)\"\n      ],\n      \"requisitos_tecnicos_clave\": [\n        \"Cumplimiento de las especificaciones mínimas de cada suministro descritas en el Anexo III (resoluciones, brillos, tamaños, conectividad, protocolos, certificaciones, etc.)\",\n        \"Monitores de señalización con sistema operativo Android 10 o superior, conectividad WiFi y memoria mínima de 16 GB\",\n        \"Pantallas LED indoor con pixel pitch 1,25 mm, brillo mínimo 800 nits, tasa de refresco 3840 Hz y mantenimiento frontal\",\n        \"Procesadores de audio/vídeo con 64x64 canales de audio en red AES67 o equivalente\",\n        \"Sistemas de videoconferencia con compartición inalámbrica 4K, cifrado WPA2-PSK y encriptación 256/1024 bits\",\n        \"Cámaras PTZ 4K con zoom óptico mínimo 30x, múltiples salidas (HDMI, 3G-SDI, LAN, CVBS) y soporte de protocolos IP avanzados (RTSP, RTMP, SRT, NDI, etc.)\",\n        \"Switches gestionables con al menos 24 puertos 1G PoE+ (300W) y puertos SFP adicionales\",\n        \"OPS y NUC con procesadores Intel i5 o equivalentes, 8 GB RAM y SSD de al menos 256-512 GB\",\n        \"Pantalla interactiva de 65\\\" 4K con Android 13 o superior, 8 GB RAM, 128 GB almacenamiento y amplia conectividad frontal y trasera\",\n        \"Soportes y estructuras con certificaciones TÜV/TÜV Nord o equivalentes y compatibilidad VESA indicada\",\n        \"Cableado de fuerza y datos incluido hasta 5 m por ubicación y correcto anclaje estructural en paredes y suelos\",\n        \"Garantía mínima de 48 meses para el contrato\",\n        \"Precio unitario de cada producto no superior al precio unitario definido en el apartado 5 del documento de licitación\"\n      ],\n      \"riesgos_y_ambiguedades\": [\n        \"No se especifica fecha exacta de publicación ni de entrega de ofertas, solo el plazo de 10 días hábiles desde la invitación, lo que puede generar incertidumbre en la planificación\",\n        \"Limitación de los gastos de instalación al 35% del importe total del contrato basado puede tensionar el margen si la instalación resulta más compleja de lo previsto\",\n        \"Necesidad de adaptar la ubicación final de algunos equipos de control a las condiciones reales de cableado y cuartos de instalaciones, pudiendo requerir ajustes no detallados en planos\",\n        \"Exigencia de que los precios unitarios ofertados no superen los precios unitarios del pliego, reduciendo el margen de maniobra comercial\",\n        \"Requisito de servicio técnico oficial propio o concertado puede excluir a empresas sin red de soporte consolidada\",\n        \"Posibles incompatibilidades entre marcas si no se seleccionan soluciones integradas para procesadores, multiventana, streaming y cartelería digital\",\n        \"No se detallan explícitamente los requisitos de formación al personal de la AEM, pudiendo generar expectativas no recogidas en el pliego\",\n        \"La retirada de equipos antiguos se indica como \\\"No procede\\\" pero podría solicitarse en la práctica, generando trabajos adicionales no presupuestados\"\n      ],\n      \"preguntas_recomendadas_al_cliente\": [\n        \"¿Cuál es la fecha prevista de publicación en la Plataforma de Contratación y el calendario concreto de presentación de ofertas?\",\n        \"¿Se requiere formación específica al personal de la Escuela de Hostelería y de la Escuela Verde y de Oficios en el uso de los sistemas de cartelería digital, videoconferencia y control?\",\n        \"¿Existe alguna preferencia de marcas o compatibilidades con equipamiento audiovisual ya existente en las sedes?\",\n        \"¿Se prevé alguna limitación de horarios para la ejecución de las instalaciones en las escuelas (por clases, exámenes, eventos)?\",\n        \"¿Se deben contemplar servicios de mantenimiento preventivo y correctivo más allá del periodo de garantía estándar?\",\n        \"¿Hay requisitos de integración con sistemas de gestión de contenidos o plataformas corporativas del Ayuntamiento de Madrid?\",\n        \"¿Se aceptan propuestas de mejora técnica (p.ej. mayor brillo, más memoria, mejores procesadores) manteniendo o mejorando el precio unitario?\",\n        \"¿Se requiere documentación as-built (planos actualizados, esquemas de conexión, inventario detallado) al finalizar la instalación?\",\n        \"¿Qué procedimiento de coordinación se seguirá con los responsables de TI para la configuración de red, VLANs, direcciones IP y seguridad?\",\n        \"¿Se prevé la futura ampliación del número de clientes de cartelería digital o de puntos de visualización y debe dimensionarse el sistema para ello?\"\n      ],\n      \"secciones_importantes\": [\n        \"1. Organismo destinatario, responsable del contrato y datos de contacto\",\n        \"2. Necesidades a satisfacer con el suministro\",\n        \"3. Objeto. Bienes a suministrar\",\n        \"4. Instalación\",\n        \"5. Presupuesto base de licitación\",\n        \"6. Financiación\",\n        \"7. Criterios de valoración para la adjudicación del contrato basado\",\n        \"8. Procedimiento de valoración de las ofertas\",\n        \"9. Plazo máximo de ejecución del contrato\",\n        \"10. Lugares de entrega de los bienes a suministrar\",\n        \"12. Contenido mínimo de la oferta\",\n        \"13. Presentación de ofertas\",\n        \"15. Garantía\",\n        \"ANEXO I: Modelo de presentación de oferta\",\n        \"ANEXO II: Modelo de justificación de la imposibilidad de presentar oferta válida\",\n        \"ANEXO III: Descripción técnica detallada de los bienes e instalación\"\n      ],\n      \"secciones_poco_relevantes\": [\n        \"Información de firmantes del documento y CSV de verificación\",\n        \"Referencias genéricas a PRTR y fondos europeos que en este contrato se marcan como no aplicables\",\n        \"Modelos de declaración del Anexo II salvo en caso de no presentar oferta\",\n        \"Repeticiones de tablas de distribución de equipamiento ya detalladas\",\n        \"Notas sobre anexos y adendas de carácter general no específicos de este contrato basado\"\n      ],\n      \"palabras_clave\": [\n        \"suministro audiovisual\",\n        \"cartelería digital\",\n        \"videowall\",\n        \"pantalla LED indoor\",\n        \"monitor de señalización\",\n        \"cámara PTZ 4K\",\n        \"sistema de videoconferencia\",\n        \"streaming H.264\",\n        \"procesador de control\",\n        \"sala multimedia\",\n        \"Escuela de Hostelería de Santa Eugenia\",\n        \"Escuela Verde y de Oficios\",\n        \"Agencia para el Empleo de Madrid\",\n        \"switch PoE\",\n        \"OPS i5\",\n        \"NUC i5\",\n        \"Acuerdo Marco AM 12/2021\",\n        \"instalación y puesta en marcha\",\n        \"racks 19 pulgadas\"\n      ],\n      \"clasificacion\": {\n        \"linea_negocio\": \"Instalaciones audiovisuales profesionales para educación y sector público\",\n        \"complejidad\": \"Alta\",\n        \"prioridad\": \"Alta\",\n        \"probabilidad_ganar\": \"Media\",\n        \"motivo\": \"Proyecto de importe medio-alto con fuerte componente de integración audiovisual y requisitos técnicos detallados; la competencia será elevada entre integradores AV homologados en el Acuerdo Marco, pero el pliego está muy alineado con capacidades de integradores especializados en cartelería digital, LED y salas multimedia.\"\n      }\n    }\n  }\n]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        144
+      ],
+      "id": "6a82bc67-e4a7-4203-8059-c11694642a87",
+      "name": "Edit Fields",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        128
+      ],
+      "id": "54686223-a91d-4c6e-9035-e4837a454a34",
+      "name": "When clicking ‘Execute workflow’"
     }
   ],
   "pinData": {},
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
   },
   "shared": [
     {
-      "updatedAt": "2026-03-08T12:11:34.749Z",
-      "createdAt": "2026-03-08T12:11:34.749Z",
+      "updatedAt": "2026-02-17T17:53:43.270Z",
+      "createdAt": "2026-02-17T17:53:43.270Z",
       "role": "workflow:owner",
-      "workflowId": "rGH8sBo0uN6LKWMEDjZdG",
+      "workflowId": "cpIHPZYkg1J3P1GyISGla",
       "projectId": "u2lnFFYk1yGEaOcS"
     }
   ],
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-03-11T15:20:28.917Z",
-  "versionId": "e8f77e27-6f09-4eb2-9577-da1762fe21b2"
+  "updatedAt": "2026-03-18T21:20:20.000Z",
+  "versionId": "16a3cd49-b300-44fb-9966-f1b2cad54d95"
 }
