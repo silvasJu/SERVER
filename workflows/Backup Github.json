@@ -1,9 +1,9 @@
 {
   "active": true,
   "activeVersion": {
-    "updatedAt": "2025-11-27T17:59:34.508Z",
-    "createdAt": "2025-11-27T17:59:34.508Z",
-    "versionId": "224e8090-d604-4477-8dcf-f096e7ac8c7e",
+    "updatedAt": "2026-03-25T14:13:45.000Z",
+    "createdAt": "2026-03-25T14:13:24.716Z",
+    "versionId": "fad3eb8d-09de-4c55-8efe-ca6485879adc",
     "workflowId": "GkrUZfZx2ZcgBb27",
     "nodes": [
       {
@@ -384,8 +384,8 @@
         "webhookId": "047e8f93-05cd-408c-af8f-de9c3f89505a",
         "credentials": {
           "telegramApi": {
-            "id": "n08JAEpIKZ4MM88M",
-            "name": "Telegram account"
+            "id": "6iv2fXswdKZnCEwM",
+            "name": "Copia Seguridad"
           }
         }
       }
@@ -579,12 +579,12 @@
         ]
       }
     },
-    "authors": "system migration",
-    "name": null,
-    "description": null,
-    "autosaved": false
+    "authors": "silvas ju",
+    "name": "Version fad3eb8d",
+    "description": "",
+    "autosaved": true
   },
-  "activeVersionId": "224e8090-d604-4477-8dcf-f096e7ac8c7e",
+  "activeVersionId": "fad3eb8d-09de-4c55-8efe-ca6485879adc",
   "connections": {
     "When clicking ‘Execute workflow’": {
       "main": [
@@ -1160,8 +1160,8 @@
       "webhookId": "047e8f93-05cd-408c-af8f-de9c3f89505a",
       "credentials": {
         "telegramApi": {
-          "id": "n08JAEpIKZ4MM88M",
-          "name": "Telegram account"
+          "id": "6iv2fXswdKZnCEwM",
+          "name": "Copia Seguridad"
         }
       }
     }
@@ -1189,6 +1189,6 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2025-11-27T17:23:29.000Z",
-  "versionId": "224e8090-d604-4477-8dcf-f096e7ac8c7e"
+  "updatedAt": "2026-03-25T14:13:24.713Z",
+  "versionId": "fad3eb8d-09de-4c55-8efe-ca6485879adc"
 }
